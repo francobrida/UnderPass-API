@@ -5,6 +5,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Hash;
 use function Pest\Laravel\postJson;
+use function Pest\Laravel\assertDatabaseHas;
 
 uses(RefreshDatabase::class);
 
@@ -27,7 +28,7 @@ test('a user can login with correct credentials', function () {
     ]);
 
     $response->assertStatus(200)
-             ->assertJsonStructure(['access_token', 'token_type', 'user' => ['nickname', 'role']]);
+             ->assertJsonStructure(['access_token', 'token_type', 'user' => ['name', 'role']]);
 });
 
 
@@ -87,7 +88,7 @@ test('login is case-insensitive for the email address', function () {
 
 test('a user can register successfully', function () {
     $response = postJson('/api/v1/register', [
-        'nickname'              => 'NewClubber',
+        'name'              => 'NewClubber',
         'email'                 => 'new@underpass.com',
         'password'              => 'password123',
         'password_confirmation' => 'password123',
@@ -95,13 +96,14 @@ test('a user can register successfully', function () {
     ]);
 
     $response->assertStatus(201)
-             ->assertJsonStructure(['access_token', 'user' => ['nickname', 'email', 'role']]);
+             ->assertJsonStructure(['access_token', 'user' => ['name', 'email', 'role']]);
 
     
-    $this->assertDatabaseHas('users', [
+    assertDatabaseHas('users', [
         'email'    => 'new@underpass.com',
-        'nickname' => 'NewPlayer'
+        'name' => 'NewClubber'
     ]);
+
 });
 
 test('a user cannot register with an existing email', function () {
@@ -109,7 +111,7 @@ test('a user cannot register with an existing email', function () {
     User::factory()->create(['email' => 'existing@test.com']);
 
     $response = postJson('/api/v1/register', [
-        'nickname'              => 'Other',
+        'name'              => 'Other',
         'email'                 => 'existing@test.com',
         'password'              => 'password123',
         'password_confirmation' => 'password123',
@@ -119,10 +121,10 @@ test('a user cannot register with an existing email', function () {
              ->assertJsonValidationErrors(['email']);
 });
 
-test('registration requires nickname, email and password', function () {
+test('registration requires name, email and password', function () {
     $response = postJson('/api/v1/register', []);
 
     $response->assertStatus(422)
-             ->assertJsonValidationErrors(['nickname', 'email', 'password']);
+             ->assertJsonValidationErrors(['name', 'email', 'password']);
 });
 

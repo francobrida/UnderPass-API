@@ -7,6 +7,8 @@ use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use App\Enums\UserRole;
+use Illuminate\Validation\Rules\Enum;
 
 class AuthController extends Controller
 {
@@ -30,8 +32,37 @@ class AuthController extends Controller
             'access_token' => $token,
             'token_type'   => 'Bearer',
             'user'         => 
-            ['nickname' => $user->nickname,'role'     => $user->role]
+            ['name' => $user->name,'role'  => $user->role]
         ], 200);
 
+    }
+
+    public function register(Request $request): JsonResponse
+    {
+        $fields = $request->validate([
+            'name' => 'required|string|max:255',
+            'email'    => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8|confirmed',
+            'role'     => ['nullable', new Enum(UserRole::class)],
+        ]);
+
+        $user = User::create([
+            'name' => $fields['name'],
+            'email'    => strtolower($fields['email']),
+            'password' => Hash::make($fields['password']),
+            'role'     => $fields['role'] ?? UserRole::CLUBBER->value,
+        ]);
+
+        $token = $user->createToken('auth_token')->accessToken;
+
+        return response()->json([
+            'access_token' => $token,
+            'token_type'   => 'Bearer',
+            'user'         => [
+                'name' => $user->name,
+                'email'    => $user->email,
+                'role'     => $user->role->value,
+            ]
+        ], 201);
     }
 }
