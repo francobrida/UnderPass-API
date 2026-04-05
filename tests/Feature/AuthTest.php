@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Hash;
 use function Pest\Laravel\postJson;
 use function Pest\Laravel\assertDatabaseHas;
+use Laravel\Passport\Passport;
 
 uses(RefreshDatabase::class);
 
@@ -128,3 +129,21 @@ test('registration requires name, email and password', function () {
              ->assertJsonValidationErrors(['name', 'email', 'password']);
 });
 
+test('an authenticated user can logout', function () {
+    
+    $user = User::factory()->create();
+
+    Passport::actingAs($user);
+
+    $response = postJson('/api/v1/logout');
+
+    $response->assertStatus(200)
+             ->assertJson(['message' => 'Sesión cerrada exitosamente']);
+});
+
+test('a not logued in user cannot logout', function () {
+    
+    $response = postJson('/api/v1/logout');
+
+    $response->assertStatus(401);
+});

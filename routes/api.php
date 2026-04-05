@@ -13,6 +13,6 @@ Route::prefix('v1')->group(function () {
 
     // AUTH
     Route::middleware('auth:sanctum')->group(function () {
-        
+        Route::post('/logout', [AuthController::class, 'logout']);
     });
 });
