@@ -34,12 +34,12 @@ test('a user can login with correct credentials', function () {
 test('a user cant login with incorrect credentials', function() {
     User::factory()->create([
         'email' => 'user@underpass.com',
-        'password' => Hash::make('password_correcto'),
+        'password' => Hash::make('correct_password'),
     ]);
 
     $response = postJson('/api/v1/login', [
         'email' => 'user@underpass.com',
-        'password' => 'password_incorrecto',
+        'password' => 'wrong_password',
     ]);
 
     $response->assertStatus(401)
@@ -60,7 +60,7 @@ test('a user cannot login with a non-existent email', function () {
 test('login requires a valid email and password', function () {
     
     $response = postJson('/api/v1/login', [
-        'email' => 'not-an-email',
+        'email' => 'not-email',
         'password' => '',
     ]);
 
@@ -82,3 +82,47 @@ test('login is case-insensitive for the email address', function () {
     $response->assertStatus(200)
              ->assertJsonStructure(['access_token']);
 });
+
+// Registration
+
+test('a user can register successfully', function () {
+    $response = postJson('/api/v1/register', [
+        'nickname'              => 'NewClubber',
+        'email'                 => 'new@underpass.com',
+        'password'              => 'password123',
+        'password_confirmation' => 'password123',
+        'role'                  => 'clubber'
+    ]);
+
+    $response->assertStatus(201)
+             ->assertJsonStructure(['access_token', 'user' => ['nickname', 'email', 'role']]);
+
+    
+    $this->assertDatabaseHas('users', [
+        'email'    => 'new@underpass.com',
+        'nickname' => 'NewPlayer'
+    ]);
+});
+
+test('a user cannot register with an existing email', function () {
+    
+    User::factory()->create(['email' => 'existing@test.com']);
+
+    $response = postJson('/api/v1/register', [
+        'nickname'              => 'Other',
+        'email'                 => 'existing@test.com',
+        'password'              => 'password123',
+        'password_confirmation' => 'password123',
+    ]);
+
+    $response->assertStatus(422)
+             ->assertJsonValidationErrors(['email']);
+});
+
+test('registration requires nickname, email and password', function () {
+    $response = postJson('/api/v1/register', []);
+
+    $response->assertStatus(422)
+             ->assertJsonValidationErrors(['nickname', 'email', 'password']);
+});
+
