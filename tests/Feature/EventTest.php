@@ -6,6 +6,7 @@ use Laravel\Passport\Passport;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use function Pest\Laravel\getJson;
 
+
 uses(RefreshDatabase::class);
 
 test('a user can see only verified events', function () {
@@ -30,3 +31,14 @@ test('unauthenticated users are blocked from seeing events', function () {
     $response->assertStatus(401);
 });
 
+test('it returns empty array when no events exist', function () {
+    $user = User::factory()->create();
+
+    /**  @var \App\Models\User $user */
+    Passport::actingAs($user);
+
+    $response = getJson('/api/v1/events');
+
+    $response->assertStatus(200);
+    $response->assertExactJson(['data' => []]);
+});
