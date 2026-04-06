@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Models\Event;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class EventController extends Controller
 {
@@ -28,5 +29,31 @@ class EventController extends Controller
         }
 
         return response()->json(['data' => $list]);
+    }
+
+    public function store(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'lineup' => 'required|string',
+            'description' => 'required|string',
+            'location_name' => 'required|string',
+            'neighborhood' => 'required|string',
+            'date' => 'required|date|after_or_equal:today',
+            'start_time' => 'required',
+            'end_time' => 'required',
+            'price' => 'required|numeric',
+            'is_18_plus' => 'required|boolean',
+        ]);
+
+        $validated['user_id'] = $request->user()->id;
+        $validated['is_verified'] = false;
+
+        $event = Event::create($validated);
+
+        return response()->json([
+            'message' => 'Event created successfully, pending verification',
+            'data' => $event
+        ], 201);
     }
 }

@@ -19,5 +19,7 @@ Route::prefix('v1')->group(function () {
         Route::delete('/profile', [UserController::class, 'destroy']);
         Route::patch('/profile', [UserController::class, 'update']);
         Route::get('/events', [EventController::class, 'index']);
+        Route::post('/events', [EventController::class, 'store']);
+        
     });
 });

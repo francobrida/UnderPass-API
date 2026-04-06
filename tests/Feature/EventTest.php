@@ -53,6 +53,7 @@ test('a user can create a new event', function () {
 
     $eventData = [
         'title' => 'Underground Techno',
+        'lineup' => 'DJ Snake, Amelie Lens',
         'description' => 'Best party in the city',
         'location_name' => 'Secret Club',
         'neighborhood' => 'Poblenou',
@@ -74,4 +75,17 @@ test('a user can create a new event', function () {
         'user_id' => $user->id,
         'is_verified' => false
     ]);
+
+});
+
+test('event creation requires title and date', function () {
+    $user = User::factory()->create();
+
+    /**  @var \App\Models\User $user */
+    Passport::actingAs($user);
+
+    $response = postJson('/api/v1/events', []); // Vacío
+
+    $response->assertStatus(422)
+             ->assertJsonValidationErrors(['title', 'date']);
 });
