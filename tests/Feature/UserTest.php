@@ -8,6 +8,7 @@ use function Pest\Laravel\getJson;
 use function Pest\Laravel\deleteJson;
 use function Pest\Laravel\assertDatabaseMissing;
 use function Pest\Laravel\assertDatabaseHas;
+use function Pest\Laravel\patchJson;
 
 uses(RefreshDatabase::class);
 
@@ -36,8 +37,7 @@ test('an admin can view any user profile (clubber or organizer)', function () {
 
     $response = getJson("/api/v1/users/{$user->id}");
 
-    $response->assertStatus(200)
-             ->assertJsonPath('data.name', 'Any User');
+    $response->assertStatus(200)->assertJsonPath('data.name', 'Any User');
 });
 
 test('a clubber cannot view another clubber profile', function () {
@@ -49,8 +49,7 @@ test('a clubber cannot view another clubber profile', function () {
 
     $response = getJson("/api/v1/users/{$clubber2->id}");
 
-    $response->assertStatus(403)
-             ->assertJson(['message' => 'You dont have permission to see this']);
+    $response->assertStatus(403)->assertJson(['message' => 'You dont have permission to see this']);
 });
 
 test('returns 404 when user does not exist', function () {
@@ -61,8 +60,7 @@ test('returns 404 when user does not exist', function () {
 
     $response = getJson("/api/v1/users/999999");
 
-    $response->assertStatus(404)
-             ->assertJson(['message' => 'User not found']);
+    $response->assertStatus(404)->assertJson(['message' => 'User not found']);
 });
 
 test('unauthenticated users are rejected', function () {
@@ -93,8 +91,7 @@ test('a user can delete their own profile', function () {
 
     $response = deleteJson('/api/v1/profile');
 
-    $response->assertStatus(200)
-             ->assertJson(['message' => 'Account successfully deleted']);
+    $response->assertStatus(200)->assertJson(['message' => 'Account successfully deleted']);
 
     assertDatabaseMissing('users', ['id' => $clubber->id]);
 });
@@ -119,6 +116,39 @@ test('a user cannot delete another users profile via this route', function () {
     
     assertDatabaseMissing('users', ['id' => $clubber1->id]);
     assertDatabaseHas('users', ['id' => $clubber2->id]);
+});
+
+test('a user can edit their own name', function () {
+    $user = User::factory()->create(['name' => 'OldName']);
+
+      /** @var \App\Models\User $user */
+    Passport::actingAs($user);
+
+    $response = patchJson('/api/v1/profile', [
+        'name' => 'NewName'
+    ]);
+
+    $response->assertStatus(200)->assertJsonPath('data.name', 'NewName');
+
+    assertDatabaseHas('users', [
+        'id' => $user->id,
+        'name' => 'NewName'
+    ]);
+});
+
+test('update profile validation email must be unique', function () {
+    $clubber1 = User::factory()->create(['email' => 'clubber@underpass.com']);
+    $clubber2 = User::factory()->create(['email' => 'other@underpass.com']);
+    
+      /** @var \App\Models\User $clubber1 */
+    Passport::actingAs($clubber1);
+
+
+    $response = patchJson('/api/v1/profile', [
+        'email' => 'other@underpass.com'
+    ]);
+
+    $response->assertStatus(422)->assertJsonValidationErrors(['email']);
 });
 
 
