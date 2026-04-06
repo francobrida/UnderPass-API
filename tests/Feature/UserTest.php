@@ -3,7 +3,10 @@
 use App\Models\User;
 use App\Enums\UserRole;
 use Laravel\Passport\Passport;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use function Pest\Laravel\getJson;
+
+uses(RefreshDatabase::class);
 
 test('a clubber can view their own profile', function () {
     $clubber = User::factory()->create([
