@@ -9,6 +9,7 @@ use function Pest\Laravel\deleteJson;
 use function Pest\Laravel\assertDatabaseMissing;
 use function Pest\Laravel\assertDatabaseHas;
 use function Pest\Laravel\patchJson;
+use Illuminate\Support\Facades\Hash;
 
 uses(RefreshDatabase::class);
 
@@ -151,5 +152,37 @@ test('update profile validation email must be unique', function () {
     $response->assertStatus(422)->assertJsonValidationErrors(['email']);
 });
 
+test('a user can update their own password', function () {
+    $user = User::factory()->create([
+        'password' => Hash::make('old-password')
+    ]);
 
+    /** @var \App\Models\User $user */
+    Passport::actingAs($user);
+
+    $response = patchJson('/api/v1/profile', [
+        'password' => 'new-secret-123',
+        'password_confirmation' => 'new-secret-123' 
+    ]);
+
+    $response->assertStatus(200);
+
+    $user->refresh();
+    expect(Hash::check('new-secret-123', $user->password))->toBeTrue();
+});
+
+test('password update requires confirmation', function () {
+    $user = User::factory()->create();
+
+    /** @var \App\Models\User $user */
+    Passport::actingAs($user);
+
+    $response = patchJson('/api/v1/profile', [
+        'password' => 'new-password',
+        'password_confirmation' => 'wrong-confirmation'
+    ]);
+
+    $response->assertStatus(422)
+             ->assertJsonValidationErrors(['password']);
+});
 

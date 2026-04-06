@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\UserController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 
@@ -17,5 +16,6 @@ Route::prefix('v1')->group(function () {
         Route::post('/logout', [AuthController::class, 'logout']);
         Route::get('/users/{id}', [UserController::class, 'show']);
         Route::delete('/profile', [UserController::class, 'destroy']);
+        Route::patch('/profile', [UserController::class, 'update']);
     });
 });
