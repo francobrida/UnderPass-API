@@ -130,7 +130,8 @@ test('registration requires name, email and password', function () {
 });
 
 test('an authenticated user can logout', function () {
-    
+
+    /** @var \App\Models\User $user */
     $user = User::factory()->create();
 
     Passport::actingAs($user);
@@ -138,7 +139,7 @@ test('an authenticated user can logout', function () {
     $response = postJson('/api/v1/logout');
 
     $response->assertStatus(200)
-             ->assertJson(['message' => 'Sesión cerrada exitosamente']);
+             ->assertJson(['message' => 'Session successfully logged out']);
 });
 
 test('a not logued in user cannot logout', function () {
@@ -147,3 +148,4 @@ test('a not logued in user cannot logout', function () {
 
     $response->assertStatus(401);
 });
+

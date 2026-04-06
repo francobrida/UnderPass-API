@@ -12,7 +12,7 @@ Route::prefix('v1')->group(function () {
     Route::post('/register', [AuthController::class, 'register']);
 
     // AUTH
-    Route::middleware('auth:sanctum')->group(function () {
+    Route::middleware('auth:api')->group(function () {
         Route::post('/logout', [AuthController::class, 'logout']);
     });
 });

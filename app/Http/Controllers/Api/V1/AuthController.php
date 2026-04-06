@@ -65,4 +65,18 @@ class AuthController extends Controller
             ]
         ], 201);
     }
+
+    public function logout(Request $request): JsonResponse
+    {
+        /** @var \App\Models\User $user */
+        $user = $request->user();
+
+        /** @var \Laravel\Passport\Token $token */
+        $token = $user->token();
+        $token->revoke();
+
+        return response()->json([
+            'message' => 'Session successfully logged out'
+        ], 200);
+    }
 }
