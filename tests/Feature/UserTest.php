@@ -7,6 +7,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use function Pest\Laravel\getJson;
 use function Pest\Laravel\deleteJson;
 use function Pest\Laravel\assertDatabaseMissing;
+use function Pest\Laravel\assertDatabaseHas;
 
 uses(RefreshDatabase::class);
 
@@ -97,4 +98,28 @@ test('a user can delete their own profile', function () {
 
     assertDatabaseMissing('users', ['id' => $clubber->id]);
 });
+
+test('a not logued in user cannot delete any profile', function () {
+    
+    $response = deleteJson('/api/v1/profile');
+
+    $response->assertStatus(401);
+});
+
+test('a user cannot delete another users profile via this route', function () {
+    $clubber1 = User::factory()->create(['role' => UserRole::CLUBBER]);
+    $clubber2 = User::factory()->create(['role' => UserRole::CLUBBER]);
+    
+     /** @var \App\Models\User $clubber1 */
+    Passport::actingAs($clubber1);
+
+    $response = deleteJson('/api/v1/profile');
+
+    $response->assertStatus(200);
+    
+    assertDatabaseMissing('users', ['id' => $clubber1->id]);
+    assertDatabaseHas('users', ['id' => $clubber2->id]);
+});
+
+
 

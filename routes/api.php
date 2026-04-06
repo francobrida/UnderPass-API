@@ -12,9 +12,10 @@ Route::prefix('v1')->group(function () {
     Route::post('/login', [AuthController::class, 'login']);
     Route::post('/register', [AuthController::class, 'register']);
 
-    // AUTH
+    // WITH AUTH
     Route::middleware('auth:api')->group(function () {
         Route::post('/logout', [AuthController::class, 'logout']);
         Route::get('/users/{id}', [UserController::class, 'show']);
+        Route::delete('/profile', [UserController::class, 'destroy']);
     });
 });
