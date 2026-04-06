@@ -186,3 +186,59 @@ test('password update requires confirmation', function () {
              ->assertJsonValidationErrors(['password']);
 });
 
+test('update profile validation: name must be a string', function () {
+    $user = User::factory()->create();
+
+    /** @var \App\Models\User $user */
+    Passport::actingAs($user);
+
+    $response = patchJson('/api/v1/profile', ['name' => 12345]);
+
+    $response->assertStatus(422)
+             ->assertJsonValidationErrors(['name']);
+});
+
+test('update profile validation: email must be a valid format', function () {
+    $user = User::factory()->create();
+
+    /** @var \App\Models\User $user */
+    Passport::actingAs($user);
+
+    $response = patchJson('/api/v1/profile', ['email' => 'not-an-email']);
+
+    $response->assertStatus(422)
+             ->assertJsonValidationErrors(['email']);
+});
+
+test('update profile validation: password must be at least 8 characters', function () {
+    $user = User::factory()->create();
+
+    /** @var \App\Models\User $user */
+    Passport::actingAs($user);
+
+    $response = patchJson('/api/v1/profile', [
+        'password' => 'short',
+        'password_confirmation' => 'short'
+    ]);
+
+    $response->assertStatus(422)
+             ->assertJsonValidationErrors(['password']);
+});
+
+test('a user cannot change their own role via profile update', function () {
+    $user = User::factory()->create(['role' => UserRole::CLUBBER]);
+
+    /** @var \App\Models\User $user */
+    Passport::actingAs($user);
+
+    $response = patchJson('/api/v1/profile', [
+        'role' => UserRole::ADMIN->value
+    ]);
+
+    $response->assertStatus(200); 
+    
+    $user->refresh();
+   
+    expect($user->role)->toBe(UserRole::CLUBBER);
+});
+
