@@ -15,7 +15,7 @@ class UserController extends Controller
         $user = User::find($id);
 
         if (!$user) {
-            return response()->json(['message' => 'Usuario no encontrado'], 404);
+            return response()->json(['message' => 'User not found'], 404);
         }
 
         $isOwner = $request->user()->id === $user->id;
@@ -23,7 +23,7 @@ class UserController extends Controller
 
         if (!$isOwner && !$isAdmin) {
             return response()->json([
-                'message' => 'No tienes permiso para ver este perfil privado'
+                'message' => 'You dont have permission to see this'
             ], 403);
         }
 

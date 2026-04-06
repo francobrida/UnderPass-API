@@ -5,6 +5,8 @@ use App\Enums\UserRole;
 use Laravel\Passport\Passport;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use function Pest\Laravel\getJson;
+use function Pest\Laravel\deleteJson;
+use function Pest\Laravel\assertDatabaseMissing;
 
 uses(RefreshDatabase::class);
 
@@ -47,7 +49,7 @@ test('a clubber cannot view another clubber profile', function () {
     $response = getJson("/api/v1/users/{$clubber2->id}");
 
     $response->assertStatus(403)
-             ->assertJson(['message' => 'No tienes permiso para ver este perfil privado']);
+             ->assertJson(['message' => 'You dont have permission to see this']);
 });
 
 test('returns 404 when user does not exist', function () {
@@ -59,7 +61,7 @@ test('returns 404 when user does not exist', function () {
     $response = getJson("/api/v1/users/999999");
 
     $response->assertStatus(404)
-             ->assertJson(['message' => 'Usuario no encontrado']);
+             ->assertJson(['message' => 'User not found']);
 });
 
 test('unauthenticated users are rejected', function () {
@@ -80,5 +82,19 @@ test('an organizer cannot view another organizers profile', function () {
     $response = getJson("/api/v1/users/{$organizer2->id}");
 
     $response->assertStatus(403);
+});
+
+test('a user can delete their own profile', function () {
+    $clubber = User::factory()->create();
+
+    /** @var \App\Models\User $clubber */
+    Passport::actingAs($clubber);
+
+    $response = deleteJson('/api/v1/profile');
+
+    $response->assertStatus(200)
+             ->assertJson(['message' => 'Account successfully deleted']);
+
+    assertDatabaseMissing('users', ['id' => $clubber->id]);
 });
 
