@@ -3,7 +3,10 @@
 use App\Models\Event;
 use App\Models\User;
 use Laravel\Passport\Passport;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use function Pest\Laravel\getJson;
+
+uses(RefreshDatabase::class);
 
 test('a user can see only verified events', function () {
     $user = User::factory()->create();
