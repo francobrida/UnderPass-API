@@ -4,7 +4,9 @@ use App\Models\Event;
 use App\Models\User;
 use Laravel\Passport\Passport;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use function Pest\Laravel\assertDatabaseHas;
 use function Pest\Laravel\getJson;
+use function Pest\Laravel\postJson;
 
 
 uses(RefreshDatabase::class);
@@ -41,4 +43,35 @@ test('it returns empty array when no events exist', function () {
 
     $response->assertStatus(200);
     $response->assertExactJson(['data' => []]);
+});
+
+test('a user can create a new event', function () {
+    $user = User::factory()->create();
+
+    /**  @var \App\Models\User $user */
+    Passport::actingAs($user);
+
+    $eventData = [
+        'title' => 'Underground Techno',
+        'description' => 'Best party in the city',
+        'location_name' => 'Secret Club',
+        'neighborhood' => 'Poblenou',
+        'date' => '2024-12-31',
+        'start_time' => '23:00',
+        'end_time' => '06:00',
+        'price' => 15.50,
+        'is_18_plus' => true
+    ];
+
+    $response = postJson('/api/v1/events', $eventData);
+
+    $response->assertStatus(201)
+             ->assertJsonPath('data.title', 'Underground Techno')
+             ->assertJsonPath('data.is_verified', false);
+
+    assertDatabaseHas('events', [
+        'title' => 'Underground Techno',
+        'user_id' => $user->id,
+        'is_verified' => false
+    ]);
 });
