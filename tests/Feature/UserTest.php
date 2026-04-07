@@ -241,4 +241,3 @@ test('a user cannot change their own role via profile update', function () {
    
     expect($user->role)->toBe(UserRole::CLUBBER);
 });
-

@@ -19,12 +19,12 @@ class EventController extends Controller
 
         foreach ($events as $event) {
             $list[] = [
-                'id'           => $event->id,
-                'title'        => $event->title,
-                'description'  => $event->description,
-                'location'     => $event->location_name,
-                'organizer'    => $event->organizer->name,
-                'vouch_count'  => $event->vouches()->count(),
+                'id' => $event->id,
+                'title' => $event->title,
+                'description' => $event->description,
+                'location' => $event->location_name,
+                'organizer' => $event->organizer->name,
+                'vouch_count' => $event->vouches()->count(),
             ];
         }
 

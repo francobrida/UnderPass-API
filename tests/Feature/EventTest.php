@@ -5,8 +5,11 @@ use App\Models\User;
 use Laravel\Passport\Passport;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use function Pest\Laravel\assertDatabaseHas;
+use function Pest\Laravel\assertDatabaseMissing;
 use function Pest\Laravel\getJson;
 use function Pest\Laravel\postJson;
+use function Pest\Laravel\putJson;
+use function Pest\Laravel\deleteJson;
 
 
 uses(RefreshDatabase::class);
@@ -145,3 +148,79 @@ test('a user cannot force an event to be verified on creation', function () {
     ]);
 
 });
+
+test('a user can update their own event', function () {
+    $user = User::factory()->create();
+
+    /**  @var \App\Models\User $user */
+    Passport::actingAs($user);
+
+    $event = Event::factory()->create([
+        'user_id' => $user->id,
+        'title' => 'Old Title',
+        'is_verified' => true 
+    ]);
+
+    $updateData = [
+        'title' => 'New Awesome Title',
+        'lineup' => 'Updated Lineup',
+        'description' => 'Updated Desc',
+        'location_name' => 'New Club',
+        'neighborhood' => 'Gracia',
+        'date' => now()->addDays(10)->toDateString(),
+        'start_time' => '23:00',
+        'end_time' => '06:00',
+        'price' => 20,
+        'is_18_plus' => true
+    ];
+
+    $response = putJson("/api/v1/events/{$event->id}", $updateData);
+
+    $response->assertStatus(200);
+    
+    assertDatabaseHas('events', [
+        'id' => $event->id,
+        'title' => 'New Awesome Title',
+        'is_verified' => false
+    ]);
+});
+
+test('a user cannot update someone else event', function () {
+    $owner = User::factory()->create();
+    $hacker = User::factory()->create();
+    
+    $event = Event::factory()->create(['user_id' => $owner->id, 'title' => 'Original Partyy']);
+
+    /**  @var \App\Models\User $hacker */
+    Passport::actingAs($hacker);
+
+    $response = putJson("/api/v1/events/{$event->id}", [
+        'title' => 'I hacked you hahaaa'
+    ]);
+
+    
+    $response->assertStatus(403);
+    
+    assertDatabaseHas('events', [
+        'id' => $event->id,
+        'title' => 'Original Partyy'
+    ]);
+});
+
+test('a user can delete their own event', function () {
+
+    $owner = User::factory()->create();
+
+    $event = Event::factory()->create(['user_id' => $owner->id]);
+
+    /** @var \App\Models\User $owner */
+    Passport::actingAs($owner);
+
+    $response = deleteJson("/api/v1/events/{$event->id}");
+
+    $response->assertStatus(200)->assertJson(['message' => 'Event successfully deleted']);
+
+    assertDatabaseMissing('events', ['id' => $event->id]);
+
+});
+
