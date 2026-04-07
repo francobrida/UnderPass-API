@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Models\Event;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class EventController extends Controller
 {
@@ -37,7 +39,7 @@ class EventController extends Controller
         return response()->json(['data' => $list]);
     }
 
-    
+
     public function store(Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -138,5 +140,36 @@ class EventController extends Controller
                 'created_at'  => $event->created_at->toDateTimeString(),
             ]
         ]);
+    }
+
+    public function userEvents(int $user_id): JsonResponse
+    {
+        $user = User::findOrFail($user_id);
+
+        if ($user->id !== Auth::id()) {
+            return response()->json([
+                'message' => 'You dont have permission to view these events.'
+            ], 403);
+        }
+
+        $events = $user->events()->latest()->get();
+
+        $list = [];
+
+        foreach ($events as $event) {
+            $eventData = [
+                'id'    => $event->id,
+                'title'   => $event->title,
+                'date'     => $event->date,
+                'location'   => $event->location_name,
+                'organizer'   => $user->name, // Usamos 'name'
+                'is_verified'   => (bool) $event->is_verified,
+                'vouch_count'   => $event->vouches()->count(),
+            ];
+
+            $list[] = $eventData;
+        }
+
+        return response()->json(['data' => $list], 200);
     }
 }

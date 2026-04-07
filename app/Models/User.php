@@ -26,4 +26,9 @@ class User extends Authenticatable
             'points' => 'integer',
         ];
     }
+
+    public function events()
+    {
+        return $this->hasMany(Event::class);
+    }
 }

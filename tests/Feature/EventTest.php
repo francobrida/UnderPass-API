@@ -372,4 +372,66 @@ test('it returns 404 if the user does not exist when fetching events', function 
     $response->assertStatus(404);
 });
 
+test('a user can see their own private event list', function () {
+
+    $user = User::factory()->create(['name' => 'Organizador VIP']);
+    
+    /** @var \App\Models\User $user */
+    Passport::actingAs($user);
+
+    Event::factory()->count(2)->create(['user_id' => $user->id]);
+
+    $response = getJson("/api/v1/users/{$user->id}/events");
+
+    $response->assertStatus(200)
+             ->assertJsonCount(2, 'data')
+             ->assertJsonPath('data.0.organizer', 'Organizador VIP');
+});
+
+test('a user cannot see the events of another user (Access Denied)', function () {
+
+    $user1 = User::factory()->create();
+    $user2 = User::factory()->create();
+    
+    /** @var \App\Models\User $user1 */
+    Passport::actingAs($user1);
+
+    
+    $response = getJson("/api/v1/users/{$user2->id}/events");
+
+    $response->assertStatus(403); 
+});
+
+test('unauthenticated user gets 401 when accessing user events', function () {
+    $user = User::factory()->create();
+    
+    $response = getJson("/api/v1/users/{$user->id}/events");
+
+    $response->assertStatus(401);
+});
+
+
+test('returns empty data array if the owner has no events yet', function () {
+    $user = User::factory()->create();
+
+    /** @var \App\Models\User $user */
+    Passport::actingAs($user);
+
+    $response = getJson("/api/v1/users/{$user->id}/events");
+
+    $response->assertStatus(200)
+             ->assertJsonCount(0, 'data')
+             ->assertExactJson(['data' => []]);
+});
+
+test('it returns 404 if the user_id in the URL does not exist at all', function () {
+    $user = User::factory()->create();
+
+    /** @var \App\Models\User $user */
+    Passport::actingAs($user);
+
+    $response = getJson("/api/v1/users/999/events");
+
+    $response->assertStatus(404);
+});
 

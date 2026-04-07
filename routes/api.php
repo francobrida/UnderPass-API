@@ -23,5 +23,6 @@ Route::prefix('v1')->group(function () {
         Route::put('/events/{id}', [EventController::class, 'update']);
         Route::delete('/events/{id}', [EventController::class, 'destroy']);
         Route::get('/events/{id}', [EventController::class, 'show']);
+        Route::get('/users/{user_id}/events', [EventController::class, 'userEvents']);
     });
 });
