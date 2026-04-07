@@ -207,6 +207,24 @@ test('a user cannot update someone else event', function () {
     ]);
 });
 
+
+test('update fails if date is in the past', function () {
+    $user = User::factory()->create();
+
+    /**  @var \App\Models\User $user */
+    Passport::actingAs($user);
+    $event = Event::factory()->create(['user_id' => $user->id]);
+
+    $response = putJson("/api/v1/events/{$event->id}", [
+        'title' => 'New Title',
+        'date' => '2020-01-01', // Pasado
+        // ... enviar el resto de campos requeridos
+    ]);
+
+    $response->assertStatus(422)
+             ->assertJsonValidationErrors(['date']);
+});
+
 test('a user can delete their own event', function () {
 
     $owner = User::factory()->create();
@@ -253,4 +271,71 @@ test('a user can view an event', function () {
     $response->assertStatus(200)
              ->assertJsonPath('data.title', 'Fiesta Verificada');
 });
+
+
+test('it returns 404 if event does not exist', function () {
+    $user = User::factory()->create();
+
+    /**  @var \App\Models\User $user */
+    Passport::actingAs($user);
+
+    $response = getJson('/api/v1/events/999999');
+
+    $response->assertStatus(404);
+});
+
+test('a user cannot see the detail of an unverified event if they are not the owner', function () {
+    $owner = User::factory()->create();
+    $stranger = User::factory()->create();
+    $event = Event::factory()->create(['user_id' => $owner->id, 'is_verified' => false]);
+
+    /**  @var \App\Models\User $stranger */
+    Passport::actingAs($stranger);
+
+    $response = getJson("/api/v1/events/{$event->id}");
+
+    $response->assertStatus(403)
+             ->assertJson(['message' => 'This event is pending verification and is not public yet.']);
+});
+
+test('a user can see the list of unverified events in the waiting room', function () {
+    
+    $user = User::factory()->create(['role' => \App\Enums\UserRole::CLUBBER]);
+
+    /** @var \App\Models\User $user */
+    Passport::actingAs($user);
+
+    
+    Event::factory()->create([
+        'title' => 'Rave Pendiente A',
+        'is_verified' => false,
+        'created_at' => now()->subMinutes(10)
+    ]);
+
+    
+    Event::factory()->create([
+        'title' => 'Rave Pendiente B',
+        'is_verified' => false,
+        'created_at' => now()
+    ]);
+
+    Event::factory()->create([
+        'title' => 'Evento Verificado',
+        'is_verified' => true
+    ]);
+
+    $response = getJson('/api/v1/events?verified=false');
+
+    
+    $response->assertStatus(200)
+             ->assertJsonCount(2, 'data') // 
+             ->assertJsonPath('data.0.title', 'Rave Pendiente B') 
+             ->assertJsonPath('data.1.title', 'Rave Pendiente A');
+             
+    
+    $titles = collect($response->json('data'))->pluck('title');
+    expect($titles)->not->toContain('Evento Verificado');
+    
+});
+
 
