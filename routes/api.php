@@ -20,6 +20,8 @@ Route::prefix('v1')->group(function () {
         Route::patch('/profile', [UserController::class, 'update']);
         Route::get('/events', [EventController::class, 'index']);
         Route::post('/events', [EventController::class, 'store']);
-        
+        Route::put('/events/{event}', [EventController::class, 'update']);
+        Route::delete('/events/{event}', [EventController::class, 'destroy']);
+
     });
 });

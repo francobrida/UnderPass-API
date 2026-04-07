@@ -56,4 +56,45 @@ class EventController extends Controller
             'data' => $event
         ], 201);
     }
+
+    public function update(Request $request, Event $event): JsonResponse
+    {
+        if ($event->user_id !== $request->user()->id) {
+            return response()->json(['message' => 'You are not authorized to edit this event'], 403);
+        }
+
+        $validated = $request->validate([
+            'title'         => 'required|string|max:255',
+            'lineup'        => 'required|string',
+            'description'   => 'required|string',
+            'location_name' => 'required|string',
+            'neighborhood'  => 'required|string',
+            'date'          => 'required|date|after_or_equal:today',
+            'start_time'    => 'required',
+            'end_time'      => 'required',
+            'price'         => 'required|numeric',
+            'is_18_plus'    => 'required|boolean',
+        ]);
+
+        $validated['is_verified'] = false;
+
+        $event->update($validated);
+
+        return response()->json([
+            'message' => 'Event updated successfully, pending re-verification',
+            'data'    => $event
+        ], 200);
+    }
+
+    public function destroy(Request $request, Event $event): JsonResponse
+    {
+        if ($event->user_id !== $request->user()->id) {
+            return response()->json(['message' => 'You are not authorized to delete this event'], 403);
+        }
+        $event->delete();
+
+        return response()->json([
+            'message' => 'Event successfully deleted'
+        ], 200);
+    }
 }
