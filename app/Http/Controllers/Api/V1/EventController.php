@@ -10,27 +10,34 @@ use Illuminate\Http\Request;
 class EventController extends Controller
 {
 
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-
-        $events = Event::where('is_verified', true)->get();
-
+        // Waiting room
+        if ($request->query('verified') === 'false') {
+            $events = Event::where('is_verified', false)->with('organizer')->latest()->get();
+        } else { 
+            // Main dashboard
+            $events = Event::where('is_verified', true)->with('organizer')->get();
+        }
+    
         $list = [];
 
         foreach ($events as $event) {
-            $list[] = [
-                'id' => $event->id,
-                'title' => $event->title,
-                'description' => $event->description,
-                'location' => $event->location_name,
-                'organizer' => $event->organizer->name,
-                'vouch_count' => $event->vouches()->count(),
+            $eventData = [
+                'id'    => $event->id,
+                'title'    => $event->title,
+                'organizer'   => $event->organizer->name,
+                'is_verified'   => (bool) $event->is_verified,
+                'vouch_count'   => $event->vouches()->count(),
             ];
+
+            $list[] = $eventData;
         }
 
         return response()->json(['data' => $list]);
     }
 
+    
     public function store(Request $request): JsonResponse
     {
         $validated = $request->validate([
