@@ -240,5 +240,17 @@ test('a user cannot delete someone else event', function () {
     assertDatabaseHas('events', ['id' => $event->id]);
 });
 
+test('a user can view an event', function () {
+    $user = User::factory()->create();
 
+    /**  @var \App\Models\User $user */
+    Passport::actingAs($user);
+
+    $event = Event::factory()->create(['is_verified' => true, 'title' => 'Fiesta Verificada']);
+
+    $response = getJson("/api/v1/events/{$event->id}");
+
+    $response->assertStatus(200)
+             ->assertJsonPath('data.title', 'Fiesta Verificada');
+});
 

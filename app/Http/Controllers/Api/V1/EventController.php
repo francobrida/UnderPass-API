@@ -57,8 +57,10 @@ class EventController extends Controller
         ], 201);
     }
 
-    public function update(Request $request, Event $event): JsonResponse
+    public function update(Request $request, Event $id): JsonResponse
     {
+        $event = $id;
+
         if ($event->user_id !== $request->user()->id) {
             return response()->json(['message' => 'You are not authorized to edit this event'], 403);
         }
@@ -86,8 +88,10 @@ class EventController extends Controller
         ], 200);
     }
 
-    public function destroy(Request $request, Event $event): JsonResponse
+    public function destroy(Request $request, Event $id): JsonResponse
     {
+        $event = $id;
+        
         if ($event->user_id !== $request->user()->id) {
             return response()->json(['message' => 'You are not authorized to delete this event'], 403);
         }
