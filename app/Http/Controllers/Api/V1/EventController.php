@@ -91,7 +91,7 @@ class EventController extends Controller
     public function destroy(Request $request, Event $id): JsonResponse
     {
         $event = $id;
-        
+
         if ($event->user_id !== $request->user()->id) {
             return response()->json(['message' => 'You are not authorized to delete this event'], 403);
         }
@@ -100,5 +100,36 @@ class EventController extends Controller
         return response()->json([
             'message' => 'Event successfully deleted'
         ], 200);
+    }
+
+    public function show(Request $request, Event $id): JsonResponse
+    {
+        $event = $id;
+
+        if (!$event->is_verified && $event->user_id !== $request->user()->id) {
+            return response()->json([
+                'message' => 'This event is pending verification and is not public yet.'
+            ], 403);
+        }
+
+        return response()->json([
+            'data' => [
+                'id'  => $event->id,
+                'title'  => $event->title,
+                'lineup'   => $event->lineup,
+                'description'   => $event->description,
+                'date'  => $event->date,
+                'start_time' => $event->start_time,
+                'end_time'  => $event->end_time,
+                'location_name' => $event->location_name,
+                'neighborhood'  => $event->neighborhood,
+                'price'  => (float) $event->price,
+                'is_18_plus'  => (bool) $event->is_18_plus,
+                'is_verified'  => (bool) $event->is_verified,
+                'organizer'  => $event->organizer->name,
+                'vouch_count'  => $event->vouches()->count(),
+                'created_at'  => $event->created_at->toDateTimeString(),
+            ]
+        ]);
     }
 }
