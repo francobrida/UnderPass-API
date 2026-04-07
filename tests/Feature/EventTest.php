@@ -335,7 +335,41 @@ test('a user can see the list of unverified events in the waiting room', functio
     
     $titles = collect($response->json('data'))->pluck('title');
     expect($titles)->not->toContain('Evento Verificado');
+
+});
+
+test('unauthenticated user cannot access the waiting room', function () {
     
+    $response = getJson('/api/v1/events?verified=false');
+
+    $response->assertStatus(401);
+});
+
+test('waiting room returns empty array when no pending events exist', function () {
+    $user = User::factory()->create();
+
+    /** @var \App\Models\User $user */
+    Passport::actingAs($user);
+
+    // Creamos solo un evento que YA está verificado
+    Event::factory()->create(['is_verified' => true]);
+
+    $response = getJson('/api/v1/events?verified=false');
+
+    $response->assertStatus(200)
+             ->assertJsonCount(0, 'data');
+});
+
+
+test('it returns 404 if the user does not exist when fetching events', function () {
+    $user = User::factory()->create();
+
+    /** @var \App\Models\User $user */
+    Passport::actingAs($user);
+
+    $response = getJson('/api/v1/users/99999/events');
+
+    $response->assertStatus(404);
 });
 
 
