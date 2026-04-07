@@ -224,5 +224,21 @@ test('a user can delete their own event', function () {
 
 });
 
+test('a user cannot delete someone else event', function () {
+    $owner = User::factory()->create();
+    $hacker = User::factory()->create();
+    
+    $event = Event::factory()->create(['user_id' => $owner->id, 'title' => 'Original Partyy']);
+
+    /**  @var \App\Models\User $hacker */
+    Passport::actingAs($hacker);
+
+    $response = deleteJson("/api/v1/events/{$event->id}");
+    
+    $response->assertStatus(403);
+    
+    assertDatabaseHas('events', ['id' => $event->id]);
+});
+
 
 
