@@ -1,0 +1,243 @@
+<?php
+
+use App\Models\User;
+use App\Enums\UserRole;
+use Laravel\Passport\Passport;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use function Pest\Laravel\getJson;
+use function Pest\Laravel\deleteJson;
+use function Pest\Laravel\assertDatabaseMissing;
+use function Pest\Laravel\assertDatabaseHas;
+use function Pest\Laravel\patchJson;
+use Illuminate\Support\Facades\Hash;
+
+uses(RefreshDatabase::class);
+
+test('a clubber can view their own profile', function () {
+    $clubber = User::factory()->create([
+        'name' => 'Mike Raver', 
+        'role' => UserRole::CLUBBER
+    ]);
+
+    /** @var \App\Models\User $clubber */
+    Passport::actingAs($clubber);
+
+    $response = getJson("/api/v1/users/{$clubber->id}");
+
+    $response->assertStatus(200)
+             ->assertJsonPath('data.name', 'Mike Raver')
+             ->assertJsonPath('data.role', 'clubber');
+});
+
+test('an admin can view any user profile (clubber or organizer)', function () {
+    $admin = User::factory()->create(['role' => UserRole::ADMIN]);
+    $user = User::factory()->create(['name' => 'Any User']);
+    
+    /** @var \App\Models\User $admin */
+    Passport::actingAs($admin);
+
+    $response = getJson("/api/v1/users/{$user->id}");
+
+    $response->assertStatus(200)->assertJsonPath('data.name', 'Any User');
+});
+
+test('a clubber cannot view another clubber profile', function () {
+    $clubber1 = User::factory()->create(['role' => UserRole::CLUBBER]);
+    $clubber2 = User::factory()->create(['role' => UserRole::CLUBBER]);
+    
+    /** @var \App\Models\User $clubber1 */
+    Passport::actingAs($clubber1);
+
+    $response = getJson("/api/v1/users/{$clubber2->id}");
+
+    $response->assertStatus(403)->assertJson(['message' => 'You dont have permission to see this']);
+});
+
+test('returns 404 when user does not exist', function () {
+    $admin = User::factory()->create(['role' => UserRole::ADMIN]);
+    
+    /** @var \App\Models\User $admin */
+    Passport::actingAs($admin);
+
+    $response = getJson("/api/v1/users/999999");
+
+    $response->assertStatus(404)->assertJson(['message' => 'User not found']);
+});
+
+test('unauthenticated users are rejected', function () {
+    $user = User::factory()->create();
+    
+    $response = getJson("/api/v1/users/{$user->id}");
+
+    $response->assertStatus(401);
+});
+
+test('an organizer cannot view another organizers profile', function () {
+    $organizer1 = User::factory()->create(['role' => UserRole::ORGANIZER]);
+    $organizer2 = User::factory()->create(['role' => UserRole::ORGANIZER]);
+    
+    /** @var \App\Models\User $organizer1 */
+    Passport::actingAs($organizer1);
+
+    $response = getJson("/api/v1/users/{$organizer2->id}");
+
+    $response->assertStatus(403);
+});
+
+test('a user can delete their own profile', function () {
+    $clubber = User::factory()->create();
+
+    /** @var \App\Models\User $clubber */
+    Passport::actingAs($clubber);
+
+    $response = deleteJson('/api/v1/profile');
+
+    $response->assertStatus(200)->assertJson(['message' => 'Account successfully deleted']);
+
+    assertDatabaseMissing('users', ['id' => $clubber->id]);
+});
+
+test('a not logued in user cannot delete any profile', function () {
+    
+    $response = deleteJson('/api/v1/profile');
+
+    $response->assertStatus(401);
+});
+
+test('a user cannot delete another users profile via this route', function () {
+    $clubber1 = User::factory()->create(['role' => UserRole::CLUBBER]);
+    $clubber2 = User::factory()->create(['role' => UserRole::CLUBBER]);
+    
+     /** @var \App\Models\User $clubber1 */
+    Passport::actingAs($clubber1);
+
+    $response = deleteJson('/api/v1/profile');
+
+    $response->assertStatus(200);
+    
+    assertDatabaseMissing('users', ['id' => $clubber1->id]);
+    assertDatabaseHas('users', ['id' => $clubber2->id]);
+});
+
+test('a user can edit their own name', function () {
+    $user = User::factory()->create(['name' => 'OldName']);
+
+      /** @var \App\Models\User $user */
+    Passport::actingAs($user);
+
+    $response = patchJson('/api/v1/profile', [
+        'name' => 'NewName'
+    ]);
+
+    $response->assertStatus(200)->assertJsonPath('data.name', 'NewName');
+
+    assertDatabaseHas('users', [
+        'id' => $user->id,
+        'name' => 'NewName'
+    ]);
+});
+
+test('update profile validation email must be unique', function () {
+    $clubber1 = User::factory()->create(['email' => 'clubber@underpass.com']);
+    $clubber2 = User::factory()->create(['email' => 'other@underpass.com']);
+    
+      /** @var \App\Models\User $clubber1 */
+    Passport::actingAs($clubber1);
+
+
+    $response = patchJson('/api/v1/profile', [
+        'email' => 'other@underpass.com'
+    ]);
+
+    $response->assertStatus(422)->assertJsonValidationErrors(['email']);
+});
+
+test('a user can update their own password', function () {
+    $user = User::factory()->create([
+        'password' => Hash::make('old-password')
+    ]);
+
+    /** @var \App\Models\User $user */
+    Passport::actingAs($user);
+
+    $response = patchJson('/api/v1/profile', [
+        'password' => 'new-secret-123',
+        'password_confirmation' => 'new-secret-123' 
+    ]);
+
+    $response->assertStatus(200);
+
+    $user->refresh();
+    expect(Hash::check('new-secret-123', $user->password))->toBeTrue();
+});
+
+test('password update requires confirmation', function () {
+    $user = User::factory()->create();
+
+    /** @var \App\Models\User $user */
+    Passport::actingAs($user);
+
+    $response = patchJson('/api/v1/profile', [
+        'password' => 'new-password',
+        'password_confirmation' => 'wrong-confirmation'
+    ]);
+
+    $response->assertStatus(422)
+             ->assertJsonValidationErrors(['password']);
+});
+
+test('update profile validation: name must be a string', function () {
+    $user = User::factory()->create();
+
+    /** @var \App\Models\User $user */
+    Passport::actingAs($user);
+
+    $response = patchJson('/api/v1/profile', ['name' => 12345]);
+
+    $response->assertStatus(422)
+             ->assertJsonValidationErrors(['name']);
+});
+
+test('update profile validation: email must be a valid format', function () {
+    $user = User::factory()->create();
+
+    /** @var \App\Models\User $user */
+    Passport::actingAs($user);
+
+    $response = patchJson('/api/v1/profile', ['email' => 'not-an-email']);
+
+    $response->assertStatus(422)
+             ->assertJsonValidationErrors(['email']);
+});
+
+test('update profile validation: password must be at least 8 characters', function () {
+    $user = User::factory()->create();
+
+    /** @var \App\Models\User $user */
+    Passport::actingAs($user);
+
+    $response = patchJson('/api/v1/profile', [
+        'password' => 'short',
+        'password_confirmation' => 'short'
+    ]);
+
+    $response->assertStatus(422)
+             ->assertJsonValidationErrors(['password']);
+});
+
+test('a user cannot change their own role via profile update', function () {
+    $user = User::factory()->create(['role' => UserRole::CLUBBER]);
+
+    /** @var \App\Models\User $user */
+    Passport::actingAs($user);
+
+    $response = patchJson('/api/v1/profile', [
+        'role' => UserRole::ADMIN->value
+    ]);
+
+    $response->assertStatus(200); 
+    
+    $user->refresh();
+   
+    expect($user->role)->toBe(UserRole::CLUBBER);
+});
