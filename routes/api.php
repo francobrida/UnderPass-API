@@ -28,5 +28,6 @@ Route::prefix('v1')->group(function () {
         Route::get('/users/{user_id}/events', [EventController::class, 'userEvents']);
         Route::post('/events/{id}/vouches', [VouchController::class, 'store']);
         Route::post('/events/{id}/vibechecks', [VibecheckController::class, 'store']);
+        Route::get('events/{id}/vibechecks', [VibecheckController::class, 'index']);
     });
 });

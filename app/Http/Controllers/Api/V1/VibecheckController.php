@@ -54,4 +54,26 @@ class VibecheckController extends Controller
             'data' => $vibecheck
         ], 201);
     }
+
+    public function index(int $id): JsonResponse
+    {
+        $event = Event::findOrFail($id);
+
+        
+        if ($event->user_id !== Auth::id()) {
+            return response()->json(['message' => 'Unauthorized. You can only view feedback for your own events.'], 403);
+        }
+
+
+        $vibechecks = $event->vibechecks()->with('user:id,name')->get();
+
+        return response()->json([
+            'event_title' => $event->title,
+            'total_reviews' => $vibechecks->count(),
+            'average_sound' => round($vibechecks->avg('sound_score'), 1),
+            'average_safety' => round($vibechecks->avg('safe_space_score'), 1),
+            'data' => $vibechecks
+        ], 200);
+    }
+    
 }

@@ -5,6 +5,7 @@ use App\Models\User;
 use Laravel\Passport\Passport;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use function Pest\Laravel\postJson;
+use function Pest\Laravel\getJson;
 use function Pest\Laravel\assertDatabaseHas;
 use function Pest\Laravel\assertDatabaseCount;
 
@@ -114,3 +115,39 @@ test('vibecheck comment is optional but scores are mandatory', function () {
     ]);
     $responseError->assertStatus(422);
 });
+
+test('an organizer can view vibechecks for their own event', function () {
+    $organizer = User::factory()->create();
+    $event = Event::factory()->create(['user_id' => $organizer->id]);
+    
+
+    \App\Models\Vibecheck::create([
+        'user_id' => User::factory()->create()->id,
+        'event_id' => $event->id,
+        'sound_score' => 5,
+        'safe_space_score' => 5,
+        'comment' => 'Epic night!'
+    ]);
+
+    /** @var \App\Models\User $organizer */
+    Passport::actingAs($organizer);
+
+    $response = getJson("/api/v1/events/{$event->id}/vibechecks");
+
+    $response->assertStatus(200)
+             ->assertJsonStructure(['event_title', 'average_sound', 'data']);
+});
+
+test('a user cannot view vibechecks for an event they do not own', function () {
+    $organizer = User::factory()->create();
+    $otherUser = User::factory()->create();
+    $event = Event::factory()->create(['user_id' => $organizer->id]);
+
+    /** @var \App\Models\User $otherUser */
+    Passport::actingAs($otherUser);
+
+    $response = getJson("/api/v1/events/{$event->id}/vibechecks");
+
+    $response->assertStatus(403);
+});
+
