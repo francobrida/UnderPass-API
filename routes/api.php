@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\V1\UserController;
 use App\Http\Controllers\Api\V1\EventController;
 use App\Http\Controllers\Api\V1\VouchController;
 use App\Http\Controllers\Api\V1\VibecheckController;
+use App\Http\Controllers\Api\V1\StampController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -29,5 +30,7 @@ Route::prefix('v1')->group(function () {
         Route::post('/events/{id}/vouches', [VouchController::class, 'store']);
         Route::post('/events/{id}/vibechecks', [VibecheckController::class, 'store']);
         Route::get('events/{id}/vibechecks', [VibecheckController::class, 'index']);
+        Route::post('/stamps', [StampController::class, 'store']);
+        Route::get('/stamps', [StampController::class, 'index']);
     });
 });
