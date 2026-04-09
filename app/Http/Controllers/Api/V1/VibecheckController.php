@@ -54,4 +54,5 @@ class VibecheckController extends Controller
             'data' => $vibecheck
         ], 201);
     }
+    
 }
