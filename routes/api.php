@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\UserController;
 use App\Http\Controllers\Api\V1\EventController;
 use App\Http\Controllers\Api\V1\VouchController;
+use App\Http\Controllers\Api\V1\VibecheckController;
 use Illuminate\Support\Facades\Route;
 
 

@@ -11,15 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-       Schema::create('vibe_checks', function (Blueprint $table) {
-        $table->id();
-        $table->foreignId('event_id')->constrained()->onDelete('cascade');
-        $table->foreignId('user_id')->constrained()->onDelete('cascade');
-        $table->integer('sound_score');
-        $table->integer('safe_space_score');
-        $table->text('comment');
-        $table->timestamp('created_at')->useCurrent(); 
-        $table->timestamp('updated_at')->nullable();
+        Schema::create('vibechecks', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('event_id')->constrained()->onDelete('cascade');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->integer('sound_score');
+            $table->integer('safe_space_score');
+            $table->text('comment')->nullable(); 
+            $table->timestamps(); 
+
+            $table->unique(['user_id', 'event_id']);
         });
     }
 
