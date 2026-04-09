@@ -45,7 +45,7 @@ test('a user cant login with incorrect credentials', function() {
     ]);
 
     $response->assertStatus(401)
-             ->assertJson(['message' => 'Credenciales incorrectas']);
+             ->assertJson(['message' => 'Invalid credentials']);
 });
 
 
@@ -56,7 +56,7 @@ test('a user cannot login with a non-existent email', function () {
     ]);
 
     $response->assertStatus(401)
-             ->assertJson(['message' => 'Credenciales incorrectas']);
+             ->assertJson(['message' => 'Invalid credentials']);
 });
 
 test('login requires a valid email and password', function () {

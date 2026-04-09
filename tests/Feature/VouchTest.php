@@ -61,19 +61,24 @@ test('a user cannot vouch the same event twice', function () {
     assertDatabaseCount('vouches', 1); 
 });
 
-
 test('an event becomes verified automatically upon receiving the 3rd vouch', function () {
 
     $event = Event::factory()->create(['is_verified' => false]);
     
+    $users = User::factory()->count(2)->create([
+        'name' => 'Votante Antiguo' 
+    ]);
 
-    $users = User::factory()->count(2)->create();
     foreach ($users as $user) {
-        $event->vouches()->create(['user_id' => $user->id]);
+        \App\Models\Vouch::create([
+            'user_id' => $user->id,
+            'event_id' => $event->id
+        ]);
     }
 
-
-    $thirdUser = User::factory()->create();
+    $thirdUser = User::factory()->create([
+        'name' => 'VotanteDecisivo'
+    ]);
 
     /** @var \App\Models\User $thirdUser */
     Passport::actingAs($thirdUser);
@@ -83,7 +88,7 @@ test('an event becomes verified automatically upon receiving the 3rd vouch', fun
     $response->assertStatus(201);
     
     $event->refresh();
-    expect($event->is_verified)->toBeTrue();
+    expect((bool)$event->is_verified)->toBeTrue();
 });
 
 
