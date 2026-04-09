@@ -3,6 +3,8 @@
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\UserController;
 use App\Http\Controllers\Api\V1\EventController;
+use App\Http\Controllers\Api\V1\VouchController;
+use App\Http\Controllers\Api\V1\VibecheckController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -24,5 +26,7 @@ Route::prefix('v1')->group(function () {
         Route::delete('/events/{id}', [EventController::class, 'destroy']);
         Route::get('/events/{id}', [EventController::class, 'show']);
         Route::get('/users/{user_id}/events', [EventController::class, 'userEvents']);
+        Route::post('/events/{id}/vouches', [VouchController::class, 'store']);
+        Route::post('/events/{id}/vibechecks', [VibecheckController::class, 'store']);
     });
 });
