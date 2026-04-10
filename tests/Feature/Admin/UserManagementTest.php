@@ -61,3 +61,30 @@ test('an admin can create a new user', function () {
 
     $this->assertDatabaseHas('users', ['email' => 'newuser@example.com']);
 });
+
+test('unauthenticated users cannot access admin endpoints', function () {
+
+    $response = getJson('/api/v1/users');
+
+    $response->assertStatus(401); 
+});
+
+test('it fails if an invalid role is provided', function () {
+    
+    $admin = User::factory()->create(['role' => UserRole::ADMIN]);
+
+    /**  @var \App\Models\User $admin */
+    Passport::actingAs($admin);
+
+    $userData = [
+        'name' => 'Hacker',
+        'email' => 'hacker@example.com',
+        'password' => 'password123',
+        'password_confirmation' => 'password123',
+        'role' => 'SUPER_GOD_MODE',
+    ];
+
+    $response = postJson('/api/v1/users', $userData);
+
+    $response->assertStatus(422);
+});

@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\V1\VouchController;
 use App\Http\Controllers\Api\V1\VibecheckController;
 use App\Http\Controllers\Api\V1\StampController;
 use App\Http\Controllers\Api\V1\RankingController;
+use App\Http\Controllers\Api\V1\Admin\UserController as AdminUserController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -34,5 +35,10 @@ Route::prefix('v1')->group(function () {
         Route::post('/stamps', [StampController::class, 'store']);
         Route::get('/stamps', [StampController::class, 'index']);
         Route::get('/ranking', [RankingController::class, 'index']);
+
+        Route::middleware('admin')->group(function () {
+            Route::get('/users', [AdminUserController::class, 'index']);
+            Route::post('/users', [AdminUserController::class, 'store']);
+        });
     });
 });
