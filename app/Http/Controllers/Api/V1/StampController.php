@@ -15,8 +15,7 @@ class StampController extends Controller
     
     public function index(): JsonResponse
     {
-        $stamps = Stamp::where('user_id', Auth::id())
-            ->with('event:id,title,date,location') // Cargamos info del evento para la UI
+        $stamps = Stamp::where('user_id', Auth::id())->with('event:id,title,date,location')
             ->latest()
             ->get();
 
@@ -38,16 +37,9 @@ class StampController extends Controller
         $eventDate = Carbon::parse($event->date);
 
         
-        if ($now->lt($eventDate->startOfDay())) {
+        if (!$event->isWithinStampScannableWindow()) {
             return response()->json([
-                'message' => 'This event has not started yet.'
-            ], 422);
-        }
-
-       
-        if ($now->gt($eventDate->addDay()->endOfDay())) {
-            return response()->json([
-                'message' => 'This QR code has expired.'
+                'message' => 'QR code is not active or has expired.'
             ], 422);
         }
 
