@@ -31,4 +31,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Event::class);
     }
+
+    public function stamps(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Stamp::class);
+    }
 }

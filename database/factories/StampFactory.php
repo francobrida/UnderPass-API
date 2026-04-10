@@ -19,7 +19,7 @@ class StampFactory extends Factory
         return [
             'user_id' => \App\Models\User::factory(),
             'event_id' => \App\Models\Event::factory(),
-            'stamp_token' => \Illuminate\Support\Str::random(32), 
+            'scanned_at' => now(),
             'created_at' => now()->subDays(rand(1, 30)), 
         ];
     }
