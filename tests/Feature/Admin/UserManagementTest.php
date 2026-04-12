@@ -88,3 +88,31 @@ test('it fails if an invalid role is provided', function () {
 
     $response->assertStatus(422);
 });
+
+test('an admin can delete a user', function () {
+    $admin = User::factory()->create(['role' => UserRole::ADMIN]);
+    $userToDelete = User::factory()->create(['role' => UserRole::CLUBBER]);
+
+    /**  @var \App\Models\User $admin */
+    Passport::actingAs($admin);
+
+    $response = $this->deleteJson("/api/v1/users/{$userToDelete->id}");
+
+    $response->assertStatus(200)->assertJson(['message' => 'User deleted successfully']);
+
+    $this->assertDatabaseMissing('users', ['id' => $userToDelete->id]);
+});
+
+test('a non-admin user cannot delete another user', function () {
+    $user = User::factory()->create(['role' => UserRole::CLUBBER]);
+    $victim = User::factory()->create(['role' => UserRole::CLUBBER]);
+
+    /**  @var \App\Models\User $user */
+    Passport::actingAs($user);
+
+    $response = $this->deleteJson("/api/v1/users/{$victim->id}");
+
+    $response->assertStatus(403);
+    $this->assertDatabaseHas('users', ['id' => $victim->id]);
+});
+
