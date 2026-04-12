@@ -116,3 +116,40 @@ test('a non-admin user cannot delete another user', function () {
     $this->assertDatabaseHas('users', ['id' => $victim->id]);
 });
 
+test('an admin can update a user role and info', function () {
+    $admin = User::factory()->create(['role' => UserRole::ADMIN]);
+    $user = User::factory()->create(['role' => UserRole::CLUBBER]);
+
+    /**  @var \App\Models\User $admin */
+    Passport::actingAs($admin);
+
+    $response = $this->putJson("/api/v1/users/{$user->id}", [
+        'name' => 'Updated Name',
+        'email' => 'updated@example.com',
+        'role' => UserRole::ORGANIZER->value,
+    ]);
+
+    $response->assertStatus(200)
+             ->assertJsonPath('data.role', UserRole::ORGANIZER->value);
+
+    $this->assertDatabaseHas('users', [
+        'id' => $user->id,
+        'role' => UserRole::ORGANIZER->value,
+        'name' => 'Updated Name'
+    ]);
+});
+
+test('a non-admin cannot update a user', function () {
+    $user = User::factory()->create(['role' => UserRole::CLUBBER]);
+    $anotherUser = User::factory()->create();
+
+    /**  @var \App\Models\User $user */
+    Passport::actingAs($user);
+
+    $response = $this->putJson("/api/v1/users/{$anotherUser->id}", [
+        'name' => 'Hacker'
+    ]);
+
+    $response->assertStatus(403);
+});
+
