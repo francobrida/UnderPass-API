@@ -56,5 +56,19 @@ class UserController extends Controller
         ], 200);
     }
 
-    
+    public function update(Request $request, User $user): JsonResponse
+    {
+        $validated = $request->validate([
+            'name'  => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
+            'role'  => ['required', new Enum(UserRole::class)],
+        ]);
+
+        $user->update($validated);
+
+        return response()->json([
+            'message' => 'User updated successfully',
+            'data' => $user
+        ], 200);
+    }
 }
