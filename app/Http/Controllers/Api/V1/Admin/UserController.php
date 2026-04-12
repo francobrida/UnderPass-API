@@ -41,4 +41,20 @@ class UserController extends Controller
             'data' => $user
         ], 201);
     }
+
+    public function destroy(Request $request, User $user): JsonResponse
+    {
+        
+        if ($request->user()->id === $user->id) {
+            return response()->json(['message' => 'You cannot delete your own admin account'], 403);
+        }
+
+        $user->delete();
+
+        return response()->json([
+            'message' => 'User deleted successfully'
+        ], 200);
+    }
+
+    
 }
