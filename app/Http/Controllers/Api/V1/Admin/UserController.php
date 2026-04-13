@@ -42,9 +42,10 @@ class UserController extends Controller
         ], 201);
     }
 
-    public function destroy(Request $request, User $user): JsonResponse
+    public function destroy(Request $request, User $id): JsonResponse
     {
-        
+        $user = $id;
+
         if ($request->user()->id === $user->id) {
             return response()->json(['message' => 'You cannot delete your own admin account'], 403);
         }
@@ -56,11 +57,13 @@ class UserController extends Controller
         ], 200);
     }
 
-    public function update(Request $request, User $user): JsonResponse
+    public function update(Request $request, User $id): JsonResponse
     {
+        $user = $id;
+
         $validated = $request->validate([
             'name'  => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
+            'email' => 'required|string|email|max:255|unique:users,email,' . $id,
             'role'  => ['required', new Enum(UserRole::class)],
         ]);
 
@@ -69,6 +72,16 @@ class UserController extends Controller
         return response()->json([
             'message' => 'User updated successfully',
             'data' => $user
+        ], 200);
+    }
+
+    public function getUserEvents(User $id): JsonResponse
+    {
+        $events = $id->events;
+
+        return response()->json([
+            'message' => "Events for user: {$id->name} retrieved successfully",
+            'data'    => $events
         ], 200);
     }
 }
