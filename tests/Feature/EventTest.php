@@ -4,13 +4,8 @@ use App\Models\Event;
 use App\Models\User;
 use Laravel\Passport\Passport;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use function Pest\Laravel\assertDatabaseHas;
-use function Pest\Laravel\assertDatabaseMissing;
-use function Pest\Laravel\getJson;
-use function Pest\Laravel\postJson;
-use function Pest\Laravel\putJson;
-use function Pest\Laravel\deleteJson;
-
+use function Pest\Laravel\{assertDatabaseHas, assertDatabaseMissing, getJson, postJson,
+putJson, deleteJson};
 
 uses(RefreshDatabase::class);
 
