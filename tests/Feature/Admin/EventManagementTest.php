@@ -108,3 +108,30 @@ test('user cannot verify their own event via update', function () {
         'is_verified' => false
     ]);
 });
+
+test('user cannot delete someone else event', function () {
+    $user = User::factory()->create(['role' => UserRole::CLUBBER]);
+    $otherUser = User::factory()->create();
+    $event = Event::factory()->create(['user_id' => $otherUser->id]);
+
+    /**  @var \App\Models\User $user */
+    Passport::actingAs($user);
+
+    $response = deleteJson("/api/v1/events/{$event->id}");
+
+    $response->assertStatus(403); 
+    assertDatabaseHas('events', ['id' => $event->id]); 
+});
+
+test('admin can delete any event', function () {
+    $admin = User::factory()->create(['role' => UserRole::ADMIN]);
+    $event = Event::factory()->create();
+
+    /**  @var \App\Models\User $admin */
+    Passport::actingAs($admin);
+
+    $response = deleteJson("/api/v1/events/{$event->id}");
+
+    $response->assertStatus(200);
+    assertDatabaseMissing('events', ['id' => $event->id]); 
+});
