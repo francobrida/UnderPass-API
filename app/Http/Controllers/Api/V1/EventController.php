@@ -103,13 +103,12 @@ class EventController extends Controller
         ], 200);
     }
 
-    public function destroy(Request $request, Event $id): JsonResponse
+    public function destroy(int $id): JsonResponse
     {
-        $event = $id;
+        $event = Event::findOrFail($id);
 
-        if ($event->user_id !== $request->user()->id) {
-            return response()->json(['message' => 'You are not authorized to delete this event'], 403);
-        }
+        $this->authorize('delete', $event);
+
         $event->delete();
 
         return response()->json([
@@ -117,7 +116,7 @@ class EventController extends Controller
         ], 200);
     }
 
-    public function show(Request $request, Event $id): JsonResponse
+    public function show(Request $request,Event $id): JsonResponse
     {
         $event = $id;
 
