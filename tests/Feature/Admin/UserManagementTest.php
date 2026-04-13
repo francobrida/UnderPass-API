@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\User;
+use App\Models\Event;
 use App\Enums\UserRole;
 use Laravel\Passport\Passport;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -21,9 +22,7 @@ test('an admin can get all users list', function () {
     $response->assertStatus(200)
              ->assertJsonCount(6, 'data') 
              ->assertJsonStructure([
-                 'data' => [
-                     '*' => ['id', 'name', 'email', 'role']
-                 ]
+                 'data' => ['*' => ['id', 'name', 'email', 'role']]
              ]);
 });
 
@@ -160,11 +159,11 @@ test('an admin can create a user', function () {
     Passport::actingAs($admin);
 
     $response = postJson('/api/v1/users', [
-        'name'                  => 'NewClubber',
-        'email'                 => 'new@underpass.com',
-        'password'              => 'password123',
+        'name'      => 'NewClubber',
+        'email'      => 'new@underpass.com',
+        'password'     => 'password123',
         'password_confirmation' => 'password123',
-        'role'                  => UserRole::CLUBBER->value 
+        'role'     => UserRole::CLUBBER->value 
     ]);
 
     $response->assertStatus(201)
@@ -179,4 +178,23 @@ test('an admin can create a user', function () {
     ]);
 });
 
+
+test('an admin can get all events for a specific user', function () {
+    $admin = User::factory()->create(['role' => UserRole::ADMIN]);
+    $user = User::factory()->create();
+    
+    Event::factory()->count(3)->create(['user_id' => $user->id]);
+    Event::factory()->create(); 
+
+    /** @var \App\Models\User $admin */
+    Passport::actingAs($admin);
+
+    $response = getJson("/api/v1/users/{$user->id}/events");
+
+    $response->assertStatus(200)
+             ->assertJsonCount(3, 'data')
+             ->assertJsonStructure([
+                'data' => [ '*' => ['id', 'title', 'date', 'location']]
+             ]);
+});
 
