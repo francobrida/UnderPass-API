@@ -2,6 +2,7 @@
 
 use App\Models\Event;
 use App\Models\User;
+use App\Enums\UserRole;
 use App\Models\Vouch;
 use Laravel\Passport\Passport;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -9,32 +10,45 @@ use function Pest\Laravel\{getJson};
 
 uses(RefreshDatabase::class);
 
-test('user can see list of vouches for a verified event', function () {
-    $event = Event::factory()->create(['is_verified' => true]);
-    $users = User::factory()->count(3)->create();
+test('admin can see list of vouches for any event', function () {
+
+    $owner = User::factory()->create(['name' => 'Organizador']);
     
-    foreach ($users as $user) {
+    $event = Event::factory()->create([
+        'user_id' => $owner->id, 
+        'is_verified' => true
+    ]);
+    
+    User::factory()->count(3)->create(['name' => 'Voucher User'])->each(function ($user) use ($event) {
         $event->vouches()->create(['user_id' => $user->id]);
-    }
+    });
 
-    $user = User::factory()->create();
+    $admin = User::factory()->create([
+        'name' => 'Admin User',
+        'role' => \App\Enums\UserRole::ADMIN
+    ]);
 
-    /**  @var \App\Models\User $user */
-    Passport::actingAs($user);
+    /**  @var \App\Models\User $admin */
+    Passport::actingAs($admin);
 
-    $response = getJson("/api/v1/events/{$event->id}/vouches");
+    $response = $this->getJson("/api/v1/events/{$event->id}/vouches");
 
     $response->assertStatus(200)
              ->assertJsonCount(3, 'data');
 });
 
-test('returns 404 if event for vouches does not exist', function () {
 
-    $user = User::factory()->create();
+test('returns 404 if event for vouches does not exist', function () {
+    $admin = User::factory()->create([
+        'name' => 'Admin Test',
+        'role' => \App\Enums\UserRole::ADMIN
+    ]);
     
-    /**  @var \App\Models\User $user */
-    Passport::actingAs($user);
+    /**  @var \App\Models\User $admin */
+    Passport::actingAs($admin);
     
-    $response = getJson("/api/v1/events/9999/vouches");
+    // Importante: usamos un ID que difícilmente exista
+    $response = $this->getJson("/api/v1/events/999999/vouches");
+    
     $response->assertStatus(404);
 });

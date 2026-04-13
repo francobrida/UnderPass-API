@@ -10,6 +10,26 @@ use Illuminate\Support\Facades\Auth;
 
 class VouchController extends Controller
 {
+    public function index($id): JsonResponse
+    {
+        
+        $event = Event::findOrFail($id);
+
+        $vouches = $event->vouches()->with('user')->get();
+
+        $data = $vouches->map(function ($vouch) {
+            return [
+                'user_id'   => $vouch->user->id,
+                'user_name' => $vouch->user->name,
+                'created_at'=> $vouch->created_at->diffForHumans(),
+            ];
+        });
+
+        return response()->json([
+            'data' => $data
+        ], 200);
+    }
+    
     public function store(int $id): JsonResponse
     {
         $event_id = $id;
