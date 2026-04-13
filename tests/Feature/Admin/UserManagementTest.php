@@ -153,3 +153,30 @@ test('a non-admin cannot update a user', function () {
     $response->assertStatus(403);
 });
 
+test('an admin can create a user', function () {
+    $admin = User::factory()->create(['role' => UserRole::ADMIN]);
+   
+    /** @var \App\Models\User $admin */
+    Passport::actingAs($admin);
+
+    $response = postJson('/api/v1/users', [
+        'name'                  => 'NewClubber',
+        'email'                 => 'new@underpass.com',
+        'password'              => 'password123',
+        'password_confirmation' => 'password123',
+        'role'                  => UserRole::CLUBBER->value 
+    ]);
+
+    $response->assertStatus(201)
+             ->assertJsonStructure([
+                 'message',
+                 'data' => ['id', 'name', 'email', 'role']
+             ]);
+
+    $this->assertDatabaseHas('users', [
+        'email' => 'new@underpass.com',
+        'name'  => 'NewClubber'
+    ]);
+});
+
+
