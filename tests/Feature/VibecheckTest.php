@@ -2,12 +2,12 @@
 
 use App\Models\Event;
 use App\Models\User;
+use App\Models\Vibecheck;
+use App\Enums\UserRole;
 use Laravel\Passport\Passport;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use function Pest\Laravel\postJson;
-use function Pest\Laravel\getJson;
-use function Pest\Laravel\assertDatabaseHas;
-use function Pest\Laravel\assertDatabaseCount;
+use function Pest\Laravel\{postJson, deleteJson, getJson, assertDatabaseHas, 
+assertDatabaseCount, assertDatabaseMissing};
 
 uses(RefreshDatabase::class);
 
@@ -21,13 +21,13 @@ test('a user can leave a vibecheck on a finished event', function () {
     /** @var \App\Models\User $user */
     Passport::actingAs($user);
 
-    $payload = [
+    $review = [
         'sound_score' => 5,
         'safe_space_score' => 4,
         'comment' => 'Niiiice, the bartender is an asshole though!',
     ];
 
-    $response = postJson("/api/v1/events/{$event->id}/vibechecks", $payload);
+    $response = postJson("/api/v1/events/{$event->id}/vibechecks", $review);
 
     $response->assertStatus(201);
     assertDatabaseHas('vibechecks', [
@@ -151,3 +151,37 @@ test('a user cannot view vibechecks for an event they do not own', function () {
     $response->assertStatus(403);
 });
 
+
+test('admin can delete any vibecheck', function () {
+   
+    $user = User::factory()->create();
+    $event = Event::factory()->create(['user_id' => $user->id]);
+    $vibecheck = Vibecheck::factory()->create([
+        'user_id' => $user->id,
+        'event_id' => $event->id,
+        'comment' => 'This vibecheck will be erased'
+    ]);
+
+    $admin = User::factory()->create(['role' => UserRole::ADMIN]);
+    /** @var \App\Models\User $admin */
+    Passport::actingAs($admin);
+
+    $response = deleteJson("/api/v1/vibechecks/{$vibecheck->id}");
+
+    $response->assertStatus(204);
+    assertDatabaseMissing('vibechecks', ['id' => $vibecheck->id]);
+});
+
+test('non-admin user cannot delete a vibecheck that is not theirs', function () {
+    $owner = User::factory()->create();
+    $vibecheck = Vibecheck::factory()->create(['user_id' => $owner->id]);
+
+    $hacker = User::factory()->create(['role' => UserRole::CLUBBER]);
+
+    /** @var \App\Models\User $hacker */
+    Passport::actingAs($hacker);
+
+    $response = deleteJson("/api/v1/vibechecks/{$vibecheck->id}");
+
+    $response->assertStatus(403);
+});

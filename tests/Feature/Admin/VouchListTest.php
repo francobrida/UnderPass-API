@@ -52,7 +52,6 @@ test('returns 404 if event for vouches does not exist', function () {
     /**  @var \App\Models\User $admin */
     Passport::actingAs($admin);
     
-    // Importante: usamos un ID que difícilmente exista
     $response = $this->getJson("/api/v1/events/999999/vouches");
     
     $response->assertStatus(404);
