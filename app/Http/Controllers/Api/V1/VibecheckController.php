@@ -75,5 +75,18 @@ class VibecheckController extends Controller
             'data' => $vibechecks
         ], 200);
     }
+
+    public function destroy(int $id) {
+        $vibecheck = Vibecheck::findOrFail($id);
+
+        if (Auth::user()->role !== \App\Enums\UserRole::ADMIN) {
+            return response()->json(['message' => 'Unauthorized. Only admins can delete vibechecks.'], 403);
+        }
+
+        $vibecheck->delete();
+
+        return response()->json(['message' => 'Vibecheck deleted successfully.'], 204);
+    }
     
+
 }

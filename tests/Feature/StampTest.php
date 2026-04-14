@@ -58,3 +58,60 @@ test('a user cannot collect a stamp if the event ended more than 24h ago', funct
     $response->assertJsonPath('message', 'QR code is not active or has expired.');
 });
 
+test('admin can view all the stamps of a user', function () {
+    $user = User::factory()->create(['name' => 'Stamp Collector']);
+    $event = Event::factory()->create(['title' => 'Techno Party', 'date' => now()->subDay()->toDateString()]);
+    
+    Stamp::create([
+        'user_id' => $user->id,
+        'event_id' => $event->id,
+        'scanned_at' => now(), 
+    ]);
+
+    $admin = User::factory()->create(['name' => 'Admin User', 'role' => \App\Enums\UserRole::ADMIN]);
+    /**  @var \App\Models\User $admin */
+    Passport::actingAs($admin);
+
+    $response = getJson("/api/v1/users/{$user->id}/stamps");
+
+    $response->assertStatus(200)
+             ->assertJsonPath('data.0.event.title', 'Techno Party');
+});
+
+test('a normal user cannot view the stamps of another user', function () {
+    $user1 = User::factory()->create(['name' => 'User One']);
+    $user2 = User::factory()->create(['name' => 'User Two']);
+    $event = Event::factory()->create(['title' => 'Techno Party', 'date' => now()->subDay()->toDateString()]);
+    
+    Stamp::create([
+        'user_id' => $user1->id,
+        'event_id' => $event->id,
+        'scanned_at' => now(), 
+    ]);
+
+    /**  @var \App\Models\User $user2 */
+    Passport::actingAs($user2);
+
+    $response = getJson("/api/v1/users/{$user1->id}/stamps");
+
+    $response->assertStatus(403);
+});
+
+test('admin can delete any user stamp', function () {
+    $user = User::factory()->create(['name' => 'Stamp Collector']);
+    $event = Event::factory()->create(['title' => 'Techno Party', 'date' => now()->subDay()->toDateString()]);
+    
+    $stamp = Stamp::create([
+        'user_id' => $user->id,
+        'event_id' => $event->id,
+        'scanned_at' => now(), 
+    ]);
+
+    $admin = User::factory()->create(['name' => 'Admin User', 'role' => \App\Enums\UserRole::ADMIN]);
+    /**  @var \App\Models\User $admin */
+    Passport::actingAs($admin);
+
+    $response = $this->deleteJson("/api/v1/stamps/{$stamp->id}");
+
+    $response->assertStatus(204);
+});

@@ -147,15 +147,11 @@ class EventController extends Controller
         ]);
     }
 
-    public function userEvents(int $user_id): JsonResponse
+    public function getUserEvents(int $user_id): JsonResponse
     {
         $user = User::findOrFail($user_id);
 
-        if ($user->id !== Auth::id()) {
-            return response()->json([
-                'message' => 'You dont have permission to view these events.'
-            ], 403);
-        }
+        $this->authorize('view', $user);
 
         $events = $user->events()->latest()->get();
 

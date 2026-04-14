@@ -65,4 +65,35 @@ class StampController extends Controller
             'data' => $stamp->load('event:id,title')
         ], 201);
     }
+
+    public function getUserStamps(int $id): JsonResponse
+    {
+        if (Auth::id() != $id && Auth::user()->role !== \App\Enums\UserRole::ADMIN) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $stamps = Stamp::where('user_id', $id)
+            ->with('event:id,title,date') 
+            ->latest()
+            ->get();
+
+        return response()->json([
+            'count' => $stamps->count(),
+            'data' => $stamps
+        ], 200);
+    }
+
+    public function destroy(int $id): JsonResponse
+    {
+        $stamp = Stamp::findOrFail($id);
+
+        if (Auth::user()->role !== \App\Enums\UserRole::ADMIN) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $stamp->delete();
+
+        return response()->json(['message' => 'Stamp deleted successfully.'], 204);
+    }
+
 }
