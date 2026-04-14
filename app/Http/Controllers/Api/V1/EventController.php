@@ -118,13 +118,9 @@ class EventController extends Controller
 
     public function show(Request $request,Event $id): JsonResponse
     {
-        $event = $id;
+        $event = Event::findOrFail($id);
 
-        if (!$event->is_verified && $event->user_id !== $request->user()->id) {
-            return response()->json([
-                'message' => 'This event is pending verification and is not public yet.'
-            ], 403);
-        }
+        $this->authorize('view', $event);
 
         return response()->json([
             'data' => [
