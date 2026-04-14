@@ -97,3 +97,21 @@ test('a normal user cannot view the stamps of another user', function () {
     $response->assertStatus(403);
 });
 
+test('admin can delete any user stamp', function () {
+    $user = User::factory()->create(['name' => 'Stamp Collector']);
+    $event = Event::factory()->create(['title' => 'Techno Party', 'date' => now()->subDay()->toDateString()]);
+    
+    $stamp = Stamp::create([
+        'user_id' => $user->id,
+        'event_id' => $event->id,
+        'scanned_at' => now(), 
+    ]);
+
+    $admin = User::factory()->create(['name' => 'Admin User', 'role' => \App\Enums\UserRole::ADMIN]);
+    /**  @var \App\Models\User $admin */
+    Passport::actingAs($admin);
+
+    $response = $this->deleteJson("/api/v1/stamps/{$stamp->id}");
+
+    $response->assertStatus(204);
+});
