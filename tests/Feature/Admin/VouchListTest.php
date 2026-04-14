@@ -11,7 +11,7 @@ use function Pest\Laravel\{getJson};
 uses(RefreshDatabase::class);
 
 test('admin can see list of vouches for any event', function () {
-
+    
     $owner = User::factory()->create(['name' => 'Organizador']);
     
     $event = Event::factory()->create([
@@ -19,15 +19,20 @@ test('admin can see list of vouches for any event', function () {
         'is_verified' => true
     ]);
     
+   
     User::factory()->count(3)->create(['name' => 'Voucher User'])->each(function ($user) use ($event) {
-        $event->vouches()->create(['user_id' => $user->id]);
+       
+        Vouch::create([
+            'user_id' => $user->id,
+            'event_id' => $event->id
+        ]);
     });
 
+  
     $admin = User::factory()->create([
         'name' => 'Admin User',
         'role' => \App\Enums\UserRole::ADMIN
     ]);
-
     /**  @var \App\Models\User $admin */
     Passport::actingAs($admin);
 
