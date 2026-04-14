@@ -13,11 +13,9 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
     
-    // PUBLIC
     Route::post('/login', [AuthController::class, 'login']);
     Route::post('/register', [AuthController::class, 'register']);
 
-    // WITH AUTH
     Route::middleware('auth:api')->group(function () {
         Route::post('/logout', [AuthController::class, 'logout']);
         Route::get('/users/{id}', [UserController::class, 'show']);
@@ -39,6 +37,7 @@ Route::prefix('v1')->group(function () {
         Route::middleware('admin')->group(function () {
             Route::get('/users', [AdminUserController::class, 'index']);
             Route::post('/users', [AdminUserController::class, 'store']);
+            Route::patch('/users/{user}', [AdminUserController::class, 'update']);
             Route::delete('/users/{user}', [AdminUserController::class, 'destroy']);
             Route::get('/users/{id}/events', [AdminUserController::class, 'getUserEvents']);
 
@@ -46,6 +45,7 @@ Route::prefix('v1')->group(function () {
             Route::delete('/vibechecks/{id}', [VibecheckController::class, 'destroy']);
             Route::get('users/{id}/stamps', [StampController::class, 'getUserStamps']);
             Route::delete('stamps/{id}', [StampController::class, 'destroy']);
+
             
         });
     });

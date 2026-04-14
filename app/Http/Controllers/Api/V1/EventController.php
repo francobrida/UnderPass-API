@@ -151,7 +151,9 @@ class EventController extends Controller
     {
         $user = User::findOrFail($user_id);
 
-        $this->authorize('view', $user);
+        if (Auth::user()?->id !== $user->id && Auth::user()?->role !== UserRole::ADMIN) {
+            return response()->json(['message' => 'Forbidden'], 403);
+        }
 
         $events = $user->events()->latest()->get();
 
