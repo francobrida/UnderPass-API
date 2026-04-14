@@ -44,7 +44,7 @@ class UserController extends Controller
 
     public function destroy(Request $request, User $user): JsonResponse
     {
-        
+
         if ($request->user()->id === $user->id) {
             return response()->json(['message' => 'You cannot delete your own admin account'], 403);
         }
@@ -58,6 +58,7 @@ class UserController extends Controller
 
     public function update(Request $request, User $user): JsonResponse
     {
+
         $validated = $request->validate([
             'name'  => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
@@ -71,4 +72,15 @@ class UserController extends Controller
             'data' => $user
         ], 200);
     }
+
+    public function getUserEvents(User $user): JsonResponse
+    {
+        $events = $user->events;
+
+        return response()->json([
+            'message' => "Events for user: {$user->name} retrieved successfully",
+            'data'    => $events
+        ], 200);
+    }
 }
+

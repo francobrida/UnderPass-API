@@ -11,11 +11,13 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
 
-#[Fillable(['name', 'email', 'password', 'role', 'points'])]
-#[Hidden(['password', 'remember_token'])]
+
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
+
+    protected $fillable = ['name', 'email', 'password', 'role', 'points'];
+    protected $hidden = ['password', 'remember_token'];
 
     protected function casts(): array
     {

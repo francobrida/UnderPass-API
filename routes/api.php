@@ -40,7 +40,11 @@ Route::prefix('v1')->group(function () {
             Route::get('/users', [AdminUserController::class, 'index']);
             Route::post('/users', [AdminUserController::class, 'store']);
             Route::delete('/users/{user}', [AdminUserController::class, 'destroy']);
-            Route::put('/users/{user}', [AdminUserController::class, 'update']);
+            Route::get('/users/{id}/events', [AdminUserController::class, 'getUserEvents']);
+
+            Route::get('/events/{id}/vouches', [VouchController::class, 'index']);
+            
+            
         });
     });
 });

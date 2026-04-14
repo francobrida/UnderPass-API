@@ -5,12 +5,16 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Models\Event;
 use App\Models\User;
+use App\Enums\UserRole;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use App\Policies\EventPolicy;
 
 class EventController extends Controller
 {
+    use AuthorizesRequests;
 
     public function index(Request $request): JsonResponse
     {
@@ -70,9 +74,7 @@ class EventController extends Controller
     {
         $event = $id;
 
-        if ($event->user_id !== $request->user()->id) {
-            return response()->json(['message' => 'You are not authorized to edit this event'], 403);
-        }
+        $this->authorize('update', $event);
 
         $validated = $request->validate([
             'title'         => 'required|string|max:255',
@@ -87,7 +89,11 @@ class EventController extends Controller
             'is_18_plus'    => 'required|boolean',
         ]);
 
-        $validated['is_verified'] = false;
+        if ($request->user()->role !== UserRole::ADMIN) {
+            $validated['is_verified'] = false; 
+        } else {
+            $validated['is_verified'] = $request->input('is_verified', $event->is_verified);
+        }
 
         $event->update($validated);
 
@@ -97,13 +103,12 @@ class EventController extends Controller
         ], 200);
     }
 
-    public function destroy(Request $request, Event $id): JsonResponse
+    public function destroy(int $id): JsonResponse
     {
-        $event = $id;
+        $event = Event::findOrFail($id);
 
-        if ($event->user_id !== $request->user()->id) {
-            return response()->json(['message' => 'You are not authorized to delete this event'], 403);
-        }
+        $this->authorize('delete', $event);
+
         $event->delete();
 
         return response()->json([
@@ -111,7 +116,7 @@ class EventController extends Controller
         ], 200);
     }
 
-    public function show(Request $request, Event $id): JsonResponse
+    public function show(Request $request,Event $id): JsonResponse
     {
         $event = $id;
 
@@ -162,7 +167,7 @@ class EventController extends Controller
                 'title'   => $event->title,
                 'date'     => $event->date,
                 'location'   => $event->location_name,
-                'organizer'   => $user->name, // Usamos 'name'
+                'organizer'   => $user->name, 
                 'is_verified'   => (bool) $event->is_verified,
                 'vouch_count'   => $event->vouches()->count(),
             ];

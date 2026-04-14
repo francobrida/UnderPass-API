@@ -10,6 +10,26 @@ use Illuminate\Support\Facades\Auth;
 
 class VouchController extends Controller
 {
+    public function index($id)
+    {
+        $event = Event::findOrFail($id);
+
+        $vouchers = $event->vouches()->get();
+
+        $data = [];
+        
+        foreach ($vouchers as $user) {
+            $data[] = [
+                'user_id'   => $user->id,
+                'user_name' => $user->name,
+            ];
+        }
+
+        return response()->json([
+            'data' => $data
+        ], 200);
+    }
+    
     public function store(int $id): JsonResponse
     {
         $event_id = $id;
