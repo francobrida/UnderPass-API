@@ -118,9 +118,13 @@ class EventController extends Controller
 
     public function show(Request $request,Event $id): JsonResponse
     {
-        $event = Event::findOrFail($id);
+        $event = $id;
 
-        $this->authorize('view', $event);
+        if (!$event->is_verified && $event->user_id !== $request->user()->id) {
+            return response()->json([
+                'message' => 'This event is pending verification and is not public yet.'
+            ], 403);
+        }
 
         return response()->json([
             'data' => [
@@ -143,15 +147,11 @@ class EventController extends Controller
         ]);
     }
 
-    public function userEvents(int $user_id): JsonResponse
+    public function getUserEvents(int $user_id): JsonResponse
     {
         $user = User::findOrFail($user_id);
 
-        if ($user->id !== Auth::id()) {
-            return response()->json([
-                'message' => 'You dont have permission to view these events.'
-            ], 403);
-        }
+        $this->authorize('view', $user);
 
         $events = $user->events()->latest()->get();
 

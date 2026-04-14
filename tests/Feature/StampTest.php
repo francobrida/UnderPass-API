@@ -65,6 +65,7 @@ test('admin can view all the stamps of a user', function () {
     Stamp::create([
         'user_id' => $user->id,
         'event_id' => $event->id,
+        'scanned_at' => now(), 
     ]);
 
     $admin = User::factory()->create(['name' => 'Admin User', 'role' => \App\Enums\UserRole::ADMIN]);
@@ -85,6 +86,7 @@ test('a normal user cannot view the stamps of another user', function () {
     Stamp::create([
         'user_id' => $user1->id,
         'event_id' => $event->id,
+        'scanned_at' => now(), 
     ]);
 
     /**  @var \App\Models\User $user2 */

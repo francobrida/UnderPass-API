@@ -65,4 +65,21 @@ class StampController extends Controller
             'data' => $stamp->load('event:id,title')
         ], 201);
     }
+
+    public function getUserStamps(int $id): JsonResponse
+    {
+        if (Auth::id() != $id && Auth::user()->role !== \App\Enums\UserRole::ADMIN) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $stamps = Stamp::where('user_id', $id)
+            ->with('event:id,title,date,location_name') // Ojo: verifica si es 'location' o 'location_name' en tu DB
+            ->latest()
+            ->get();
+
+        return response()->json([
+            'count' => $stamps->count(),
+            'data' => $stamps
+        ], 200);
+    }
 }

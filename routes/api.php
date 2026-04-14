@@ -28,7 +28,7 @@ Route::prefix('v1')->group(function () {
         Route::put('/events/{id}', [EventController::class, 'update']);
         Route::delete('/events/{id}', [EventController::class, 'destroy']);
         Route::get('/events/{id}', [EventController::class, 'show']);
-        Route::get('/users/{user_id}/events', [EventController::class, 'userEvents']);
+        Route::get('/users/{user_id}/events', [EventController::class, 'getUserEvents']);
         Route::post('/events/{id}/vouches', [VouchController::class, 'store']);
         Route::post('/events/{id}/vibechecks', [VibecheckController::class, 'store']);
         Route::get('events/{id}/vibechecks', [VibecheckController::class, 'index']);
@@ -40,10 +40,11 @@ Route::prefix('v1')->group(function () {
             Route::get('/users', [AdminUserController::class, 'index']);
             Route::post('/users', [AdminUserController::class, 'store']);
             Route::delete('/users/{user}', [AdminUserController::class, 'destroy']);
-            Route::get('/users/{id}/events', [AdminUserController::class, 'userEvents']);
+            Route::get('/users/{id}/events', [AdminUserController::class, 'getUserEvents']);
 
             Route::get('/events/{id}/vouches', [VouchController::class, 'index']);
             Route::delete('/vibechecks/{id}', [VibecheckController::class, 'destroy']);
+            Route::get('users/{id}/stamps', [StampController::class, 'getUserStamps']);
             
         });
     });
