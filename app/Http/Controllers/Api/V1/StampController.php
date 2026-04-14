@@ -73,7 +73,7 @@ class StampController extends Controller
         }
 
         $stamps = Stamp::where('user_id', $id)
-            ->with('event:id,title,date,location_name') // Ojo: verifica si es 'location' o 'location_name' en tu DB
+            ->with('event:id,title,date') 
             ->latest()
             ->get();
 
@@ -82,4 +82,18 @@ class StampController extends Controller
             'data' => $stamps
         ], 200);
     }
+
+    public function destroy(int $id): JsonResponse
+    {
+        $stamp = Stamp::findOrFail($id);
+
+        if (Auth::user()->role !== \App\Enums\UserRole::ADMIN) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $stamp->delete();
+
+        return response()->json(['message' => 'Stamp deleted successfully.'], 204);
+    }
+
 }
