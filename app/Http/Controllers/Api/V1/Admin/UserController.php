@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\Rules\Enum;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
@@ -75,7 +76,12 @@ class UserController extends Controller
 
     public function getUserEvents(User $user): JsonResponse
     {
-        $events = $user->events;
+        
+        if (Auth::user()->role !== UserRole::ADMIN) {
+            return response()->json(['message' => 'Forbidden'], 403);
+        }
+
+        $events = $user->events; 
 
         return response()->json([
             'message' => "Events for user: {$user->name} retrieved successfully",

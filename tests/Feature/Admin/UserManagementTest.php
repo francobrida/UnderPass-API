@@ -5,7 +5,7 @@ use App\Models\Event;
 use App\Enums\UserRole;
 use Laravel\Passport\Passport;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use function Pest\Laravel\{getJson, postJson};
+use function Pest\Laravel\{getJson, postJson, patchJson};
 
 uses(RefreshDatabase::class);
 
@@ -122,7 +122,7 @@ test('an admin can update a user role and info', function () {
     /**  @var \App\Models\User $admin */
     Passport::actingAs($admin);
 
-    $response = $this->putJson("/api/v1/users/{$user->id}", [
+    $response = $this->patchJson("/api/v1/users/{$user->id}", [
         'name' => 'Updated Name',
         'email' => 'updated@example.com',
         'role' => UserRole::ORGANIZER->value,
@@ -145,7 +145,7 @@ test('a non-admin cannot update a user', function () {
     /**  @var \App\Models\User $user */
     Passport::actingAs($user);
 
-    $response = $this->putJson("/api/v1/users/{$anotherUser->id}", [
+    $response = $this->patchJson("/api/v1/users/{$anotherUser->id}", [
         'name' => 'Hacker'
     ]);
 
