@@ -43,7 +43,7 @@ Route::prefix('v1')->group(function () {
             Route::get('/users/{id}/events', [AdminUserController::class, 'getUserEvents']);
 
             Route::get('/events/{id}/vouches', [VouchController::class, 'index']);
-            
+            Route::delete('/vibechecks/{id}', [VibecheckController::class, 'destroy']);
             
         });
     });

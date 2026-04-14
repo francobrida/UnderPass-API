@@ -184,4 +184,5 @@ test('non-admin user cannot delete a vibecheck that is not theirs', function () 
     $response = deleteJson("/api/v1/vibechecks/{$vibecheck->id}");
 
     $response->assertStatus(403);
+    
 });
