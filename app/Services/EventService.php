@@ -6,7 +6,6 @@ use App\Models\Event;
 use App\Models\User;
 use App\Enums\UserRole;
 use Illuminate\Support\Str;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class EventService {
