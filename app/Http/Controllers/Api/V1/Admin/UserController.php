@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Enums\UserRole;
+use App\Http\Resources\V1\{UserResource, EventResource}; 
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Hash;
@@ -17,7 +18,7 @@ class UserController extends Controller
     {
         return response()->json([
             'message' => 'Users list retrieved successfully',
-            'data' => User::all()
+            'data' => UserResource::collection(User::all())
         ], 200);
     }
 
@@ -34,13 +35,32 @@ class UserController extends Controller
 
         return response()->json([
             'message' => 'User created successfully',
-            'data' => $user
+            'data' => new UserResource($user)
         ], 201);
+    }
+
+    public function update(UpdateUserRequest $request, User $user): JsonResponse
+    {
+        $user->update($request->validated());
+
+        return response()->json([
+            'message' => 'User updated successfully',
+            'data' => new UserResource($user)
+        ], 200);
+    }
+
+    public function getUserEvents(User $user): JsonResponse
+    {
+        $events = $user->events()->withCount('vouches')->get(); 
+
+        return response()->json([
+            'message' => "Events for user: {$user->name} retrieved successfully",
+            'data'    => EventResource::collection($events)
+        ], 200);
     }
 
     public function destroy(Request $request, User $user): JsonResponse
     {
-
         if ($request->user()->id === $user->id) {
             return response()->json(['message' => 'You cannot delete your own admin account'], 403);
         }
@@ -51,33 +71,4 @@ class UserController extends Controller
             'message' => 'User deleted successfully'
         ], 200);
     }
-
-    public function update(UpdateUserRequest $request, User $user): JsonResponse
-    {
-
-        $validated = $request->validated();
-
-        $user->update($validated);
-
-        return response()->json([
-            'message' => 'User updated successfully',
-            'data' => $user
-        ], 200);
-    }
-
-    public function getUserEvents(User $user): JsonResponse
-    {
-        
-        if (Auth::user()->role !== UserRole::ADMIN) {
-            return response()->json(['message' => 'Forbidden'], 403);
-        }
-
-        $events = $user->events; 
-
-        return response()->json([
-            'message' => "Events for user: {$user->name} retrieved successfully",
-            'data'    => $events
-        ], 200);
-    }
 }
-
