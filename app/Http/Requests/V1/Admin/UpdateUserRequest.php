@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests\V1\Admin;
 
-use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use App\Enums\UserRole;
 use Illuminate\Validation\Rules\Enum;

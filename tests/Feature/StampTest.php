@@ -3,6 +3,7 @@
 use App\Models\Event;
 use App\Models\User;
 use App\Models\Stamp;
+use App\Enums\UserRole;
 use Laravel\Passport\Passport;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use function Pest\Laravel\postJson;
@@ -15,13 +16,14 @@ test('a user can collect a stamp and see event details in the collection', funct
     
     $event = Event::factory()->create([
         'title' => 'Underpass Techno Night',
-        'date' => now()->subDay()->toDateString() 
+        'date' => now()->toDateString(),
+        'stamp_token' => 'valid-token-123'
     ]);
 
-    /**  @var \App\Models\User $user */
+    /** @var \App\Models\User $user */
     Passport::actingAs($user);
 
-    $response = postJson('/api/v1/stamps', ['event_id' => $event->id]);
+    $response = postJson('/api/v1/stamps', ['token' => $event->stamp_token]);
     
     $response->assertStatus(201);
 
@@ -32,35 +34,40 @@ test('a user can collect a stamp and see event details in the collection', funct
 
 test('a user cannot collect a stamp for an event that has not started yet', function () {
     $user = User::factory()->create();
-    $futureEvent = Event::factory()->create(['date' => now()->addDays(5)->toDateString()]);
+    $futureEvent = Event::factory()->create([
+        'date' => now()->addDays(5)->toDateString(),
+        'stamp_token' => 'future-token'
+    ]);
 
-    /**  @var \App\Models\User $user */
+    /** @var \App\Models\User $user */
     Passport::actingAs($user);
 
-    $response = postJson('/api/v1/stamps', ['event_id' => $futureEvent->id]);
+    $response = postJson('/api/v1/stamps', ['token' => $futureEvent->stamp_token]);
 
     $response->assertStatus(422);
     
-    $response->assertJsonPath('message', 'QR code is not active or has expired.');
+    $response->assertJsonFragment(['token' => ['QR code is not active or has expired.']]);
 });
 
 test('a user cannot collect a stamp if the event ended more than 24h ago', function () {
     $user = User::factory()->create();
-    $oldEvent = Event::factory()->create(['date' => now()->subDays(10)->toDateString()]);
+    $oldEvent = Event::factory()->create([
+        'date' => now()->subDays(10)->toDateString(),
+        'stamp_token' => 'expired-token'
+    ]);
 
-    /**  @var \App\Models\User $user */
+    /** @var \App\Models\User $user */
     Passport::actingAs($user);
 
-    $response = postJson('/api/v1/stamps', ['event_id' => $oldEvent->id]);
+    $response = postJson('/api/v1/stamps', ['token' => $oldEvent->stamp_token]);
 
     $response->assertStatus(422);
-  
-    $response->assertJsonPath('message', 'QR code is not active or has expired.');
+    $response->assertJsonFragment(['token' => ['QR code is not active or has expired.']]);
 });
 
 test('admin can view all the stamps of a user', function () {
     $user = User::factory()->create(['name' => 'Stamp Collector']);
-    $event = Event::factory()->create(['title' => 'Techno Party', 'date' => now()->subDay()->toDateString()]);
+    $event = Event::factory()->create(['title' => 'Techno Party']);
     
     Stamp::create([
         'user_id' => $user->id,
@@ -68,8 +75,8 @@ test('admin can view all the stamps of a user', function () {
         'scanned_at' => now(), 
     ]);
 
-    $admin = User::factory()->create(['name' => 'Admin User', 'role' => \App\Enums\UserRole::ADMIN]);
-    /**  @var \App\Models\User $admin */
+    $admin = User::factory()->create(['name' => 'Admin User', 'role' => UserRole::ADMIN]);
+    /** @var \App\Models\User $admin */
     Passport::actingAs($admin);
 
     $response = getJson("/api/v1/users/{$user->id}/stamps");
@@ -81,7 +88,7 @@ test('admin can view all the stamps of a user', function () {
 test('a normal user cannot view the stamps of another user', function () {
     $user1 = User::factory()->create(['name' => 'User One']);
     $user2 = User::factory()->create(['name' => 'User Two']);
-    $event = Event::factory()->create(['title' => 'Techno Party', 'date' => now()->subDay()->toDateString()]);
+    $event = Event::factory()->create(['title' => 'Techno Party']);
     
     Stamp::create([
         'user_id' => $user1->id,
@@ -89,7 +96,7 @@ test('a normal user cannot view the stamps of another user', function () {
         'scanned_at' => now(), 
     ]);
 
-    /**  @var \App\Models\User $user2 */
+    /** @var \App\Models\User $user2 */
     Passport::actingAs($user2);
 
     $response = getJson("/api/v1/users/{$user1->id}/stamps");
@@ -99,7 +106,7 @@ test('a normal user cannot view the stamps of another user', function () {
 
 test('admin can delete any user stamp', function () {
     $user = User::factory()->create(['name' => 'Stamp Collector']);
-    $event = Event::factory()->create(['title' => 'Techno Party', 'date' => now()->subDay()->toDateString()]);
+    $event = Event::factory()->create(['title' => 'Techno Party']);
     
     $stamp = Stamp::create([
         'user_id' => $user->id,
@@ -107,8 +114,8 @@ test('admin can delete any user stamp', function () {
         'scanned_at' => now(), 
     ]);
 
-    $admin = User::factory()->create(['name' => 'Admin User', 'role' => \App\Enums\UserRole::ADMIN]);
-    /**  @var \App\Models\User $admin */
+    $admin = User::factory()->create(['name' => 'Admin User', 'role' => UserRole::ADMIN]);
+    /** @var \App\Models\User $admin */
     Passport::actingAs($admin);
 
     $response = $this->deleteJson("/api/v1/stamps/{$stamp->id}");

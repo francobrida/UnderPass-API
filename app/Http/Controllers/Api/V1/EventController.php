@@ -7,6 +7,7 @@ use App\Models\Event;
 use App\Models\User;
 use App\Enums\UserRole;
 use App\Http\Requests\V1\{StoreEventRequest, UpdateEventRequest};
+use App\Services\EventService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -16,28 +17,21 @@ class EventController extends Controller
 {
     use AuthorizesRequests;
 
+    public function __construct(private EventService $eventService){}
+
     public function index(Request $request): JsonResponse
     {
-        // Waiting room
-        if ($request->query('verified') === 'false') {
-            $events = Event::where('is_verified', false)->with('organizer')->latest()->get();
-        } else { 
-            // Main dashboard
-            $events = Event::where('is_verified', true)->with('organizer')->get();
-        }
+        $events = $this->eventService->filter($request->all());
     
         $list = [];
-
         foreach ($events as $event) {
-            $eventData = [
-                'id'    => $event->id,
-                'title'    => $event->title,
-                'organizer'   => $event->organizer->name,
+            $list[] = [
+                'id'            => $event->id,
+                'title'         => $event->title,
+                'organizer'     => $event->organizer->name,
                 'is_verified'   => (bool) $event->is_verified,
                 'vouch_count'   => $event->vouches()->count(),
             ];
-
-            $list[] = $eventData;
         }
 
         return response()->json(['data' => $list]);
@@ -45,12 +39,11 @@ class EventController extends Controller
 
     public function store(StoreEventRequest $request): JsonResponse
     {
-        $validated = $request->validated();
-
-        $validated['user_id'] = $request->user()->id;
-        $validated['is_verified'] = false;
-
-        $event = Event::create($validated);
+        $event = $this->eventService->store(
+            $request->user(), 
+            $request->validated(), 
+            $request->file('flyer')
+        );
 
         return response()->json([
             'message' => 'Event created successfully, pending verification',
@@ -62,36 +55,32 @@ class EventController extends Controller
     {
         $event = $id;
 
-        $validated = $request->validated();
-
-        if ($request->user()->role !== UserRole::ADMIN) {
-            $validated['is_verified'] = false; 
-        } else {
-            $validated['is_verified'] = $request->input('is_verified', $event->is_verified);
-        }
-
-        $event->update($validated);
+        $updatedEvent = $this->eventService->update(
+            $request->user(), 
+            $event, 
+            $request->validated(), 
+            $request->file('flyer')
+        );
 
         return response()->json([
-            'message' => 'Event updated successfully, pending re-verification',
-            'data'    => $event
+            'message' => 'Event updated successfully',
+            'data'    => $updatedEvent
         ], 200);
     }
 
     public function destroy(int $id): JsonResponse
     {
         $event = Event::findOrFail($id);
-
         $this->authorize('delete', $event);
 
-        $event->delete();
+        $this->eventService->delete($event);
 
         return response()->json([
             'message' => 'Event successfully deleted'
         ], 200);
     }
 
-    public function show(Request $request,Event $id): JsonResponse
+    public function show(Request $request, Event $id): JsonResponse
     {
         $event = $id;
 
@@ -103,21 +92,21 @@ class EventController extends Controller
 
         return response()->json([
             'data' => [
-                'id'  => $event->id,
-                'title'  => $event->title,
-                'lineup'   => $event->lineup,
+                'id'            => $event->id,
+                'title'         => $event->title,
+                'lineup'        => $event->lineup,
                 'description'   => $event->description,
-                'date'  => $event->date,
-                'start_time' => $event->start_time,
-                'end_time'  => $event->end_time,
+                'date'          => $event->date,
+                'start_time'    => $event->start_time,
+                'end_time'      => $event->end_time,
                 'location_name' => $event->location_name,
                 'neighborhood'  => $event->neighborhood,
-                'price'  => (float) $event->price,
-                'is_18_plus'  => (bool) $event->is_18_plus,
-                'is_verified'  => (bool) $event->is_verified,
-                'organizer'  => $event->organizer->name,
-                'vouch_count'  => $event->vouches()->count(),
-                'created_at'  => $event->created_at->toDateTimeString(),
+                'price'         => (float) $event->price,
+                'is_18_plus'    => (bool) $event->is_18_plus,
+                'is_verified'   => (bool) $event->is_verified,
+                'organizer'     => $event->organizer->name,
+                'vouch_count'   => $event->vouches()->count(),
+                'created_at'    => $event->created_at->toDateTimeString(),
             ]
         ]);
     }
@@ -133,19 +122,16 @@ class EventController extends Controller
         $events = $user->events()->latest()->get();
 
         $list = [];
-
         foreach ($events as $event) {
-            $eventData = [
-                'id'    => $event->id,
-                'title'   => $event->title,
-                'date'     => $event->date,
-                'location'   => $event->location_name,
-                'organizer'   => $user->name, 
+            $list[] = [
+                'id'            => $event->id,
+                'title'         => $event->title,
+                'date'          => $event->date,
+                'location'      => $event->location_name,
+                'organizer'     => $user->name, 
                 'is_verified'   => (bool) $event->is_verified,
                 'vouch_count'   => $event->vouches()->count(),
             ];
-
-            $list[] = $eventData;
         }
 
         return response()->json(['data' => $list], 200);
