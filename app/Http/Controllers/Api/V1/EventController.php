@@ -7,11 +7,13 @@ use App\Models\Event;
 use App\Models\User;
 use App\Enums\UserRole;
 use App\Http\Requests\V1\{StoreEventRequest, UpdateEventRequest};
+use App\Http\Resources\V1\EventResource;
 use App\Services\EventService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+
 
 class EventController extends Controller
 {
@@ -22,19 +24,10 @@ class EventController extends Controller
     public function index(Request $request): JsonResponse
     {
         $events = $this->eventService->filter($request->all());
-    
-        $list = [];
-        foreach ($events as $event) {
-            $list[] = [
-                'id'            => $event->id,
-                'title'         => $event->title,
-                'organizer'     => $event->organizer->name,
-                'is_verified'   => (bool) $event->is_verified,
-                'vouch_count'   => $event->vouches()->count(),
-            ];
-        }
 
-        return response()->json(['data' => $list]);
+        $events->load('organizer')->loadCount('vouches');
+
+        return EventResource::collection($events)->response();
     }
 
     public function store(StoreEventRequest $request): JsonResponse
@@ -80,9 +73,9 @@ class EventController extends Controller
         ], 200);
     }
 
-    public function show(Request $request, Event $id): JsonResponse
+    public function show(Request $request, int $id): JsonResponse
     {
-        $event = $id;
+        $event = Event::findOrFail($id);
 
         if (!$event->is_verified && $event->user_id !== $request->user()->id) {
             return response()->json([
@@ -90,25 +83,9 @@ class EventController extends Controller
             ], 403);
         }
 
-        return response()->json([
-            'data' => [
-                'id'            => $event->id,
-                'title'         => $event->title,
-                'lineup'        => $event->lineup,
-                'description'   => $event->description,
-                'date'          => $event->date,
-                'start_time'    => $event->start_time,
-                'end_time'      => $event->end_time,
-                'location_name' => $event->location_name,
-                'neighborhood'  => $event->neighborhood,
-                'price'         => (float) $event->price,
-                'is_18_plus'    => (bool) $event->is_18_plus,
-                'is_verified'   => (bool) $event->is_verified,
-                'organizer'     => $event->organizer->name,
-                'vouch_count'   => $event->vouches()->count(),
-                'created_at'    => $event->created_at->toDateTimeString(),
-            ]
-        ]);
+        $event->load('organizer')->loadCount('vouches');
+
+        return (new EventResource($event))->response();
     }
 
     public function getUserEvents(int $user_id): JsonResponse
@@ -120,20 +97,9 @@ class EventController extends Controller
         }
 
         $events = $user->events()->latest()->get();
+        
+        $events->loadCount('vouches');
 
-        $list = [];
-        foreach ($events as $event) {
-            $list[] = [
-                'id'            => $event->id,
-                'title'         => $event->title,
-                'date'          => $event->date,
-                'location'      => $event->location_name,
-                'organizer'     => $user->name, 
-                'is_verified'   => (bool) $event->is_verified,
-                'vouch_count'   => $event->vouches()->count(),
-            ];
-        }
-
-        return response()->json(['data' => $list], 200);
+        return EventResource::collection($events)->response();
     }
 }

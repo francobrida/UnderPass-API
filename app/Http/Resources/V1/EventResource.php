@@ -1,0 +1,30 @@
+<?php
+
+namespace App\Http\Resources\V1;
+
+use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
+
+class EventResource extends JsonResource
+{
+    public function toArray(Request $request): array
+    {
+        return [
+            'id'            => $this->id,
+            'title'         => $this->title,
+            'lineup'        => $this->lineup,
+            'description'   => $this->description,
+            'date'          => $this->date,
+            'start_time'    => $this->start_time,
+            'end_time'      => $this->end_time,
+            'location'      => $this->location_name,
+            'neighborhood'  => $this->neighborhood,
+            'price'         => (float) $this->price,
+            'is_18_plus'    => (bool) $this->is_18_plus,
+            'is_verified'   => (bool) $this->is_verified,
+            'organizer'     => $this->organizer?->name, 
+            'vouch_count'   => $this->vouches_count ?? $this->vouches()->count(),
+            'created_at'    => $this->created_at->toDateTimeString(),
+        ];
+    }
+}
