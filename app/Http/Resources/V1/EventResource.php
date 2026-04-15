@@ -17,7 +17,7 @@ class EventResource extends JsonResource
             'date'          => $this->date,
             'start_time'    => $this->start_time,
             'end_time'      => $this->end_time,
-            'location_name' => $this->location_name,
+            'location'      => $this->location_name,
             'neighborhood'  => $this->neighborhood,
             'price'         => (float) $this->price,
             'is_18_plus'    => (bool) $this->is_18_plus,

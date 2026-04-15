@@ -24,19 +24,10 @@ class EventController extends Controller
     public function index(Request $request): JsonResponse
     {
         $events = $this->eventService->filter($request->all());
-    
-        $list = [];
-        foreach ($events as $event) {
-            $list[] = [
-                'id'            => $event->id,
-                'title'         => $event->title,
-                'organizer'     => $event->organizer->name,
-                'is_verified'   => (bool) $event->is_verified,
-                'vouch_count'   => $event->vouches()->count(),
-            ];
-        }
 
-        return response()->json(['data' => $list]);
+        $events->load('organizer')->loadCount('vouches');
+
+        return EventResource::collection($events)->response();
     }
 
     public function store(StoreEventRequest $request): JsonResponse
@@ -106,20 +97,9 @@ class EventController extends Controller
         }
 
         $events = $user->events()->latest()->get();
+        
+        $events->loadCount('vouches');
 
-        $list = [];
-        foreach ($events as $event) {
-            $list[] = [
-                'id'            => $event->id,
-                'title'         => $event->title,
-                'date'          => $event->date,
-                'location'      => $event->location_name,
-                'organizer'     => $user->name, 
-                'is_verified'   => (bool) $event->is_verified,
-                'vouch_count'   => $event->vouches()->count(),
-            ];
-        }
-
-        return response()->json(['data' => $list], 200);
+        return EventResource::collection($events)->response();
     }
 }
