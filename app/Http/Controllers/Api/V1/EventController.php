@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Event;
 use App\Models\User;
 use App\Enums\UserRole;
-use App\Http\Requests\V1\Auth\{StoreEventRequest, UpdateEventRequest};
+use App\Http\Requests\V1\{StoreEventRequest, UpdateEventRequest};
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;

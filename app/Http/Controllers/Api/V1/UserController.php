@@ -8,7 +8,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Enums\UserRole;
 use Illuminate\Support\Facades\Hash;
-use App\Http\Requests\V1\Auth\UpdateUserRequest;
+use App\Http\Requests\V1\UpdateUserRequest;
 use Illuminate\Validation\Rule;
 
 
