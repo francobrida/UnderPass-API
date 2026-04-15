@@ -46,7 +46,6 @@ Route::prefix('v1')->group(function () {
             Route::get('users/{id}/stamps', [StampController::class, 'getUserStamps']);
             Route::delete('stamps/{id}', [StampController::class, 'destroy']);
 
-            
         });
     });
 });

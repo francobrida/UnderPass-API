@@ -7,22 +7,18 @@ use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use App\Enums\UserRole;
-use Illuminate\Validation\Rules\Enum;
+use App\Http\Requests\V1\Auth\{RegisterRequest, LoginRequest};
+
 
 class AuthController extends Controller
 {
-    public function login(Request $request): JsonResponse
+    public function login(LoginRequest $request): JsonResponse
     {
-        
-        $fields = $request->validate([
-            'email'    => 'required|string|email',
-            'password' => 'required|string'
-        ]);
+        $credentials = $request->validated();
 
-        $user = User::where('email', strtolower($fields['email']))->first();
+        $user = User::where('email', $credentials['email'])->first();
 
-        if (!$user || !Hash::check($fields['password'], $user->password)) {
+        if (!$user || !Hash::check($credentials['password'], $user->password)) {
             return response()->json(['message' => 'Invalid credentials'], 401);
         }
 
@@ -31,27 +27,19 @@ class AuthController extends Controller
         return response()->json([
             'access_token' => $token,
             'token_type'   => 'Bearer',
-            'user'         => 
-            ['name' => $user->name,'role'  => $user->role]
+            'user'         => [
+                'name' => $user->name,
+                'role' => $user->role
+            ]
         ], 200);
-
     }
 
-    public function register(Request $request): JsonResponse
+    public function register(RegisterRequest $request): JsonResponse
     {
-        $fields = $request->validate([
-            'name' => 'required|string|max:255',
-            'email'    => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
-            'role'     => ['nullable', new Enum(UserRole::class)],
-        ]);
+        $validated = $request->validated();
+        $validated['password'] = Hash::make($validated['password']);
 
-        $user = User::create([
-            'name' => $fields['name'],
-            'email'    => strtolower($fields['email']),
-            'password' => Hash::make($fields['password']),
-            'role'     => $fields['role'] ?? UserRole::CLUBBER->value,
-        ]);
+        $user = User::create($validated);
 
         $token = $user->createToken('auth_token')->accessToken;
 

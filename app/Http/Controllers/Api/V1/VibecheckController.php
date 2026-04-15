@@ -6,13 +6,13 @@ use App\Http\Controllers\Controller;
 use App\Models\Event;
 use App\Models\Vibecheck;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Requests\V1\StoreVibecheckRequest;
 
 class VibecheckController extends Controller
 {
     
-    public function store(Request $request, int $id): JsonResponse
+    public function store(StoreVibecheckRequest $request, int $id): JsonResponse
     {
         
         $event = Event::findOrFail($id);
@@ -25,7 +25,6 @@ class VibecheckController extends Controller
             ], 422);
         }
 
-        
         $alreadyReviewed = Vibecheck::where('user_id', $user->id)->where('event_id', $event->id)->exists();
 
         if ($alreadyReviewed) {
@@ -35,11 +34,7 @@ class VibecheckController extends Controller
         }
 
     
-        $validated = $request->validate([
-            'sound_score' => 'required|integer|min:1|max:5',
-            'safe_space_score' => 'required|integer|min:1|max:5',
-            'comment' => 'nullable|string|max:500',
-        ]);
+        $validated = $request->validated();
 
         $vibecheck = Vibecheck::create([
             'user_id' => $user->id,

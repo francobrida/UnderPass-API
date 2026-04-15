@@ -8,7 +8,9 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Enums\UserRole;
 use Illuminate\Support\Facades\Hash;
+use App\Http\Requests\V1\UpdateUserRequest;
 use Illuminate\Validation\Rule;
+
 
 class UserController extends Controller
 {
@@ -49,21 +51,11 @@ class UserController extends Controller
         ], 200);
     }
 
-    public function update(Request $request): JsonResponse
+    public function update(UpdateUserRequest $request): JsonResponse
     {
-        /** @var \App\Models\User $user */
         $user = $request->user();
 
-        $validated = $request->validate([
-            'name' => 'sometimes|string|max:255',
-            'email' => [
-                'sometimes', 
-                'email', 
-                Rule::unique('users')->ignore($user->id)
-            ],
-            
-            'password' => 'sometimes|string|min:8|confirmed',
-        ]);
+        $validated = $request->validated();
 
         if (isset($validated['password'])) {
             $validated['password'] = Hash::make($validated['password']);
