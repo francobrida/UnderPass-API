@@ -6,11 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Models\Event;
 use App\Models\User;
 use App\Enums\UserRole;
+use App\Http\Requests\V1\Auth\{StoreEventRequest, UpdateEventRequest};
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use App\Policies\EventPolicy;
 
 class EventController extends Controller
 {
@@ -43,21 +43,9 @@ class EventController extends Controller
         return response()->json(['data' => $list]);
     }
 
-
-    public function store(Request $request): JsonResponse
+    public function store(StoreEventRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'lineup' => 'required|string',
-            'description' => 'required|string',
-            'location_name' => 'required|string',
-            'neighborhood' => 'required|string',
-            'date' => 'required|date|after_or_equal:today',
-            'start_time' => 'required',
-            'end_time' => 'required',
-            'price' => 'required|numeric',
-            'is_18_plus' => 'required|boolean',
-        ]);
+        $validated = $request->validated();
 
         $validated['user_id'] = $request->user()->id;
         $validated['is_verified'] = false;
@@ -70,24 +58,11 @@ class EventController extends Controller
         ], 201);
     }
 
-    public function update(Request $request, Event $id): JsonResponse
+    public function update(UpdateEventRequest $request, Event $id): JsonResponse
     {
         $event = $id;
 
-        $this->authorize('update', $event);
-
-        $validated = $request->validate([
-            'title'         => 'required|string|max:255',
-            'lineup'        => 'required|string',
-            'description'   => 'required|string',
-            'location_name' => 'required|string',
-            'neighborhood'  => 'required|string',
-            'date'          => 'required|date|after_or_equal:today',
-            'start_time'    => 'required',
-            'end_time'      => 'required',
-            'price'         => 'required|numeric',
-            'is_18_plus'    => 'required|boolean',
-        ]);
+        $validated = $request->validated();
 
         if ($request->user()->role !== UserRole::ADMIN) {
             $validated['is_verified'] = false; 

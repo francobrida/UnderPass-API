@@ -7,9 +7,9 @@ use App\Models\User;
 use App\Enums\UserRole;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Validation\Rules\Enum;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Requests\V1\Admin\{StoreUserRequest, UpdateUserRequest};
 
 class UserController extends Controller
 {
@@ -21,14 +21,9 @@ class UserController extends Controller
         ], 200);
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(StoreUserRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'name'     => 'required|string|max:255',
-            'email'    => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
-            'role'     => ['required', new Enum(UserRole::class)], 
-        ]);
+        $validated = $request->validated();
 
         $user = User::create([
             'name' => $validated['name'],
@@ -57,14 +52,10 @@ class UserController extends Controller
         ], 200);
     }
 
-    public function update(Request $request, User $user): JsonResponse
+    public function update(UpdateUserRequest $request, User $user): JsonResponse
     {
 
-        $validated = $request->validate([
-            'name'  => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
-            'role'  => ['required', new Enum(UserRole::class)],
-        ]);
+        $validated = $request->validated();
 
         $user->update($validated);
 
