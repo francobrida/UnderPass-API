@@ -17,12 +17,7 @@ class EventController extends Controller
 {
     use AuthorizesRequests;
 
-    private $eventService;
-
-    public function __construct(EventService $eventService)
-    {
-        $this->eventService = $eventService;
-    }
+    public function __construct(private EventService $eventService){}
 
     public function index(Request $request): JsonResponse
     {

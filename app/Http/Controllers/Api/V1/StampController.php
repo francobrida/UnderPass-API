@@ -3,97 +3,61 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Models\Event;
-use App\Models\Stamp;
+use App\Enums\UserRole;
+use App\Services\StampService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Carbon\Carbon;
 
 class StampController extends Controller
 {
     
+    public function __construct(private StampService $stampService) {}
+
     public function index(): JsonResponse
     {
-        $stamps = Stamp::where('user_id', Auth::id())->with('event:id,title,date,location')
-            ->latest()
-            ->get();
+        $stamps = $this->stampService->getUserStamps(Auth::id());
 
         return response()->json([
             'count' => $stamps->count(),
-            'data' => $stamps
+            'data'  => $stamps
         ], 200);
     }
 
-    
     public function store(Request $request): JsonResponse
     {
-        $request->validate([
-            'event_id' => 'required|exists:events,id',
-        ]);
+        $request->validate(['token' => 'required|string',]);
 
-        $event = Event::findOrFail($request->event_id);
-        $now = Carbon::now();
-        $eventDate = Carbon::parse($event->date);
-
-        
-        if (!$event->isWithinStampScannableWindow()) {
-            return response()->json([
-                'message' => 'QR code is not active or has expired.'
-            ], 422);
-        }
-
-        $exists = Stamp::where('user_id', Auth::id())
-            ->where('event_id', $event->id)
-            ->exists();
-
-        if ($exists) {
-            return response()->json([
-                'message' => 'You already collected this stamp!'
-            ], 422);
-        }
-
-
-        $stamp = Stamp::create([
-            'user_id' => Auth::id(),
-            'event_id' => $event->id,
-            'scanned_at' => $now,
-        ]);
+        $stamp = $this->stampService->collect(Auth::user(), $request->token);
 
         return response()->json([
             'message' => 'Stamp collected successfully!',
-            'data' => $stamp->load('event:id,title')
+            'data'    => $stamp->load('event:id,title')
         ], 201);
     }
 
     public function getUserStamps(int $id): JsonResponse
     {
-        if (Auth::id() != $id && Auth::user()->role !== \App\Enums\UserRole::ADMIN) {
+        if (Auth::id() !== $id && Auth::user()->role !== UserRole::ADMIN) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
-
-        $stamps = Stamp::where('user_id', $id)
-            ->with('event:id,title,date') 
-            ->latest()
-            ->get();
+        
+        $stamps = $this->stampService->getUserStamps($id);
 
         return response()->json([
             'count' => $stamps->count(),
-            'data' => $stamps
+            'data'  => $stamps
         ], 200);
     }
 
     public function destroy(int $id): JsonResponse
     {
-        $stamp = Stamp::findOrFail($id);
-
-        if (Auth::user()->role !== \App\Enums\UserRole::ADMIN) {
+        if (Auth::user()->role !== UserRole::ADMIN) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
-        $stamp->delete();
+        $this->stampService->delete($id);
 
         return response()->json(['message' => 'Stamp deleted successfully.'], 204);
     }
-
 }
