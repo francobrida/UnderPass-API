@@ -7,11 +7,13 @@ use App\Models\Event;
 use App\Models\User;
 use App\Enums\UserRole;
 use App\Http\Requests\V1\{StoreEventRequest, UpdateEventRequest};
+use App\Http\Resources\V1\EventResource;
 use App\Services\EventService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+
 
 class EventController extends Controller
 {
@@ -80,9 +82,9 @@ class EventController extends Controller
         ], 200);
     }
 
-    public function show(Request $request, Event $id): JsonResponse
+    public function show(Request $request, int $id): JsonResponse
     {
-        $event = $id;
+        $event = Event::findOrFail($id);
 
         if (!$event->is_verified && $event->user_id !== $request->user()->id) {
             return response()->json([
@@ -90,25 +92,9 @@ class EventController extends Controller
             ], 403);
         }
 
-        return response()->json([
-            'data' => [
-                'id'            => $event->id,
-                'title'         => $event->title,
-                'lineup'        => $event->lineup,
-                'description'   => $event->description,
-                'date'          => $event->date,
-                'start_time'    => $event->start_time,
-                'end_time'      => $event->end_time,
-                'location_name' => $event->location_name,
-                'neighborhood'  => $event->neighborhood,
-                'price'         => (float) $event->price,
-                'is_18_plus'    => (bool) $event->is_18_plus,
-                'is_verified'   => (bool) $event->is_verified,
-                'organizer'     => $event->organizer->name,
-                'vouch_count'   => $event->vouches()->count(),
-                'created_at'    => $event->created_at->toDateTimeString(),
-            ]
-        ]);
+        $event->load('organizer')->loadCount('vouches');
+
+        return (new EventResource($event))->response();
     }
 
     public function getUserEvents(int $user_id): JsonResponse

@@ -40,7 +40,7 @@ test('a user cannot vouch their own event', function () {
 
     $response = postJson("/api/v1/events/{$event->id}/vouches");
 
-    $response->assertStatus(403); 
+    $response->assertStatus(422); 
     
     assertDatabaseCount('vouches', 0);
 });
