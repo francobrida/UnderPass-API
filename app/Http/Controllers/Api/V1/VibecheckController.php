@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Models\Event;
+use App\Models\Vibecheck;
 use App\Enums\UserRole;
 use App\Http\Requests\V1\StoreVibecheckRequest;
 use App\Services\VibecheckService;
+use App\Http\Resources\V1\VibecheckResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 
@@ -18,7 +20,6 @@ class VibecheckController extends Controller
     {
         $event = Event::findOrFail($id);
 
-        // Delegamos todo al servicio
         $vibecheck = $this->vibecheckService->store(
             Auth::user(), 
             $event, 
@@ -35,16 +36,18 @@ class VibecheckController extends Controller
     {
         $event = Event::findOrFail($id);
 
-        // Solo el organizador puede ver el feedback detallado
-        if ($event->user_id !== Auth::id() && Auth::user()->role !== UserRole::ADMIN) {
-            return response()->json([
-                'message' => 'Unauthorized. You can only view feedback for your own events.'
-            ], 403);
-        }
+        $vibechecks = Vibecheck::where('event_id', $id)
+            ->with('user')
+            ->latest()
+            ->get();
 
-        $feedback = $this->vibecheckService->getEventFeedback($event);
+        $averageSound = $vibechecks->avg('sound_score') ?? 0;
 
-        return response()->json($feedback, 200);
+        return response()->json([
+            'event_title'   => $event->title,
+            'average_sound' => (float) $averageSound,
+            'data'          => VibecheckResource::collection($vibechecks)
+        ], 200);
     }
 
     public function destroy(int $id): JsonResponse
