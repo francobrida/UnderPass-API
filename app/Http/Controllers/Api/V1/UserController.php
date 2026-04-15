@@ -4,13 +4,12 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Enums\UserRole;
+use App\Http\Resources\V1\UserResource;
+use App\Http\Requests\V1\UpdateUserRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use App\Enums\UserRole;
 use Illuminate\Support\Facades\Hash;
-use App\Http\Requests\V1\UpdateUserRequest;
-use Illuminate\Validation\Rule;
-
 
 class UserController extends Controller
 {
@@ -31,14 +30,23 @@ class UserController extends Controller
             ], 403);
         }
 
+        return (new UserResource($user))->response();
+    }
+
+    public function update(UpdateUserRequest $request): JsonResponse
+    {
+        $user = $request->user();
+        $validated = $request->validated();
+
+        if (isset($validated['password'])) {
+            $validated['password'] = Hash::make($validated['password']);
+        }
+
+        $user->update($validated);
+
         return response()->json([
-            'data' => [
-                'id' => $user->id,
-                'name' => $user->name,
-                'email'  => $user->email,
-                'role'   => $user->role->value,
-                'points' => $user->points,
-            ]
+            'message' => 'Profile successfully updated',
+            'data'    => new UserResource($user)
         ]);
     }
 
@@ -50,29 +58,4 @@ class UserController extends Controller
             'message' => 'Account successfully deleted'
         ], 200);
     }
-
-    public function update(UpdateUserRequest $request): JsonResponse
-    {
-        $user = $request->user();
-
-        $validated = $request->validated();
-
-        if (isset($validated['password'])) {
-            $validated['password'] = Hash::make($validated['password']);
-        }
-
-        $user->update($validated);
-
-        return response()->json([
-            'message' => 'Profile successfully updated',
-            'data' => [
-                'id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email,
-                'role'  => $user->role?->value ?? 'clubber',
-            ]
-        ]);
-    }
-
-
 }
