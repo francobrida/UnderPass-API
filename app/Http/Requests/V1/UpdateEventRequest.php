@@ -22,7 +22,7 @@ class UpdateEventRequest extends FormRequest
             'description'   => 'sometimes|string',
             'location_name' => 'sometimes|string',
             'neighborhood'  => 'sometimes|string',
-            'date'          => 'sometimes|date|after_or_equal:today|date_format:d-m-Y',
+            'date'          => 'sometimes|date|after_or_equal:today',
             'start_time'    => 'sometimes',
             'end_time'      => 'sometimes',
             'price'         => 'sometimes|numeric',
