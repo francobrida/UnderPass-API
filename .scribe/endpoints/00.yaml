@@ -433,7 +433,7 @@ endpoints:
         name: is_18_plus
         description: ''
         required: true
-        example: true
+        example: false
         type: boolean
         enumValues: []
         exampleWasSpecified: false
@@ -449,7 +449,7 @@ endpoints:
       start_time: architecto
       end_time: architecto
       price: 4326.41688
-      is_18_plus: true
+      is_18_plus: false
     fileParameters: []
     responses: []
     responseFields: []
@@ -1211,7 +1211,7 @@ endpoints:
         name: role
         description: ''
         required: true
-        example: organizer
+        example: admin
         type: string
         enumValues:
           - admin
@@ -1224,7 +1224,7 @@ endpoints:
       name: b
       email: zbailey@example.net
       password: '-0pBNvYgxw'
-      role: organizer
+      role: admin
     fileParameters: []
     responses: []
     responseFields: []
@@ -1298,7 +1298,7 @@ endpoints:
         name: role
         description: ''
         required: false
-        example: clubber
+        example: organizer
         type: string
         enumValues:
           - admin
@@ -1310,7 +1310,7 @@ endpoints:
     cleanBodyParameters:
       name: b
       email: zbailey@example.net
-      role: clubber
+      role: organizer
     fileParameters: []
     responses: []
     responseFields: []

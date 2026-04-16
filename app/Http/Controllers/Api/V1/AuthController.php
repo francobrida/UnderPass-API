@@ -30,10 +30,12 @@ class AuthController extends Controller
         $token = $user->createToken('auth_token')->accessToken;
 
         return response()->json([
+            'message'      => 'Login successful',
             'access_token' => $token,
             'token_type'   => 'Bearer',
             'user'         => [
                 'name' => $user->name,
+                'id' => $user->id, 
                 'role' => $user->role
             ]
         ], 200);
@@ -42,7 +44,7 @@ class AuthController extends Controller
     /**
      * Register a new user.
      * @unauthenticated
-     * @bodyParam password_confirmation string required El mismo password de arriba. Example: password123
+     * @bodyParam password_confirmation string required Same pass as above. Example: -0pBNvYgxw
      */
     public function register(RegisterRequest $request): JsonResponse
     {
@@ -63,6 +65,7 @@ class AuthController extends Controller
                 'name'  => $user->name,
                 'email' => $user->email,
                 'role'  => $user->role->value,
+                'id' => $user->id, 
             ]
         ], 201);
     }

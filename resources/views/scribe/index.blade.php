@@ -1082,7 +1082,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     \"start_time\": \"architecto\",
     \"end_time\": \"architecto\",
     \"price\": 4326.41688,
-    \"is_18_plus\": true
+    \"is_18_plus\": false
 }"
 </code></pre></div>
 
@@ -1108,7 +1108,7 @@ let body = {
     "start_time": "architecto",
     "end_time": "architecto",
     "price": 4326.41688,
-    "is_18_plus": true
+    "is_18_plus": false
 };
 
 fetch(url, {
@@ -1333,7 +1333,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
             <code>false</code>
         </label>
     <br>
-<p>Example: <code>true</code></p>
+<p>Example: <code>false</code></p>
         </div>
         </form>
 
@@ -3155,7 +3155,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     \"name\": \"b\",
     \"email\": \"zbailey@example.net\",
     \"password\": \"-0pBNvYgxw\",
-    \"role\": \"organizer\"
+    \"role\": \"admin\"
 }"
 </code></pre></div>
 
@@ -3175,7 +3175,7 @@ let body = {
     "name": "b",
     "email": "zbailey@example.net",
     "password": "-0pBNvYgxw",
-    "role": "organizer"
+    "role": "admin"
 };
 
 fetch(url, {
@@ -3315,10 +3315,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="role"                data-endpoint="POSTapi-v1-users"
-               value="organizer"
+               value="admin"
                data-component="body">
     <br>
-<p>Example: <code>organizer</code></p>
+<p>Example: <code>admin</code></p>
 Must be one of:
 <ul style="list-style-type: square;"><li><code>admin</code></li> <li><code>organizer</code></li> <li><code>clubber</code></li></ul>
         </div>
@@ -3345,7 +3345,7 @@ Must be one of:
     --data "{
     \"name\": \"b\",
     \"email\": \"zbailey@example.net\",
-    \"role\": \"clubber\"
+    \"role\": \"organizer\"
 }"
 </code></pre></div>
 
@@ -3364,7 +3364,7 @@ const headers = {
 let body = {
     "name": "b",
     "email": "zbailey@example.net",
-    "role": "clubber"
+    "role": "organizer"
 };
 
 fetch(url, {
@@ -3505,10 +3505,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="role"                data-endpoint="PATCHapi-v1-users--user_id-"
-               value="clubber"
+               value="organizer"
                data-component="body">
     <br>
-<p>Example: <code>clubber</code></p>
+<p>Example: <code>organizer</code></p>
 Must be one of:
 <ul style="list-style-type: square;"><li><code>admin</code></li> <li><code>organizer</code></li> <li><code>clubber</code></li></ul>
         </div>
