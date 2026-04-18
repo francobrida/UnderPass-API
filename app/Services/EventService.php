@@ -26,26 +26,25 @@ class EventService {
                 ->where('date', '>=', now()->toDateString()); 
         }
 
-       
         if (!empty($eventData['search'])) {
             $search = '%' . $eventData['search'] . '%';
-            $query->where(function($q) use ($search) {
-                $q->where('title', 'like', $search)
+            $query->where(function($each) use ($search) {
+                $each->where('title', 'like', $search)
                 ->orWhere('lineup', 'like', $search);
             });
         }
 
-        if (!empty($request['neighborhood'])) {
-            $query->where('neighborhood', $request['neighborhood']);
+        if (!empty($eventData['neighborhood'])) {
+            $query->where('neighborhood', $eventData['neighborhood']);
         }
 
-        if (!empty($request['genre'])) {
-            $query->whereHas('genres', function($genreQuery) use ($request) {
-                $genreQuery->where('genres.id', $request['genre']);
+        if (!empty($eventData['genre'])) {
+            $query->whereHas('genres', function($genreQuery) use ($eventData) {
+                $genreQuery->where('genres.id', $eventData['genre']);
             });
         }
 
-        $order = $request['price'] ?? null;
+        $order = $eventData['price'] ?? null;
 
         if ($order === 'asc' || $order === 'desc') {
             $query->orderBy('price', $order);
@@ -63,6 +62,7 @@ class EventService {
         $eventData['stamp_token'] = Str::random(32); 
         $eventData['is_verified'] = false; 
 
+        
         if ($file) {
             $eventData['flyer'] = $file->store('flyers', 'public');
         }

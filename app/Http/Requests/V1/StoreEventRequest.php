@@ -9,6 +9,8 @@ use Illuminate\Foundation\Http\FormRequest;
  * @bodyParam title string required Example: Night Moves: Industrial Techno
  * @bodyParam lineup string required Example: Amelie Lens, Richie Hawtin, local support
  * @bodyParam description string required Example: A deep dive into industrial sounds in an intimate basement.
+ * @bodyParam genres int[] required The IDs of the genres. Example: [1, 2]
+ * @bodyParam genres.* integer Each genre ID must exist in the genres table. Example: 3
  * @bodyParam location_name string required Example: Input High Fidelity Dance Club
  * @bodyParam neighborhood string required Example: Poble Espanyol
  * @bodyParam date string required Example: 2026-08-15
@@ -34,6 +36,8 @@ class StoreEventRequest extends FormRequest
             'title' => 'required|string|max:255',
             'lineup' => 'required|string',
             'description' => 'required|string',
+            'genres' => 'sometimes|array|min:1',
+            'genres.*' => 'integer|exists:genres,id',
             'location_name' => 'required|string',
             'neighborhood' => 'required|string',
             'date' => 'required|date|after_or_equal:today',

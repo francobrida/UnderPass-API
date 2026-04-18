@@ -86,14 +86,17 @@
                                                                                 <li class="tocify-item level-2" data-unique="endpoints-DELETEapi-v1-profile">
                                 <a href="#endpoints-DELETEapi-v1-profile">DELETE api/v1/profile</a>
                             </li>
+                                                                                <li class="tocify-item level-2" data-unique="endpoints-PATCHapi-v1-profile">
+                                <a href="#endpoints-PATCHapi-v1-profile">PATCH api/v1/profile</a>
+                            </li>
                                                                                 <li class="tocify-item level-2" data-unique="endpoints-GETapi-v1-events">
                                 <a href="#endpoints-GETapi-v1-events">GET api/v1/events</a>
                             </li>
                                                                                 <li class="tocify-item level-2" data-unique="endpoints-POSTapi-v1-events">
                                 <a href="#endpoints-POSTapi-v1-events">POST api/v1/events</a>
                             </li>
-                                                                                <li class="tocify-item level-2" data-unique="endpoints-PUTapi-v1-events--id_id-">
-                                <a href="#endpoints-PUTapi-v1-events--id_id-">PUT api/v1/events/{id_id}</a>
+                                                                                <li class="tocify-item level-2" data-unique="endpoints-PUTapi-v1-events--id-">
+                                <a href="#endpoints-PUTapi-v1-events--id-">Edit own event.</a>
                             </li>
                                                                                 <li class="tocify-item level-2" data-unique="endpoints-DELETEapi-v1-events--id-">
                                 <a href="#endpoints-DELETEapi-v1-events--id-">DELETE api/v1/events/{id}</a>
@@ -308,7 +311,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
         <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>email</code></b>&nbsp;&nbsp;
 <small>email</small>&nbsp;
-<i>optional</i> &nbsp;
+ &nbsp;
  &nbsp;
                 <input type="text" style="display: none"
                               name="email"                data-endpoint="POSTapi-v1-login"
@@ -320,7 +323,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>password</code></b>&nbsp;&nbsp;
 <small>string</small>&nbsp;
-<i>optional</i> &nbsp;
+ &nbsp;
  &nbsp;
                 <input type="text" style="display: none"
                               name="password"                data-endpoint="POSTapi-v1-login"
@@ -912,6 +915,195 @@ You can check the Dev Tools console for debugging information.</code></pre>
             </div>
                         </form>
 
+                    <h2 id="endpoints-PATCHapi-v1-profile">PATCH api/v1/profile</h2>
+
+<p>
+<small class="badge badge-darkred">requires authentication</small>
+</p>
+
+
+
+<span id="example-requests-PATCHapi-v1-profile">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request PATCH \
+    "http://localhost:8000/api/v1/profile" \
+    --header "Authorization: Bearer {YOUR_AUTH_KEY}" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json" \
+    --data "{
+    \"name\": \"Lolo Techno\",
+    \"email\": \"fran@underpass.app\",
+    \"password\": \"password123\",
+    \"password_confirmation\": \"password123\"
+}"
+</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost:8000/api/v1/profile"
+);
+
+const headers = {
+    "Authorization": "Bearer {YOUR_AUTH_KEY}",
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+let body = {
+    "name": "Lolo Techno",
+    "email": "fran@underpass.app",
+    "password": "password123",
+    "password_confirmation": "password123"
+};
+
+fetch(url, {
+    method: "PATCH",
+    headers,
+    body: JSON.stringify(body),
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-PATCHapi-v1-profile">
+</span>
+<span id="execution-results-PATCHapi-v1-profile" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-PATCHapi-v1-profile"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-PATCHapi-v1-profile"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-PATCHapi-v1-profile" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-PATCHapi-v1-profile">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-PATCHapi-v1-profile" data-method="PATCH"
+      data-path="api/v1/profile"
+      data-authed="1"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('PATCHapi-v1-profile', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-PATCHapi-v1-profile"
+                    onclick="tryItOut('PATCHapi-v1-profile');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-PATCHapi-v1-profile"
+                    onclick="cancelTryOut('PATCHapi-v1-profile');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-PATCHapi-v1-profile"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-purple">PATCH</small>
+            <b><code>api/v1/profile</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Authorization</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Authorization" class="auth-value"               data-endpoint="PATCHapi-v1-profile"
+               value="Bearer {YOUR_AUTH_KEY}"
+               data-component="header">
+    <br>
+<p>Example: <code>Bearer {YOUR_AUTH_KEY}</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="PATCHapi-v1-profile"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="PATCHapi-v1-profile"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
+        <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>name</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="name"                data-endpoint="PATCHapi-v1-profile"
+               value="Lolo Techno"
+               data-component="body">
+    <br>
+<p>Example: <code>Lolo Techno</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>email</code></b>&nbsp;&nbsp;
+<small>email</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="email"                data-endpoint="PATCHapi-v1-profile"
+               value="fran@underpass.app"
+               data-component="body">
+    <br>
+<p>Example: <code>fran@underpass.app</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>password</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="password"                data-endpoint="PATCHapi-v1-profile"
+               value="password123"
+               data-component="body">
+    <br>
+<p>Example: <code>password123</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>password_confirmation</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="password_confirmation"                data-endpoint="PATCHapi-v1-profile"
+               value="password123"
+               data-component="body">
+    <br>
+<p>Example: <code>password123</code></p>
+        </div>
+        </form>
+
                     <h2 id="endpoints-GETapi-v1-events">GET api/v1/events</h2>
 
 <p>
@@ -1076,6 +1268,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
     \"title\": \"Night Moves: Industrial Techno\",
     \"lineup\": \"Amelie Lens, Richie Hawtin, local support\",
     \"description\": \"A deep dive into industrial sounds in an intimate basement.\",
+    \"genres\": [
+        1,
+        2
+    ],
     \"location_name\": \"Input High Fidelity Dance Club\",
     \"neighborhood\": \"Poble Espanyol\",
     \"date\": \"2026-08-15\",
@@ -1105,6 +1301,10 @@ let body = {
     "title": "Night Moves: Industrial Techno",
     "lineup": "Amelie Lens, Richie Hawtin, local support",
     "description": "A deep dive into industrial sounds in an intimate basement.",
+    "genres": [
+        1,
+        2
+    ],
     "location_name": "Input High Fidelity Dance Club",
     "neighborhood": "Poble Espanyol",
     "date": "2026-08-15",
@@ -1248,6 +1448,30 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <p>Example: <code>A deep dive into industrial sounds in an intimate basement.</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
+        <details>
+            <summary style="padding-bottom: 10px;">
+                <b style="line-height: 2;"><code>genres</code></b>&nbsp;&nbsp;
+<small>integer[]</small>&nbsp;
+ &nbsp;
+ &nbsp;
+<br>
+<p>The IDs of the genres.</p>
+            </summary>
+                                                <div style="margin-left: 14px; clear: unset;">
+                        <b style="line-height: 2;"><code>*</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="genres.*"                data-endpoint="POSTapi-v1-events"
+               value="3"
+               data-component="body">
+    <br>
+<p>Each genre ID must exist in the genres table. Example: <code>3</code></p>
+                    </div>
+                                    </details>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>location_name</code></b>&nbsp;&nbsp;
 <small>string</small>&nbsp;
  &nbsp;
@@ -1369,112 +1593,129 @@ You can check the Dev Tools console for debugging information.</code></pre>
         </div>
         </form>
 
-                    <h2 id="endpoints-PUTapi-v1-events--id_id-">PUT api/v1/events/{id_id}</h2>
+                    <h2 id="endpoints-PUTapi-v1-events--id-">Edit own event.</h2>
 
 <p>
 <small class="badge badge-darkred">requires authentication</small>
 </p>
 
+<ul>
+<li>This endpoint allows an organizer to update the details of an event they created.</li>
+<li>@urlParam id int required The ID of the event to edit. Example: 1</li>
+</ul>
 
-
-<span id="example-requests-PUTapi-v1-events--id_id-">
+<span id="example-requests-PUTapi-v1-events--id-">
 <blockquote>Example request:</blockquote>
 
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request PUT \
-    "http://localhost:8000/api/v1/events/1" \
+    "http://localhost:8000/api/v1/events/architecto" \
     --header "Authorization: Bearer {YOUR_AUTH_KEY}" \
-    --header "Content-Type: multipart/form-data" \
+    --header "Content-Type: application/json" \
     --header "Accept: application/json" \
-    --form "title=Night Moves: Rescheduled"\
-    --form "lineup=architecto"\
-    --form "description=Eius et animi quos velit et."\
-    --form "location_name=architecto"\
-    --form "neighborhood=architecto"\
-    --form "date=2052-05-11"\
-    --form "start_time=09:41"\
-    --form "end_time=09:41"\
-    --form "price=30"\
-    --form "is_18_plus=1"\
-    --form "price_info=architecto"\
-    --form "ticket_link=http://bailey.com/"\
-    --form "flyer=@C:\Users\PC\AppData\Local\Temp\php7D87.tmp" </code></pre></div>
+    --data "{
+    \"title\": \"Night Moves: Industrial Techno\",
+    \"lineup\": \"Amelie Lens, Richie Hawtin, local support\",
+    \"description\": \"A deep dive into industrial sounds in an intimate basement.\",
+    \"genres\": [
+        1,
+        2,
+        3
+    ],
+    \"location_name\": \"Input High Fidelity Dance Club\",
+    \"neighborhood\": \"Poble Espanyol\",
+    \"date\": \"2026-08-15\",
+    \"start_time\": \"23:59\",
+    \"end_time\": \"06:00\",
+    \"price\": 25.5,
+    \"is_18_plus\": true,
+    \"price_info\": \"Includes one drink before 1:30 AM\",
+    \"ticket_link\": \"https:\\/\\/ra.co\\/events\\/123456\",
+    \"flyer\": \"(binary)\"
+}"
+</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8000/api/v1/events/1"
+    "http://localhost:8000/api/v1/events/architecto"
 );
 
 const headers = {
     "Authorization": "Bearer {YOUR_AUTH_KEY}",
-    "Content-Type": "multipart/form-data",
+    "Content-Type": "application/json",
     "Accept": "application/json",
 };
 
-const body = new FormData();
-body.append('title', 'Night Moves: Rescheduled');
-body.append('lineup', 'architecto');
-body.append('description', 'Eius et animi quos velit et.');
-body.append('location_name', 'architecto');
-body.append('neighborhood', 'architecto');
-body.append('date', '2052-05-11');
-body.append('start_time', '09:41');
-body.append('end_time', '09:41');
-body.append('price', '30');
-body.append('is_18_plus', '1');
-body.append('price_info', 'architecto');
-body.append('ticket_link', 'http://bailey.com/');
-body.append('flyer', document.querySelector('input[name="flyer"]').files[0]);
+let body = {
+    "title": "Night Moves: Industrial Techno",
+    "lineup": "Amelie Lens, Richie Hawtin, local support",
+    "description": "A deep dive into industrial sounds in an intimate basement.",
+    "genres": [
+        1,
+        2,
+        3
+    ],
+    "location_name": "Input High Fidelity Dance Club",
+    "neighborhood": "Poble Espanyol",
+    "date": "2026-08-15",
+    "start_time": "23:59",
+    "end_time": "06:00",
+    "price": 25.5,
+    "is_18_plus": true,
+    "price_info": "Includes one drink before 1:30 AM",
+    "ticket_link": "https:\/\/ra.co\/events\/123456",
+    "flyer": "(binary)"
+};
 
 fetch(url, {
     method: "PUT",
     headers,
-    body,
+    body: JSON.stringify(body),
 }).then(response =&gt; response.json());</code></pre></div>
 
 </span>
 
-<span id="example-responses-PUTapi-v1-events--id_id-">
+<span id="example-responses-PUTapi-v1-events--id-">
 </span>
-<span id="execution-results-PUTapi-v1-events--id_id-" hidden>
+<span id="execution-results-PUTapi-v1-events--id-" hidden>
     <blockquote>Received response<span
-                id="execution-response-status-PUTapi-v1-events--id_id-"></span>:
+                id="execution-response-status-PUTapi-v1-events--id-"></span>:
     </blockquote>
-    <pre class="json"><code id="execution-response-content-PUTapi-v1-events--id_id-"
+    <pre class="json"><code id="execution-response-content-PUTapi-v1-events--id-"
       data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
 </span>
-<span id="execution-error-PUTapi-v1-events--id_id-" hidden>
+<span id="execution-error-PUTapi-v1-events--id-" hidden>
     <blockquote>Request failed with error:</blockquote>
-    <pre><code id="execution-error-message-PUTapi-v1-events--id_id-">
+    <pre><code id="execution-error-message-PUTapi-v1-events--id-">
 
 Tip: Check that you&#039;re properly connected to the network.
 If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
 You can check the Dev Tools console for debugging information.</code></pre>
 </span>
-<form id="form-PUTapi-v1-events--id_id-" data-method="PUT"
-      data-path="api/v1/events/{id_id}"
+<form id="form-PUTapi-v1-events--id-" data-method="PUT"
+      data-path="api/v1/events/{id}"
       data-authed="1"
-      data-hasfiles="1"
+      data-hasfiles="0"
       data-isarraybody="0"
       autocomplete="off"
-      onsubmit="event.preventDefault(); executeTryOut('PUTapi-v1-events--id_id-', this);">
+      onsubmit="event.preventDefault(); executeTryOut('PUTapi-v1-events--id-', this);">
     <h3>
         Request&nbsp;&nbsp;&nbsp;
                     <button type="button"
                     style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-tryout-PUTapi-v1-events--id_id-"
-                    onclick="tryItOut('PUTapi-v1-events--id_id-');">Try it out ⚡
+                    id="btn-tryout-PUTapi-v1-events--id-"
+                    onclick="tryItOut('PUTapi-v1-events--id-');">Try it out ⚡
             </button>
             <button type="button"
                     style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-canceltryout-PUTapi-v1-events--id_id-"
-                    onclick="cancelTryOut('PUTapi-v1-events--id_id-');" hidden>Cancel 🛑
+                    id="btn-canceltryout-PUTapi-v1-events--id-"
+                    onclick="cancelTryOut('PUTapi-v1-events--id-');" hidden>Cancel 🛑
             </button>&nbsp;&nbsp;
             <button type="submit"
                     style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-executetryout-PUTapi-v1-events--id_id-"
+                    id="btn-executetryout-PUTapi-v1-events--id-"
                     data-initial-text="Send Request 💥"
                     data-loading-text="⏱ Sending..."
                     hidden>Send Request 💥
@@ -1482,7 +1723,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
             </h3>
             <p>
             <small class="badge badge-darkblue">PUT</small>
-            <b><code>api/v1/events/{id_id}</code></b>
+            <b><code>api/v1/events/{id}</code></b>
         </p>
                 <h4 class="fancy-heading-panel"><b>Headers</b></h4>
                                 <div style="padding-left: 28px; clear: unset;">
@@ -1491,7 +1732,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
  &nbsp;
                 <input type="text" style="display: none"
-                              name="Authorization" class="auth-value"               data-endpoint="PUTapi-v1-events--id_id-"
+                              name="Authorization" class="auth-value"               data-endpoint="PUTapi-v1-events--id-"
                value="Bearer {YOUR_AUTH_KEY}"
                data-component="header">
     <br>
@@ -1503,11 +1744,11 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
  &nbsp;
                 <input type="text" style="display: none"
-                              name="Content-Type"                data-endpoint="PUTapi-v1-events--id_id-"
-               value="multipart/form-data"
+                              name="Content-Type"                data-endpoint="PUTapi-v1-events--id-"
+               value="application/json"
                data-component="header">
     <br>
-<p>Example: <code>multipart/form-data</code></p>
+<p>Example: <code>application/json</code></p>
             </div>
                                 <div style="padding-left: 28px; clear: unset;">
                 <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
@@ -1515,7 +1756,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
  &nbsp;
                 <input type="text" style="display: none"
-                              name="Accept"                data-endpoint="PUTapi-v1-events--id_id-"
+                              name="Accept"                data-endpoint="PUTapi-v1-events--id-"
                value="application/json"
                data-component="header">
     <br>
@@ -1523,16 +1764,16 @@ You can check the Dev Tools console for debugging information.</code></pre>
             </div>
                         <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
                     <div style="padding-left: 28px; clear: unset;">
-                <b style="line-height: 2;"><code>id_id</code></b>&nbsp;&nbsp;
-<small>integer</small>&nbsp;
+                <b style="line-height: 2;"><code>id</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
  &nbsp;
  &nbsp;
-                <input type="number" style="display: none"
-               step="any"               name="id_id"                data-endpoint="PUTapi-v1-events--id_id-"
-               value="1"
+                <input type="text" style="display: none"
+                              name="id"                data-endpoint="PUTapi-v1-events--id-"
+               value="architecto"
                data-component="url">
     <br>
-<p>The ID of the id. Example: <code>1</code></p>
+<p>The ID of the event. Example: <code>architecto</code></p>
             </div>
                             <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
         <div style=" padding-left: 28px;  clear: unset;">
@@ -1541,11 +1782,11 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <i>optional</i> &nbsp;
  &nbsp;
                 <input type="text" style="display: none"
-                              name="title"                data-endpoint="PUTapi-v1-events--id_id-"
-               value="Night Moves: Rescheduled"
+                              name="title"                data-endpoint="PUTapi-v1-events--id-"
+               value="Night Moves: Industrial Techno"
                data-component="body">
     <br>
-<p>Example: <code>Night Moves: Rescheduled</code></p>
+<p>Example: <code>Night Moves: Industrial Techno</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>lineup</code></b>&nbsp;&nbsp;
@@ -1553,11 +1794,11 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <i>optional</i> &nbsp;
  &nbsp;
                 <input type="text" style="display: none"
-                              name="lineup"                data-endpoint="PUTapi-v1-events--id_id-"
-               value="architecto"
+                              name="lineup"                data-endpoint="PUTapi-v1-events--id-"
+               value="Amelie Lens, Richie Hawtin, local support"
                data-component="body">
     <br>
-<p>Example: <code>architecto</code></p>
+<p>Example: <code>Amelie Lens, Richie Hawtin, local support</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>description</code></b>&nbsp;&nbsp;
@@ -1565,11 +1806,35 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <i>optional</i> &nbsp;
  &nbsp;
                 <input type="text" style="display: none"
-                              name="description"                data-endpoint="PUTapi-v1-events--id_id-"
-               value="Eius et animi quos velit et."
+                              name="description"                data-endpoint="PUTapi-v1-events--id-"
+               value="A deep dive into industrial sounds in an intimate basement."
                data-component="body">
     <br>
-<p>Example: <code>Eius et animi quos velit et.</code></p>
+<p>Example: <code>A deep dive into industrial sounds in an intimate basement.</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+        <details>
+            <summary style="padding-bottom: 10px;">
+                <b style="line-height: 2;"><code>genres</code></b>&nbsp;&nbsp;
+<small>string[]</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+<br>
+<p>An array of genre IDs associated with the event.</p>
+            </summary>
+                                                <div style="margin-left: 14px; clear: unset;">
+                        <b style="line-height: 2;"><code>*</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="genres.*"                data-endpoint="PUTapi-v1-events--id-"
+               value="1"
+               data-component="body">
+    <br>
+<p>Each genre ID must exist in the genres table. Example: <code>1</code></p>
+                    </div>
+                                    </details>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>location_name</code></b>&nbsp;&nbsp;
@@ -1577,11 +1842,11 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <i>optional</i> &nbsp;
  &nbsp;
                 <input type="text" style="display: none"
-                              name="location_name"                data-endpoint="PUTapi-v1-events--id_id-"
-               value="architecto"
+                              name="location_name"                data-endpoint="PUTapi-v1-events--id-"
+               value="Input High Fidelity Dance Club"
                data-component="body">
     <br>
-<p>Example: <code>architecto</code></p>
+<p>Example: <code>Input High Fidelity Dance Club</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>neighborhood</code></b>&nbsp;&nbsp;
@@ -1589,11 +1854,11 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <i>optional</i> &nbsp;
  &nbsp;
                 <input type="text" style="display: none"
-                              name="neighborhood"                data-endpoint="PUTapi-v1-events--id_id-"
-               value="architecto"
+                              name="neighborhood"                data-endpoint="PUTapi-v1-events--id-"
+               value="Poble Espanyol"
                data-component="body">
     <br>
-<p>Example: <code>architecto</code></p>
+<p>Example: <code>Poble Espanyol</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>date</code></b>&nbsp;&nbsp;
@@ -1601,11 +1866,11 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <i>optional</i> &nbsp;
  &nbsp;
                 <input type="text" style="display: none"
-                              name="date"                data-endpoint="PUTapi-v1-events--id_id-"
-               value="2052-05-11"
+                              name="date"                data-endpoint="PUTapi-v1-events--id-"
+               value="2026-08-15"
                data-component="body">
     <br>
-<p>Must be a valid date. Must be a date after or equal to <code>today</code>. Example: <code>2052-05-11</code></p>
+<p>Example: <code>2026-08-15</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>start_time</code></b>&nbsp;&nbsp;
@@ -1613,11 +1878,11 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <i>optional</i> &nbsp;
  &nbsp;
                 <input type="text" style="display: none"
-                              name="start_time"                data-endpoint="PUTapi-v1-events--id_id-"
-               value="09:41"
+                              name="start_time"                data-endpoint="PUTapi-v1-events--id-"
+               value="23:59"
                data-component="body">
     <br>
-<p>Must be a valid date in the format <code>H:i</code>. Example: <code>09:41</code></p>
+<p>Example: <code>23:59</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>end_time</code></b>&nbsp;&nbsp;
@@ -1625,11 +1890,11 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <i>optional</i> &nbsp;
  &nbsp;
                 <input type="text" style="display: none"
-                              name="end_time"                data-endpoint="PUTapi-v1-events--id_id-"
-               value="09:41"
+                              name="end_time"                data-endpoint="PUTapi-v1-events--id-"
+               value="06:00"
                data-component="body">
     <br>
-<p>Must be a valid date in the format <code>H:i</code>. Example: <code>09:41</code></p>
+<p>Example: <code>06:00</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>price</code></b>&nbsp;&nbsp;
@@ -1637,28 +1902,28 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <i>optional</i> &nbsp;
  &nbsp;
                 <input type="number" style="display: none"
-               step="any"               name="price"                data-endpoint="PUTapi-v1-events--id_id-"
-               value="30"
+               step="any"               name="price"                data-endpoint="PUTapi-v1-events--id-"
+               value="25.5"
                data-component="body">
     <br>
-<p>Example: <code>30</code></p>
+<p>Example: <code>25.5</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>is_18_plus</code></b>&nbsp;&nbsp;
 <small>boolean</small>&nbsp;
 <i>optional</i> &nbsp;
  &nbsp;
-                <label data-endpoint="PUTapi-v1-events--id_id-" style="display: none">
+                <label data-endpoint="PUTapi-v1-events--id-" style="display: none">
             <input type="radio" name="is_18_plus"
                    value="true"
-                   data-endpoint="PUTapi-v1-events--id_id-"
+                   data-endpoint="PUTapi-v1-events--id-"
                    data-component="body"             >
             <code>true</code>
         </label>
-        <label data-endpoint="PUTapi-v1-events--id_id-" style="display: none">
+        <label data-endpoint="PUTapi-v1-events--id-" style="display: none">
             <input type="radio" name="is_18_plus"
                    value="false"
-                   data-endpoint="PUTapi-v1-events--id_id-"
+                   data-endpoint="PUTapi-v1-events--id-"
                    data-component="body"             >
             <code>false</code>
         </label>
@@ -1671,35 +1936,35 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <i>optional</i> &nbsp;
  &nbsp;
                 <input type="text" style="display: none"
-                              name="price_info"                data-endpoint="PUTapi-v1-events--id_id-"
-               value="architecto"
+                              name="price_info"                data-endpoint="PUTapi-v1-events--id-"
+               value="Includes one drink before 1:30 AM"
                data-component="body">
     <br>
-<p>Example: <code>architecto</code></p>
+<p>Example: <code>Includes one drink before 1:30 AM</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>ticket_link</code></b>&nbsp;&nbsp;
-<small>string</small>&nbsp;
+<small>url</small>&nbsp;
 <i>optional</i> &nbsp;
  &nbsp;
                 <input type="text" style="display: none"
-                              name="ticket_link"                data-endpoint="PUTapi-v1-events--id_id-"
-               value="http://bailey.com/"
+                              name="ticket_link"                data-endpoint="PUTapi-v1-events--id-"
+               value="https://ra.co/events/123456"
                data-component="body">
     <br>
-<p>Must be a valid URL. Example: <code>http://bailey.com/</code></p>
+<p>Example: <code>https://ra.co/events/123456</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>flyer</code></b>&nbsp;&nbsp;
-<small>file</small>&nbsp;
+<small>image</small>&nbsp;
 <i>optional</i> &nbsp;
  &nbsp;
-                <input type="file" style="display: none"
-                              name="flyer"                data-endpoint="PUTapi-v1-events--id_id-"
-               value=""
+                <input type="text" style="display: none"
+                              name="flyer"                data-endpoint="PUTapi-v1-events--id-"
+               value="(binary)"
                data-component="body">
     <br>
-<p>Must be an image. Must not be greater than 2048 kilobytes. Example: <code>C:\Users\PC\AppData\Local\Temp\php7D87.tmp</code></p>
+<p>The event poster. Example: <code>(binary)</code></p>
         </div>
         </form>
 
@@ -1717,7 +1982,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request DELETE \
-    "http://localhost:8000/api/v1/events/1" \
+    "http://localhost:8000/api/v1/events/architecto" \
     --header "Authorization: Bearer {YOUR_AUTH_KEY}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
@@ -1725,7 +1990,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8000/api/v1/events/1"
+    "http://localhost:8000/api/v1/events/architecto"
 );
 
 const headers = {
@@ -1830,15 +2095,15 @@ You can check the Dev Tools console for debugging information.</code></pre>
                         <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
                     <div style="padding-left: 28px; clear: unset;">
                 <b style="line-height: 2;"><code>id</code></b>&nbsp;&nbsp;
-<small>integer</small>&nbsp;
+<small>string</small>&nbsp;
  &nbsp;
  &nbsp;
-                <input type="number" style="display: none"
-               step="any"               name="id"                data-endpoint="DELETEapi-v1-events--id-"
-               value="1"
+                <input type="text" style="display: none"
+                              name="id"                data-endpoint="DELETEapi-v1-events--id-"
+               value="architecto"
                data-component="url">
     <br>
-<p>The ID of the event. Example: <code>1</code></p>
+<p>The ID of the event. Example: <code>architecto</code></p>
             </div>
                     </form>
 
@@ -1856,7 +2121,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost:8000/api/v1/events/1" \
+    --get "http://localhost:8000/api/v1/events/architecto" \
     --header "Authorization: Bearer {YOUR_AUTH_KEY}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
@@ -1864,7 +2129,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8000/api/v1/events/1"
+    "http://localhost:8000/api/v1/events/architecto"
 );
 
 const headers = {
@@ -1985,15 +2250,15 @@ You can check the Dev Tools console for debugging information.</code></pre>
                         <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
                     <div style="padding-left: 28px; clear: unset;">
                 <b style="line-height: 2;"><code>id</code></b>&nbsp;&nbsp;
-<small>integer</small>&nbsp;
+<small>string</small>&nbsp;
  &nbsp;
  &nbsp;
-                <input type="number" style="display: none"
-               step="any"               name="id"                data-endpoint="GETapi-v1-events--id-"
-               value="1"
+                <input type="text" style="display: none"
+                              name="id"                data-endpoint="GETapi-v1-events--id-"
+               value="architecto"
                data-component="url">
     <br>
-<p>The ID of the event. Example: <code>1</code></p>
+<p>The ID of the event. Example: <code>architecto</code></p>
             </div>
                     </form>
 
@@ -2166,7 +2431,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request POST \
-    "http://localhost:8000/api/v1/events/1/vouches" \
+    "http://localhost:8000/api/v1/events/architecto/vouches" \
     --header "Authorization: Bearer {YOUR_AUTH_KEY}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
@@ -2174,7 +2439,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8000/api/v1/events/1/vouches"
+    "http://localhost:8000/api/v1/events/architecto/vouches"
 );
 
 const headers = {
@@ -2279,15 +2544,15 @@ You can check the Dev Tools console for debugging information.</code></pre>
                         <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
                     <div style="padding-left: 28px; clear: unset;">
                 <b style="line-height: 2;"><code>id</code></b>&nbsp;&nbsp;
-<small>integer</small>&nbsp;
+<small>string</small>&nbsp;
  &nbsp;
  &nbsp;
-                <input type="number" style="display: none"
-               step="any"               name="id"                data-endpoint="POSTapi-v1-events--id--vouches"
-               value="1"
+                <input type="text" style="display: none"
+                              name="id"                data-endpoint="POSTapi-v1-events--id--vouches"
+               value="architecto"
                data-component="url">
     <br>
-<p>The ID of the event. Example: <code>1</code></p>
+<p>The ID of the event. Example: <code>architecto</code></p>
             </div>
                     </form>
 
@@ -2305,7 +2570,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request POST \
-    "http://localhost:8000/api/v1/events/1/vibechecks" \
+    "http://localhost:8000/api/v1/events/architecto/vibechecks" \
     --header "Authorization: Bearer {YOUR_AUTH_KEY}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
@@ -2319,7 +2584,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8000/api/v1/events/1/vibechecks"
+    "http://localhost:8000/api/v1/events/architecto/vibechecks"
 );
 
 const headers = {
@@ -2430,15 +2695,15 @@ You can check the Dev Tools console for debugging information.</code></pre>
                         <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
                     <div style="padding-left: 28px; clear: unset;">
                 <b style="line-height: 2;"><code>id</code></b>&nbsp;&nbsp;
-<small>integer</small>&nbsp;
+<small>string</small>&nbsp;
  &nbsp;
  &nbsp;
-                <input type="number" style="display: none"
-               step="any"               name="id"                data-endpoint="POSTapi-v1-events--id--vibechecks"
-               value="1"
+                <input type="text" style="display: none"
+                              name="id"                data-endpoint="POSTapi-v1-events--id--vibechecks"
+               value="architecto"
                data-component="url">
     <br>
-<p>The ID of the event. Example: <code>1</code></p>
+<p>The ID of the event. Example: <code>architecto</code></p>
             </div>
                             <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
         <div style=" padding-left: 28px;  clear: unset;">
@@ -2493,7 +2758,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost:8000/api/v1/events/1/vibechecks" \
+    --get "http://localhost:8000/api/v1/events/architecto/vibechecks" \
     --header "Authorization: Bearer {YOUR_AUTH_KEY}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
@@ -2501,7 +2766,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8000/api/v1/events/1/vibechecks"
+    "http://localhost:8000/api/v1/events/architecto/vibechecks"
 );
 
 const headers = {
@@ -2622,15 +2887,15 @@ You can check the Dev Tools console for debugging information.</code></pre>
                         <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
                     <div style="padding-left: 28px; clear: unset;">
                 <b style="line-height: 2;"><code>id</code></b>&nbsp;&nbsp;
-<small>integer</small>&nbsp;
+<small>string</small>&nbsp;
  &nbsp;
  &nbsp;
-                <input type="number" style="display: none"
-               step="any"               name="id"                data-endpoint="GETapi-v1-events--id--vibechecks"
-               value="1"
+                <input type="text" style="display: none"
+                              name="id"                data-endpoint="GETapi-v1-events--id--vibechecks"
+               value="architecto"
                data-component="url">
     <br>
-<p>The ID of the event. Example: <code>1</code></p>
+<p>The ID of the event. Example: <code>architecto</code></p>
             </div>
                     </form>
 
@@ -3908,7 +4173,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost:8000/api/v1/events/1/vouches" \
+    --get "http://localhost:8000/api/v1/events/architecto/vouches" \
     --header "Authorization: Bearer {YOUR_AUTH_KEY}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
@@ -3916,7 +4181,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost:8000/api/v1/events/1/vouches"
+    "http://localhost:8000/api/v1/events/architecto/vouches"
 );
 
 const headers = {
@@ -4037,15 +4302,15 @@ You can check the Dev Tools console for debugging information.</code></pre>
                         <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
                     <div style="padding-left: 28px; clear: unset;">
                 <b style="line-height: 2;"><code>id</code></b>&nbsp;&nbsp;
-<small>integer</small>&nbsp;
+<small>string</small>&nbsp;
  &nbsp;
  &nbsp;
-                <input type="number" style="display: none"
-               step="any"               name="id"                data-endpoint="GETapi-v1-events--id--vouches"
-               value="1"
+                <input type="text" style="display: none"
+                              name="id"                data-endpoint="GETapi-v1-events--id--vouches"
+               value="architecto"
                data-component="url">
     <br>
-<p>The ID of the event. Example: <code>1</code></p>
+<p>The ID of the event. Example: <code>architecto</code></p>
             </div>
                     </form>
 

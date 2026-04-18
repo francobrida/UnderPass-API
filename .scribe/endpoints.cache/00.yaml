@@ -30,7 +30,7 @@ endpoints:
         custom: []
         name: email
         description: ''
-        required: false
+        required: true
         example: admin@underpass.app
         type: email
         enumValues: []
@@ -41,7 +41,7 @@ endpoints:
         custom: []
         name: password
         description: ''
-        required: false
+        required: true
         example: password123
         type: string
         enumValues: []
@@ -266,6 +266,89 @@ endpoints:
   -
     custom: []
     httpMethods:
+      - PATCH
+    uri: api/v1/profile
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      name:
+        custom: []
+        name: name
+        description: ''
+        required: false
+        example: 'Lolo Techno'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      email:
+        custom: []
+        name: email
+        description: ''
+        required: false
+        example: fran@underpass.app
+        type: email
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      password:
+        custom: []
+        name: password
+        description: ''
+        required: false
+        example: password123
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      password_confirmation:
+        custom: []
+        name: password_confirmation
+        description: ''
+        required: false
+        example: password123
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      name: 'Lolo Techno'
+      email: fran@underpass.app
+      password: password123
+      password_confirmation: password123
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
       - GET
     uri: api/v1/events
     metadata:
@@ -360,6 +443,19 @@ endpoints:
         required: true
         example: 'A deep dive into industrial sounds in an intimate basement.'
         type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      genres:
+        custom: []
+        name: genres
+        description: 'The IDs of the genres.'
+        required: true
+        example:
+          - 1
+          - 2
+        type: 'integer[]'
         enumValues: []
         exampleWasSpecified: true
         nullable: false
@@ -474,10 +570,24 @@ endpoints:
         exampleWasSpecified: true
         nullable: true
         deprecated: false
+      'genres.*':
+        custom: []
+        name: 'genres.*'
+        description: 'Each genre ID must exist in the genres table.'
+        required: false
+        example: 3
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
     cleanBodyParameters:
       title: 'Night Moves: Industrial Techno'
       lineup: 'Amelie Lens, Richie Hawtin, local support'
       description: 'A deep dive into industrial sounds in an intimate basement.'
+      genres:
+        - 1
+        - 2
       location_name: 'Input High Fidelity Dance Club'
       neighborhood: 'Poble Espanyol'
       date: '2026-08-15'
@@ -502,35 +612,37 @@ endpoints:
     custom: []
     httpMethods:
       - PUT
-    uri: 'api/v1/events/{id_id}'
+    uri: 'api/v1/events/{id}'
     metadata:
       custom: []
       groupName: Endpoints
       groupDescription: ''
       subgroup: ''
       subgroupDescription: ''
-      title: ''
-      description: ''
+      title: 'Edit own event.'
+      description: |-
+        * This endpoint allows an organizer to update the details of an event they created.
+        * @urlParam id int required The ID of the event to edit. Example: 1
       authenticated: true
       deprecated: false
     headers:
       Authorization: 'Bearer {YOUR_AUTH_KEY}'
-      Content-Type: multipart/form-data
+      Content-Type: application/json
       Accept: application/json
     urlParameters:
-      id_id:
+      id:
         custom: []
-        name: id_id
-        description: 'The ID of the id.'
+        name: id
+        description: 'The ID of the event.'
         required: true
-        example: 1
-        type: integer
+        example: architecto
+        type: string
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      id_id: 1
+      id: architecto
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters:
@@ -539,7 +651,7 @@ endpoints:
         name: title
         description: ''
         required: false
-        example: 'Night Moves: Rescheduled'
+        example: 'Night Moves: Industrial Techno'
         type: string
         enumValues: []
         exampleWasSpecified: true
@@ -550,10 +662,10 @@ endpoints:
         name: lineup
         description: ''
         required: false
-        example: architecto
+        example: 'Amelie Lens, Richie Hawtin, local support'
         type: string
         enumValues: []
-        exampleWasSpecified: false
+        exampleWasSpecified: true
         nullable: false
         deprecated: false
       description:
@@ -561,10 +673,24 @@ endpoints:
         name: description
         description: ''
         required: false
-        example: 'Eius et animi quos velit et.'
+        example: 'A deep dive into industrial sounds in an intimate basement.'
         type: string
         enumValues: []
-        exampleWasSpecified: false
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      genres:
+        custom: []
+        name: genres
+        description: 'An array of genre IDs associated with the event.'
+        required: false
+        example:
+          - 1
+          - 2
+          - 3
+        type: 'string[]'
+        enumValues: []
+        exampleWasSpecified: true
         nullable: false
         deprecated: false
       location_name:
@@ -572,10 +698,10 @@ endpoints:
         name: location_name
         description: ''
         required: false
-        example: architecto
+        example: 'Input High Fidelity Dance Club'
         type: string
         enumValues: []
-        exampleWasSpecified: false
+        exampleWasSpecified: true
         nullable: false
         deprecated: false
       neighborhood:
@@ -583,43 +709,43 @@ endpoints:
         name: neighborhood
         description: ''
         required: false
-        example: architecto
+        example: 'Poble Espanyol'
         type: string
         enumValues: []
-        exampleWasSpecified: false
+        exampleWasSpecified: true
         nullable: false
         deprecated: false
       date:
         custom: []
         name: date
-        description: 'Must be a valid date. Must be a date after or equal to <code>today</code>.'
+        description: ''
         required: false
-        example: '2052-05-11'
+        example: '2026-08-15'
         type: string
         enumValues: []
-        exampleWasSpecified: false
+        exampleWasSpecified: true
         nullable: false
         deprecated: false
       start_time:
         custom: []
         name: start_time
-        description: 'Must be a valid date in the format <code>H:i</code>.'
+        description: ''
         required: false
-        example: '09:41'
+        example: '23:59'
         type: string
         enumValues: []
-        exampleWasSpecified: false
+        exampleWasSpecified: true
         nullable: false
         deprecated: false
       end_time:
         custom: []
         name: end_time
-        description: 'Must be a valid date in the format <code>H:i</code>.'
+        description: ''
         required: false
-        example: '09:41'
+        example: '06:00'
         type: string
         enumValues: []
-        exampleWasSpecified: false
+        exampleWasSpecified: true
         nullable: false
         deprecated: false
       price:
@@ -627,7 +753,7 @@ endpoints:
         name: price
         description: ''
         required: false
-        example: 30.0
+        example: 25.5
         type: number
         enumValues: []
         exampleWasSpecified: true
@@ -649,49 +775,64 @@ endpoints:
         name: price_info
         description: ''
         required: false
-        example: architecto
+        example: 'Includes one drink before 1:30 AM'
         type: string
         enumValues: []
-        exampleWasSpecified: false
+        exampleWasSpecified: true
         nullable: false
         deprecated: false
       ticket_link:
         custom: []
         name: ticket_link
-        description: 'Must be a valid URL.'
+        description: ''
         required: false
-        example: 'http://bailey.com/'
-        type: string
+        example: 'https://ra.co/events/123456'
+        type: url
         enumValues: []
-        exampleWasSpecified: false
+        exampleWasSpecified: true
         nullable: false
         deprecated: false
       flyer:
         custom: []
         name: flyer
-        description: 'Must be an image. Must not be greater than 2048 kilobytes.'
+        description: 'The event poster.'
         required: false
-        example: null
-        type: file
+        example: (binary)
+        type: image
         enumValues: []
-        exampleWasSpecified: false
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      'genres.*':
+        custom: []
+        name: 'genres.*'
+        description: 'Each genre ID must exist in the genres table.'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
         nullable: false
         deprecated: false
     cleanBodyParameters:
-      title: 'Night Moves: Rescheduled'
-      lineup: architecto
-      description: 'Eius et animi quos velit et.'
-      location_name: architecto
-      neighborhood: architecto
-      date: '2052-05-11'
-      start_time: '09:41'
-      end_time: '09:41'
-      price: 30.0
+      title: 'Night Moves: Industrial Techno'
+      lineup: 'Amelie Lens, Richie Hawtin, local support'
+      description: 'A deep dive into industrial sounds in an intimate basement.'
+      genres:
+        - 1
+        - 2
+        - 3
+      location_name: 'Input High Fidelity Dance Club'
+      neighborhood: 'Poble Espanyol'
+      date: '2026-08-15'
+      start_time: '23:59'
+      end_time: '06:00'
+      price: 25.5
       is_18_plus: true
-      price_info: architecto
-      ticket_link: 'http://bailey.com/'
-    fileParameters:
-      flyer: null
+      price_info: 'Includes one drink before 1:30 AM'
+      ticket_link: 'https://ra.co/events/123456'
+      flyer: (binary)
+    fileParameters: []
     responses: []
     responseFields: []
     auth:
@@ -726,14 +867,14 @@ endpoints:
         name: id
         description: 'The ID of the event.'
         required: true
-        example: 1
-        type: integer
+        example: architecto
+        type: string
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      id: 1
+      id: architecto
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
@@ -773,14 +914,14 @@ endpoints:
         name: id
         description: 'The ID of the event.'
         required: true
-        example: 1
-        type: integer
+        example: architecto
+        type: string
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      id: 1
+      id: architecto
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
@@ -885,14 +1026,14 @@ endpoints:
         name: id
         description: 'The ID of the event.'
         required: true
-        example: 1
-        type: integer
+        example: architecto
+        type: string
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      id: 1
+      id: architecto
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
@@ -932,14 +1073,14 @@ endpoints:
         name: id
         description: 'The ID of the event.'
         required: true
-        example: 1
-        type: integer
+        example: architecto
+        type: string
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      id: 1
+      id: architecto
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters:
@@ -1015,14 +1156,14 @@ endpoints:
         name: id
         description: 'The ID of the event.'
         required: true
-        example: 1
-        type: integer
+        example: architecto
+        type: string
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      id: 1
+      id: architecto
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
@@ -1534,14 +1675,14 @@ endpoints:
         name: id
         description: 'The ID of the event.'
         required: true
-        example: 1
-        type: integer
+        example: architecto
+        type: string
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      id: 1
+      id: architecto
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
