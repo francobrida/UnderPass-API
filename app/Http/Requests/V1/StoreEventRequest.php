@@ -22,8 +22,8 @@ class StoreEventRequest extends FormRequest
             'location_name' => 'required|string',
             'neighborhood' => 'required|string',
             'date' => 'required|date|after_or_equal:today',
-            'start_time' => 'required',
-            'end_time' => 'required',
+            'start_time' => ['required', 'date_format:H:i'],
+            'end_time' => ['required', 'date_format:H:i'],
             'price' => 'required|numeric',
             'is_18_plus' => 'required|boolean',
         ];

@@ -23,8 +23,8 @@ class UpdateEventRequest extends FormRequest
             'location_name' => 'sometimes|string',
             'neighborhood'  => 'sometimes|string',
             'date'          => 'sometimes|date|after_or_equal:today',
-            'start_time'    => 'sometimes',
-            'end_time'      => 'sometimes',
+            'start_time'    => 'sometimes|date_format:H:i',
+            'end_time'      => 'sometimes|date_format:H:i',
             'price'         => 'sometimes|numeric',
             'is_18_plus'    => 'sometimes|boolean',
         ];
