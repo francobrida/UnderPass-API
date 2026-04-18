@@ -26,7 +26,9 @@ class UpdateEventRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        $event = $this->route('id');
+        $eventId = $this->route('id') ?? $this->route('event');
+
+        $event = $eventId instanceof \App\Models\Event ? $eventId : \App\Models\Event::findOrFail($eventId);
 
         return $this->user()->id === $event->user_id || $this->user()->role === \App\Enums\UserRole::ADMIN;
     }

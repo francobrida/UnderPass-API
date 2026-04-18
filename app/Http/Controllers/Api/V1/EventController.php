@@ -51,18 +51,18 @@ class EventController extends Controller
      */
     public function update(UpdateEventRequest $request, $id): JsonResponse
     {
-        $event = $id;
+        $event = Event::findOrFail($id);
 
         $updatedEvent = $this->eventService->update(
-            $request->user(), 
-            $event, 
-            $request->validated(), 
-            $request->file('flyer')
+            $request->user(),      // the user
+            $event,               // the model Event
+            $request->validated(), // validated data
+            $request->file('flyer') // file (optional)
         );
 
         return response()->json([
             'message' => 'Event updated successfully',
-            'data'    => $updatedEvent
+            'data' => new EventResource($updatedEvent)
         ], 200);
     }
 
