@@ -44,7 +44,7 @@ class AuthController extends Controller
     /**
      * Register a new user.
      * @unauthenticated
-     * @bodyParam password_confirmation string required Same pass as above. Example: -0pBNvYgxw
+     * @bodyParam password_confirmation string required Same pass as above. Example: secret1234
      */
     public function register(RegisterRequest $request): JsonResponse
     {

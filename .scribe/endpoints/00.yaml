@@ -27,28 +27,28 @@ endpoints:
       email:
         custom: []
         name: email
-        description: 'Must be a valid email address.'
-        required: true
-        example: gbailey@example.net
-        type: string
+        description: ''
+        required: false
+        example: admin@underpass.app
+        type: email
         enumValues: []
-        exampleWasSpecified: false
+        exampleWasSpecified: true
         nullable: false
         deprecated: false
       password:
         custom: []
         name: password
         description: ''
-        required: true
-        example: '|]|{+-'
+        required: false
+        example: password123
         type: string
         enumValues: []
-        exampleWasSpecified: false
+        exampleWasSpecified: true
         nullable: false
         deprecated: false
     cleanBodyParameters:
-      email: gbailey@example.net
-      password: '|]|{+-'
+      email: admin@underpass.app
+      password: password123
     fileParameters: []
     responses: []
     responseFields: []
@@ -82,40 +82,40 @@ endpoints:
       name:
         custom: []
         name: name
-        description: 'Must not be greater than 255 characters.'
+        description: ''
         required: true
-        example: b
+        example: 'Lolo Techno'
         type: string
         enumValues: []
-        exampleWasSpecified: false
+        exampleWasSpecified: true
         nullable: false
         deprecated: false
       email:
         custom: []
         name: email
-        description: 'Must be a valid email address. Must not be greater than 255 characters.'
+        description: ''
         required: true
-        example: zbailey@example.net
-        type: string
+        example: fran@underpass.app
+        type: email
         enumValues: []
-        exampleWasSpecified: false
+        exampleWasSpecified: true
         nullable: false
         deprecated: false
       password:
         custom: []
         name: password
-        description: 'Must be at least 8 characters.'
+        description: ''
         required: true
-        example: '-0pBNvYgxw'
+        example: password123
         type: string
         enumValues: []
-        exampleWasSpecified: false
+        exampleWasSpecified: true
         nullable: false
         deprecated: false
       password_confirmation:
         custom: []
         name: password_confirmation
-        description: 'El mismo password de arriba.'
+        description: ''
         required: true
         example: password123
         type: string
@@ -124,9 +124,9 @@ endpoints:
         nullable: false
         deprecated: false
     cleanBodyParameters:
-      name: b
-      email: zbailey@example.net
-      password: '-0pBNvYgxw'
+      name: 'Lolo Techno'
+      email: fran@underpass.app
+      password: password123
       password_confirmation: password123
     fileParameters: []
     responses: []
@@ -332,12 +332,12 @@ endpoints:
       title:
         custom: []
         name: title
-        description: 'Must not be greater than 255 characters.'
+        description: ''
         required: true
-        example: b
+        example: 'Night Moves: Industrial Techno'
         type: string
         enumValues: []
-        exampleWasSpecified: false
+        exampleWasSpecified: true
         nullable: false
         deprecated: false
       lineup:
@@ -345,10 +345,10 @@ endpoints:
         name: lineup
         description: ''
         required: true
-        example: architecto
+        example: 'Amelie Lens, Richie Hawtin, local support'
         type: string
         enumValues: []
-        exampleWasSpecified: false
+        exampleWasSpecified: true
         nullable: false
         deprecated: false
       description:
@@ -356,10 +356,10 @@ endpoints:
         name: description
         description: ''
         required: true
-        example: 'Eius et animi quos velit et.'
+        example: 'A deep dive into industrial sounds in an intimate basement.'
         type: string
         enumValues: []
-        exampleWasSpecified: false
+        exampleWasSpecified: true
         nullable: false
         deprecated: false
       location_name:
@@ -367,10 +367,10 @@ endpoints:
         name: location_name
         description: ''
         required: true
-        example: architecto
+        example: 'Input High Fidelity Dance Club'
         type: string
         enumValues: []
-        exampleWasSpecified: false
+        exampleWasSpecified: true
         nullable: false
         deprecated: false
       neighborhood:
@@ -378,21 +378,21 @@ endpoints:
         name: neighborhood
         description: ''
         required: true
-        example: architecto
+        example: 'Poble Espanyol'
         type: string
         enumValues: []
-        exampleWasSpecified: false
+        exampleWasSpecified: true
         nullable: false
         deprecated: false
       date:
         custom: []
         name: date
-        description: 'Must be a valid date. Must be a date after or equal to <code>today</code>.'
+        description: ''
         required: true
-        example: '2052-05-09'
+        example: '2026-08-15'
         type: string
         enumValues: []
-        exampleWasSpecified: false
+        exampleWasSpecified: true
         nullable: false
         deprecated: false
       start_time:
@@ -400,10 +400,10 @@ endpoints:
         name: start_time
         description: ''
         required: true
-        example: architecto
+        example: '23:59'
         type: string
         enumValues: []
-        exampleWasSpecified: false
+        exampleWasSpecified: true
         nullable: false
         deprecated: false
       end_time:
@@ -411,10 +411,10 @@ endpoints:
         name: end_time
         description: ''
         required: true
-        example: architecto
+        example: '06:00'
         type: string
         enumValues: []
-        exampleWasSpecified: false
+        exampleWasSpecified: true
         nullable: false
         deprecated: false
       price:
@@ -422,34 +422,70 @@ endpoints:
         name: price
         description: ''
         required: true
-        example: 4326.41688
+        example: 25.5
         type: number
         enumValues: []
-        exampleWasSpecified: false
+        exampleWasSpecified: true
         nullable: false
         deprecated: false
       is_18_plus:
         custom: []
         name: is_18_plus
-        description: ''
-        required: true
-        example: false
-        type: boolean
+        description: boolean
+        required: false
+        example: 'true'
+        type: required
         enumValues: []
-        exampleWasSpecified: false
+        exampleWasSpecified: true
         nullable: false
         deprecated: false
+      price_info:
+        custom: []
+        name: price_info
+        description: ''
+        required: false
+        example: 'Includes one drink before 1:30 AM'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: true
+        deprecated: false
+      ticket_link:
+        custom: []
+        name: ticket_link
+        description: ''
+        required: false
+        example: 'https://ra.co/events/123456'
+        type: url
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: true
+        deprecated: false
+      flyer:
+        custom: []
+        name: flyer
+        description: 'The event poster.'
+        required: false
+        example: (binary)
+        type: image
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: true
+        deprecated: false
     cleanBodyParameters:
-      title: b
-      lineup: architecto
-      description: 'Eius et animi quos velit et.'
-      location_name: architecto
-      neighborhood: architecto
-      date: '2052-05-09'
-      start_time: architecto
-      end_time: architecto
-      price: 4326.41688
-      is_18_plus: false
+      title: 'Night Moves: Industrial Techno'
+      lineup: 'Amelie Lens, Richie Hawtin, local support'
+      description: 'A deep dive into industrial sounds in an intimate basement.'
+      location_name: 'Input High Fidelity Dance Club'
+      neighborhood: 'Poble Espanyol'
+      date: '2026-08-15'
+      start_time: '23:59'
+      end_time: '06:00'
+      price: 25.5
+      is_18_plus: 'true'
+      price_info: 'Includes one drink before 1:30 AM'
+      ticket_link: 'https://ra.co/events/123456'
+      flyer: (binary)
     fileParameters: []
     responses: []
     responseFields: []
@@ -477,7 +513,7 @@ endpoints:
       deprecated: false
     headers:
       Authorization: 'Bearer {YOUR_AUTH_KEY}'
-      Content-Type: application/json
+      Content-Type: multipart/form-data
       Accept: application/json
     urlParameters:
       id_id:
@@ -485,26 +521,26 @@ endpoints:
         name: id_id
         description: 'The ID of the id.'
         required: true
-        example: 16
+        example: 1
         type: integer
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      id_id: 16
+      id_id: 1
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters:
       title:
         custom: []
         name: title
-        description: 'Must not be greater than 255 characters.'
+        description: ''
         required: false
-        example: b
+        example: 'Night Moves: Rescheduled'
         type: string
         enumValues: []
-        exampleWasSpecified: false
+        exampleWasSpecified: true
         nullable: false
         deprecated: false
       lineup:
@@ -556,7 +592,7 @@ endpoints:
         name: date
         description: 'Must be a valid date. Must be a date after or equal to <code>today</code>.'
         required: false
-        example: '2052-05-09'
+        example: '2052-05-11'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -565,9 +601,9 @@ endpoints:
       start_time:
         custom: []
         name: start_time
-        description: ''
+        description: 'Must be a valid date in the format <code>H:i</code>.'
         required: false
-        example: null
+        example: '09:41'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -576,9 +612,9 @@ endpoints:
       end_time:
         custom: []
         name: end_time
-        description: ''
+        description: 'Must be a valid date in the format <code>H:i</code>.'
         required: false
-        example: null
+        example: '09:41'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -589,10 +625,10 @@ endpoints:
         name: price
         description: ''
         required: false
-        example: 4326.41688
+        example: 30.0
         type: number
         enumValues: []
-        exampleWasSpecified: false
+        exampleWasSpecified: true
         nullable: false
         deprecated: false
       is_18_plus:
@@ -600,22 +636,60 @@ endpoints:
         name: is_18_plus
         description: ''
         required: false
-        example: false
+        example: true
         type: boolean
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      price_info:
+        custom: []
+        name: price_info
+        description: ''
+        required: false
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      ticket_link:
+        custom: []
+        name: ticket_link
+        description: 'Must be a valid URL.'
+        required: false
+        example: 'http://bailey.com/'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      flyer:
+        custom: []
+        name: flyer
+        description: 'Must be an image. Must not be greater than 2048 kilobytes.'
+        required: false
+        example: null
+        type: file
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         deprecated: false
     cleanBodyParameters:
-      title: b
+      title: 'Night Moves: Rescheduled'
       lineup: architecto
       description: 'Eius et animi quos velit et.'
       location_name: architecto
       neighborhood: architecto
-      date: '2052-05-09'
-      price: 4326.41688
-      is_18_plus: false
-    fileParameters: []
+      date: '2052-05-11'
+      start_time: '09:41'
+      end_time: '09:41'
+      price: 30.0
+      is_18_plus: true
+      price_info: architecto
+      ticket_link: 'http://bailey.com/'
+    fileParameters:
+      flyer: null
     responses: []
     responseFields: []
     auth:
@@ -650,14 +724,14 @@ endpoints:
         name: id
         description: 'The ID of the event.'
         required: true
-        example: 16
+        example: 1
         type: integer
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      id: 16
+      id: 1
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
@@ -697,14 +771,14 @@ endpoints:
         name: id
         description: 'The ID of the event.'
         required: true
-        example: 16
+        example: 1
         type: integer
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      id: 16
+      id: 1
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
@@ -809,14 +883,14 @@ endpoints:
         name: id
         description: 'The ID of the event.'
         required: true
-        example: 16
+        example: 1
         type: integer
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      id: 16
+      id: 1
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
@@ -856,54 +930,54 @@ endpoints:
         name: id
         description: 'The ID of the event.'
         required: true
-        example: 16
-        type: integer
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-    cleanUrlParameters:
-      id: 16
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters:
-      sound_score:
-        custom: []
-        name: sound_score
-        description: 'Must be at least 1. Must not be greater than 5.'
-        required: true
         example: 1
         type: integer
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         deprecated: false
+    cleanUrlParameters:
+      id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      sound_score:
+        custom: []
+        name: sound_score
+        description: ''
+        required: false
+        example: 5
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
       safe_space_score:
         custom: []
         name: safe_space_score
-        description: 'Must be at least 1. Must not be greater than 5.'
-        required: true
-        example: 2
+        description: ''
+        required: false
+        example: 4
         type: integer
         enumValues: []
-        exampleWasSpecified: false
+        exampleWasSpecified: true
         nullable: false
         deprecated: false
       comment:
         custom: []
         name: comment
-        description: 'Must not be greater than 500 characters.'
+        description: ''
         required: false
-        example: g
+        example: 'Sound system was crystal clear, but the dancefloor was a bit too crowded.'
         type: string
         enumValues: []
-        exampleWasSpecified: false
+        exampleWasSpecified: true
         nullable: true
         deprecated: false
     cleanBodyParameters:
-      sound_score: 1
-      safe_space_score: 2
-      comment: g
+      sound_score: 5
+      safe_space_score: 4
+      comment: 'Sound system was crystal clear, but the dancefloor was a bit too crowded.'
     fileParameters: []
     responses: []
     responseFields: []
@@ -939,14 +1013,14 @@ endpoints:
         name: id
         description: 'The ID of the event.'
         required: true
-        example: 16
+        example: 1
         type: integer
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      id: 16
+      id: 1
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
@@ -1176,55 +1250,64 @@ endpoints:
       name:
         custom: []
         name: name
-        description: 'Must not be greater than 255 characters.'
+        description: ''
         required: true
-        example: b
+        example: 'Pepe Organizer'
         type: string
         enumValues: []
-        exampleWasSpecified: false
+        exampleWasSpecified: true
         nullable: false
         deprecated: false
       email:
         custom: []
         name: email
-        description: 'Must be a valid email address. Must not be greater than 255 characters.'
+        description: ''
         required: true
-        example: zbailey@example.net
-        type: string
+        example: Pepe@club.com
+        type: email
         enumValues: []
-        exampleWasSpecified: false
+        exampleWasSpecified: true
         nullable: false
         deprecated: false
       password:
         custom: []
         name: password
-        description: 'Must be at least 8 characters.'
+        description: ''
         required: true
-        example: '-0pBNvYgxw'
+        example: secret1234
         type: string
         enumValues: []
-        exampleWasSpecified: false
+        exampleWasSpecified: true
         nullable: false
         deprecated: false
       role:
         custom: []
         name: role
-        description: ''
+        description: "The user's role (admin, organizer, clubber)."
         required: true
-        example: admin
+        example: organizer
         type: string
-        enumValues:
-          - admin
-          - organizer
-          - clubber
-        exampleWasSpecified: false
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      password_confirmation:
+        custom: []
+        name: password_confirmation
+        description: string
+        required: false
+        example: secret1234
+        type: required
+        enumValues: []
+        exampleWasSpecified: true
         nullable: false
         deprecated: false
     cleanBodyParameters:
-      name: b
-      email: zbailey@example.net
-      password: '-0pBNvYgxw'
-      role: admin
+      name: 'Pepe Organizer'
+      email: Pepe@club.com
+      password: secret1234
+      role: organizer
+      password_confirmation: secret1234
     fileParameters: []
     responses: []
     responseFields: []
@@ -1274,23 +1357,23 @@ endpoints:
       name:
         custom: []
         name: name
-        description: 'Must not be greater than 255 characters.'
+        description: ''
         required: false
-        example: b
+        example: 'Lolo Techno'
         type: string
         enumValues: []
-        exampleWasSpecified: false
+        exampleWasSpecified: true
         nullable: false
         deprecated: false
       email:
         custom: []
         name: email
-        description: 'Must be a valid email address. Must not be greater than 255 characters.'
+        description: ''
         required: false
-        example: zbailey@example.net
-        type: string
+        example: fran@underpass.app
+        type: email
         enumValues: []
-        exampleWasSpecified: false
+        exampleWasSpecified: true
         nullable: false
         deprecated: false
       role:
@@ -1308,8 +1391,8 @@ endpoints:
         nullable: false
         deprecated: false
     cleanBodyParameters:
-      name: b
-      email: zbailey@example.net
+      name: 'Lolo Techno'
+      email: fran@underpass.app
       role: organizer
     fileParameters: []
     responses: []
@@ -1449,14 +1532,14 @@ endpoints:
         name: id
         description: 'The ID of the event.'
         required: true
-        example: 16
+        example: 1
         type: integer
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      id: 16
+      id: 1
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
