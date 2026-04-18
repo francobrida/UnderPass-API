@@ -20,6 +20,12 @@ class VibecheckController extends Controller
     {
         $event = Event::findOrFail($id);
 
+        if (!$event->isReadyForVibeCheck()) {
+            return response()->json([
+                'message' => 'Too early! The vibe check opens 6 hours after the event ends.'
+            ], 403);
+        }
+        
         $vibecheck = $this->vibecheckService->store(
             Auth::user(), 
             $event, 

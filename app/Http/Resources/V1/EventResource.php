@@ -25,6 +25,7 @@ class EventResource extends JsonResource
             'organizer'     => $this->organizer?->name, 
             'vouch_count'   => $this->vouches_count ?? $this->vouches()->count(),
             'created_at'    => $this->created_at->toDateTimeString(),
+            'can_vibe_check' => $this->isReadyForVibeCheck(),
         ];
     }
 }

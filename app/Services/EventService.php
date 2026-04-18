@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Event;
 use App\Models\User;
 use App\Enums\UserRole;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 
@@ -64,6 +65,14 @@ class EventService {
 
         if ($file) {
             $eventData['flyer'] = $file->store('flyers', 'public');
+        }
+
+        if (isset($eventData['start_time'])) {
+            $eventData['start_time'] = Carbon::parse($eventData['start_time'])->format('H:i:s');
+        }
+        
+        if (isset($eventData['end_time'])) {
+            $eventData['end_time'] = Carbon::parse($eventData['end_time'])->format('H:i:s');
         }
 
         $event = $user->events()->create($eventData);
