@@ -44,20 +44,25 @@ class EventController extends Controller
         ], 201);
     }
 
-    public function update(UpdateEventRequest $request, Event $id): JsonResponse
+    /**
+     * Edit own event.
+     * * This endpoint allows an organizer to update the details of an event they created.
+     * * @urlParam id int required The ID of the event to edit. Example: 1
+     */
+    public function update(UpdateEventRequest $request, $id): JsonResponse
     {
-        $event = $id;
+        $event = Event::findOrFail($id);
 
         $updatedEvent = $this->eventService->update(
-            $request->user(), 
-            $event, 
-            $request->validated(), 
-            $request->file('flyer')
+            $request->user(),      // the user
+            $event,               // the model Event
+            $request->validated(), // validated data
+            $request->file('flyer') // file (optional)
         );
 
         return response()->json([
             'message' => 'Event updated successfully',
-            'data'    => $updatedEvent
+            'data' => new EventResource($updatedEvent)
         ], 200);
     }
 

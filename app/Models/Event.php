@@ -13,6 +13,28 @@ use Illuminate\Support\Carbon;
 class Event extends Model
 {
     use HasFactory;
+
+    protected $casts = [
+        'date' => 'date',
+        'is_verified' => 'boolean',
+        'is_18_plus' => 'boolean',
+    ];
+
+    public function getStartDateTimeAttribute(): Carbon
+    {
+        return Carbon::parse($this->date->format('Y-m-d') . ' ' . $this->start_time);
+    }
+
+    public function getEndDateTimeAttribute(): Carbon
+    {
+        $endDatetime = Carbon::parse($this->date->format('Y-m-d') . ' ' . $this->end_time);
+        
+        if ($this->end_time < $this->start_time) {
+            $endDatetime->addDay();
+        }
+        
+        return $endDatetime;
+    }
     
     public function organizer() {
         return $this->belongsTo(User::class, 'user_id');
@@ -48,6 +70,14 @@ class Event extends Model
             $eventDate->copy()->startOfDay(), 
             $eventDate->copy()->addDay()->endOfDay()
         );
+    }
+
+    public function isReadyForVibeCheck(): bool
+    {
+        $now = now();
+        $vibeCheckOpening = $this->end_date_time->copy()->addHours(6);
+
+        return $now->greaterThanOrEqualTo($vibeCheckOpening);
     }
 
 }

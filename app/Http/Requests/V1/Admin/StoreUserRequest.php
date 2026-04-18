@@ -6,6 +6,13 @@ use App\Enums\UserRole;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
 
+/**
+ * @bodyParam name string required Example: Pepe Organizer
+ * @bodyParam email email required Example: Pepe@club.com
+ * @bodyParam role string required The user's role (admin, organizer, clubber). Example: organizer
+ * @bodyParam password string required Example: secret1234
+ * @bodyParam password_confirmation required string Example: secret1234
+ */
 class StoreUserRequest extends FormRequest
 {
     public function authorize(): bool

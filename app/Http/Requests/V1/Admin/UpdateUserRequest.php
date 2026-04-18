@@ -6,6 +6,10 @@ use Illuminate\Foundation\Http\FormRequest;
 use App\Enums\UserRole;
 use Illuminate\Validation\Rules\Enum;
 
+/**
+ * @bodyParam name string Example: Lolo Techno
+ * @bodyParam email email Example: fran@underpass.app
+ */
 class UpdateUserRequest extends FormRequest
 {
     
