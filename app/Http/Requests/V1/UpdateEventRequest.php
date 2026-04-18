@@ -5,6 +5,11 @@ namespace App\Http\Requests\V1;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * @bodyParam title string Example: Night Moves: Rescheduled
+ * @bodyParam price number Example: 30.00
+ * @bodyParam is_18_plus boolean Example: true
+ */
 class UpdateEventRequest extends FormRequest
 {
     public function authorize(): bool
@@ -27,6 +32,9 @@ class UpdateEventRequest extends FormRequest
             'end_time'      => 'sometimes|date_format:H:i',
             'price'         => 'sometimes|numeric',
             'is_18_plus'    => 'sometimes|boolean',
+            'price_info'   => 'sometimes|string',
+            'ticket_link'  => 'sometimes|url',
+            'flyer'        => ['sometimes', 'image', 'max:2048']
         ];
     }
 }

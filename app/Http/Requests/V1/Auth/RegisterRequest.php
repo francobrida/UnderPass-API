@@ -7,6 +7,12 @@ use Illuminate\Foundation\Http\FormRequest;
 use App\Enums\UserRole;
 use Illuminate\Validation\Rules\Enum;
 
+/**
+ * @bodyParam name string Example: Lolo Techno
+ * @bodyParam email email Example: fran@underpass.app
+ * @bodyParam password string Example: password123
+ * @bodyParam password_confirmation string Example: password123
+ */
 class RegisterRequest extends FormRequest
 {
     

@@ -4,6 +4,11 @@ namespace App\Http\Requests\V1;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * @bodyParam sound_score integer Example: 5
+ * @bodyParam safe_space_score integer Example: 4
+ * @bodyParam comment string Example: Sound system was crystal clear, but the dancefloor was a bit too crowded.
+ */
 class StoreVibecheckRequest extends FormRequest
 {
 
