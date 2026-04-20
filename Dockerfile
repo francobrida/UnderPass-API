@@ -5,12 +5,8 @@ RUN apt-get update && apt-get install -y \
     git curl libpng-dev libonig-dev libxml2-dev zip unzip
 RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
 
-# LIMPIEZA DE MÓDULOS MPM (Evita el error AH00534)
-# Desactivamos físicamente los archivos que cargan otros MPM
-RUN rm -f /etc/apache2/mods-enabled/mpm_event.load /etc/apache2/mods-enabled/mpm_event.conf \
-    && rm -f /etc/apache2/mods-enabled/mpm_worker.load /etc/apache2/mods-enabled/mpm_worker.conf
-# Forzamos la carga de prefork y rewrite
-RUN a2enmod mpm_prefork rewrite
+RUN a2dismod mpm_event mpm_worker \
+    && a2enmod mpm_prefork rewrite
 
 # Configuración de Laravel
 ENV APACHE_DOCUMENT_ROOT /var/www/html/public
