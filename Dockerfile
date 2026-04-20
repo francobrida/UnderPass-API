@@ -1,26 +1,27 @@
-FROM php:8.4-apache
+FROM php:8.4-cli
 
-# Instalaciones de sistema
+# Dependencias
 RUN apt-get update && apt-get install -y \
-    git curl libpng-dev libonig-dev libxml2-dev zip unzip
+    git curl zip unzip libpng-dev libonig-dev libxml2-dev
+
 RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
 
-RUN a2dismod mpm_event mpm_worker \
-    && a2enmod mpm_prefork rewrite
-
-# Configuración de Laravel
-ENV APACHE_DOCUMENT_ROOT /var/www/html/public
-RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
-RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
-
-# Archivos y permisos
+# Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-WORKDIR /var/www/html
+
+# App
+WORKDIR /app
 COPY . .
-RUN composer install --no-interaction --optimize-autoloader --no-dev
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
-EXPOSE 80
+RUN composer install --no-dev --optimize-autoloader
 
-# Comando de inicio limpio
-CMD ["sh", "-c", "sed -i \"s/80/${PORT}/g\" /etc/apache2/ports.conf /etc/apache2/sites-available/000-default.conf && apache2-foreground"]
+# Laravel necesita esto
+RUN php artisan config:cache || true
+RUN php artisan route:cache || true
+
+# Puerto Railway
+ENV PORT=8080
+EXPOSE 8080
+
+# Arranque
+CMD php -S 0.0.0.0:$PORT -t public
