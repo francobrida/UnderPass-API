@@ -1,58 +1,133 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🎧 UnderPass API | Barcelona Underground Electronic Scene
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+UnderPass is a specialized REST API designed for the management and community-driven curation of electronic music events within the Barcelona local scene. It features a unique trust-based verification system, physical attendance validation via QR/Stamps, and a qualitative feedback loop.
 
-## About Laravel
+[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/)
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 📚 Table of Contents
+* [About](#-about)
+* [Tech Stack](#-tech-stack)
+* [Core Logic & Features](#-core-logic--features)
+* [Setup & Installation](#-setup--installation)
+* [Docker & Deployment](#-docker--deployment)
+* [API Documentation](#-api-documentation)
+* [Demo Accounts](#-demo-accounts)
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## 📖 About
+**UnderPass API** acts as the engine for a decentralized electronic music agenda. Unlike traditional platforms, it relies on the community to verify events and uses a gamification loop (Stamps & Points) to ensure that only attendees can provide qualitative feedback ("Vibechecks").
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+The API follows RESTful conventions, is fully versioned under `/api/v1/`, and uses OAuth2 (Laravel Passport) for secure authentication.
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+---
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+## 💻 Tech Stack
+* **Runtime:** PHP 8.4
+* **Framework:** Laravel 12
+* **Architecture:** Service Layer Pattern (decoupling business logic from Controllers)
+* **Authentication:** Laravel Passport (OAuth2 Personal Access Tokens)
+* **Database:** MySQL 8.0
+* **Documentation:** Scribe + Scalar (Interactive UI)
+* **Containerization:** Docker + Docker Compose
+* **Deployment:** Railway
 
-## Agentic Development
+---
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+## 🧠 Core Logic & Features
 
+### 1. Vouch-to-Verify System
+To prevent spam, new events enter a **"Waiting Room"** (Pending status).
+* **Vouches:** Trusted users can "vouch" for an event.
+* **Auto-Publish:** Upon reaching **3 vouches**, the event is automatically verified and promoted to the main feed.
+
+### 2. Gamification: QR Stamps & Passport
+* **Proof of Attendance:** Organizers of verified events receive a unique QR code.
+* **Digital Stamps:** When a user "scans" (accesses) the QR URL, they receive a collectible Stamp in their digital Passport.
+
+### 3. Vibechecks (Qualitative Feedback)
+* **Exclusive Access:** Only users holding the event's Stamp can submit a "Vibecheck" (Review).
+* **Incentive:** Submitting a Vibecheck rewards the user with **+5 points**.
+
+---
+
+## 🛠 Setup & Installation
+
+### Prerequisites
+* PHP >= 8.4
+* Composer
+* Docker (Optional, but recommended)
+
+### Local Installation
+1.  **Clone the repo:**
+    ```bash
+    git clone [https://github.com/francobrida/UnderPass-API.git](https://github.com/francobrida/UnderPass-API.git)
+    cd UnderPass-API
+    ```
+2.  **Install dependencies:**
+    ```bash
+    composer install
+    ```
+3.  **Environment Setup:**
+    ```bash
+    cp .env.example .env
+    php artisan key:generate
+    ```
+    *Update your .env with your local database credentials.*
+
+4.  **Migrations & Passport:**
+    ```bash
+    php artisan migrate --seed
+    php artisan passport:keys
+    php artisan passport:client --personal
+    ```
+5.  **Storage Link:**
+    ```bash
+    php artisan storage:link
+    ```
+
+---
+
+## 🐳 Docker & Deployment
+
+### Run Locally with Docker
+The project includes a multi-container setup (App & Web Server) to ensure environment consistency.
 ```bash
-composer require laravel/boost --dev
+docker-compose up -d --build
+The API will be available at http://localhost.
 
-php artisan boost:install
-```
+### Production Deployment (Railway)
+This API is optimized for **Railway** using the provided `Dockerfile`.
+* **Live API:** `https://your-app-name.up.railway.app/api/v1/`
+* **CI/CD:** Any push to the `main` or `develop` branch triggers an automatic rebuild and deployment.
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+---
 
-## Contributing
+## 📖 API Documentation
+Interactive documentation is generated via **Scribe** and rendered with **Scalar**.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+* **Live Docs:** [https://your-app-name.up.railway.app/docs](https://your-app-name.up.railway.app/docs)
+* **Postman Collection:** You can download the auto-generated Postman collection and OpenAPI spec directly from the "Introduction" section of the Live Docs.
 
-## Code of Conduct
+---
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## 🔐 Demo Accounts
+Use these pre-seeded accounts to test the Role-Based Access Control (RBAC):
 
-## Security Vulnerabilities
+| Role | Email | Password | Access Level |
+| :--- | :--- | :--- | :--- |
+| **Admin** | admin@underpass.com | password | Full CRUD & Moderation |
+| **Organizer** | organizer@test.com | password | Create Events & QR Management |
+| **Clubber** | clubber@test.com | password | Vouching, Stamps & Vibechecks |
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+---
 
-## License
+## 📈 Scalability & Future Improvements
+* **Organizer Reputation:** Implementation of an average score based on historical Vibechecks.
+* **Points Marketplace:** A dedicated module to exchange accumulated points for exclusive community benefits or partner discounts.
+* **Push Notifications:** Real-time alerts when a "Waiting Room" event from a favorite organizer gets verified.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+---
+Developed by **Franco Bridarolli** - 2026.
