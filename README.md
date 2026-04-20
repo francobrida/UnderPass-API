@@ -96,6 +96,7 @@ To prevent spam, new events enter a **"Waiting Room"** (Pending status).
 The project includes a multi-container setup (App & Web Server) to ensure environment consistency.
 ```bash
 docker-compose up -d --build
+```
 The API will be available at http://localhost.
 
 ### Production Deployment (Railway)
