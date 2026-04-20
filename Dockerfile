@@ -32,4 +32,9 @@ RUN chmod +x /start.sh
 # Puerto Railway
 EXPOSE 8080
 
+<<<<<<< HEAD
 CMD ["/start.sh"]
+=======
+# Arranque
+CMD php -S 0.0.0.0:$PORT -t public
+>>>>>>> 974352557d2cf462183ac88c42ebab22bb91171f
