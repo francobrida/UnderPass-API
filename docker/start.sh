@@ -1,14 +1,12 @@
 #!/bin/sh
 
+chown -R www-data:www-data /var/www
+
 php artisan config:clear
 php artisan cache:clear
 php artisan migrate --force || true
 
-
-chown -R www-data:www-data /var/www
-
 php-fpm -D
 
-
-echo "--- LANZANDO NGINX ---"
+echo "--- NGINX ESTÁ EN LÍNEA, otra vez ---"
 nginx -g "daemon off;"
