@@ -1,33 +1,30 @@
-FROM php:8.3-apache
+FROM dunglas/frankenphp:1-php8.4
 
-# 1. Instalar dependencias del sistema
+# 1. Instalar dependencias necesarias
 RUN apt-get update && apt-get install -y \
-    git curl libpng-dev libonig-dev libxml2-dev zip unzip libzip-dev
+    git unzip libzip-dev libpng-dev libicu-dev \
+    && docker-php-ext-install pdo_mysql zip gd intl bcmath pcntl
 
-# 2. Instalar extensiones de PHP necesarias para Laravel
-RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
+# 2. Habilitar variables de entorno de Laravel
+ENV PHP_INI_SCAN_DIR=$PHP_INI_SCAN_DIR:/usr/local/etc/php/conf.d
+ENV SERVER_NAME=:80
+ENV APP_RUNTIME=Laravel\Octane\FrankenPHP\Runtime
 
-# 3. Habilitar el módulo rewrite de Apache (Vital para las rutas de Laravel)
-RUN a2enmod rewrite
-
-# 4. Configurar el DocumentRoot de Apache a la carpeta /public
-ENV APACHE_DOCUMENT_ROOT /var/www/html/public
-RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
-RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
-
-# 5. Instalar Composer
+# 3. Instalar Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# 6. Copiar el código
-WORKDIR /var/www/html
+# 4. Preparar la app
+WORKDIR /app
 COPY . .
 
-# 7. Permisos y optimización
+# 5. Instalar dependencias de PHP
 RUN composer install --no-interaction --optimize-autoloader --no-dev
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
-# 8. Exponer el puerto que Railway espera (Apache usa el 80 por defecto, Railway lo mapea solo)
+# 6. Permisos para Laravel
+RUN chown -R www-data:www-data storage bootstrap/cache
+
+# 7. Exponer el puerto
 EXPOSE 80
 
-# 9. Comando de inicio (Apache ya corre en primer plano por defecto en esta imagen)
-CMD ["apache2-foreground"]
+# 8. Arrancar FrankenPHP
+CMD ["frankenphp", "php-server", "--public-url", "http://localhost:80", "--root", "public/"]
