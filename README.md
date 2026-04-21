@@ -10,6 +10,7 @@ UnderPass is a specialized REST API designed for the management and community-dr
 * [About](#-about)
 * [Tech Stack](#-tech-stack)
 * [Core Logic & Features](#-core-logic--features)
+* [Testing & QA](#-testing--qa)
 * [Setup & Installation](#-setup--installation)
 * [Docker & Deployment](#-docker--deployment)
 * [API Documentation](#-api-documentation)
@@ -20,7 +21,7 @@ UnderPass is a specialized REST API designed for the management and community-dr
 ## 📖 About
 **UnderPass API** acts as the engine for a decentralized electronic music agenda. Unlike traditional platforms, it relies on the community to verify events and uses a gamification loop (Stamps & Points) to ensure that only attendees can provide qualitative feedback ("Vibechecks").
 
-The API follows RESTful conventions, is fully versioned under `/api/v1/`, and uses OAuth2 (Laravel Passport) for secure authentication.
+The API follows RESTful conventions, is fully versioned under `/api/v1/`, and uses **OAuth2 (Laravel Passport)** for secure authentication.
 
 ---
 
@@ -29,10 +30,11 @@ The API follows RESTful conventions, is fully versioned under `/api/v1/`, and us
 * **Framework:** Laravel 12
 * **Architecture:** Service Layer Pattern (decoupling business logic from Controllers)
 * **Authentication:** Laravel Passport (OAuth2 Personal Access Tokens)
+* **Testing:** PEST (Functional & Unit Testing)
 * **Database:** MySQL 8.0
 * **Documentation:** Scribe + Scalar (Interactive UI)
 * **Containerization:** Docker + Docker Compose
-* **Deployment:** Railway
+* **Deployment:** Railway (FrankenPHP)
 
 ---
 
@@ -43,13 +45,32 @@ To prevent spam, new events enter a **"Waiting Room"** (Pending status).
 * **Vouches:** Trusted users can "vouch" for an event.
 * **Auto-Publish:** Upon reaching **3 vouches**, the event is automatically verified and promoted to the main feed.
 
-### 2. Gamification: QR Stamps & Passport
-* **Proof of Attendance:** Organizers of verified events receive a unique QR code.
-* **Digital Stamps:** When a user "scans" (accesses) the QR URL, they receive a collectible Stamp in their digital Passport.
+### 2. Role-Based Access Control (RBAC)
+The API implements a custom Role system to manage permissions:
+* **Admin:** Full moderation and system control.
+* **Clubber:** Standard user capable of vouching and collecting stamps.
+* **Organizer:** Clubbers with verified event history, granted access to QR management.
 
-### 3. Vibechecks (Qualitative Feedback)
-* **Exclusive Access:** Only users holding the event's Stamp can submit a "Vibecheck" (Review).
-* **Incentive:** Submitting a Vibecheck rewards the user with **+5 points**.
+### 3. Gamification: QR Stamps & Passport
+* **Proof of Attendance:** Organizers of verified events receive a unique QR code.
+* **Digital Stamps:** When a user scans the QR URL, they receive a collectible Stamp in their digital Passport.
+
+---
+
+## 🧪 Testing & QA
+The project follows a rigorous testing strategy to ensure all endpoints are functional (Happy, Sad, and Edge cases).
+
+* **Framework:** PEST.
+* **Coverage:** Authentication, Event Lifecycle, Vibechecks, and Role Permissions.
+* **Run Tests Locally:**
+    ```bash
+    php artisan test
+    ```
+* **Run Tests on Production (Railway):**
+    You can trigger tests directly on the container via Railway CLI:
+    ```bash
+    railway run php artisan test
+    ```
 
 ---
 
@@ -58,34 +79,28 @@ To prevent spam, new events enter a **"Waiting Room"** (Pending status).
 ### Prerequisites
 * PHP >= 8.4
 * Composer
-* Docker (Optional, but recommended)
+* Docker
 
 ### Local Installation
-1.  **Clone the repo:**
+1. **Clone the repo:**
     ```bash
     git clone [https://github.com/francobrida/UnderPass-API.git](https://github.com/francobrida/UnderPass-API.git)
     cd UnderPass-API
     ```
-2.  **Install dependencies:**
+2. **Install dependencies:**
     ```bash
     composer install
     ```
-3.  **Environment Setup:**
+3. **Environment Setup:**
     ```bash
     cp .env.example .env
     php artisan key:generate
     ```
-    *Update your .env with your local database credentials.*
-
-4.  **Migrations & Passport:**
+4. **Migrations & Passport:**
     ```bash
     php artisan migrate --seed
     php artisan passport:keys
     php artisan passport:client --personal
-    ```
-5.  **Storage Link:**
-    ```bash
-    php artisan storage:link
     ```
 
 ---
@@ -93,24 +108,14 @@ To prevent spam, new events enter a **"Waiting Room"** (Pending status).
 ## 🐳 Docker & Deployment
 
 ### Run Locally with Docker
-The project includes a multi-container setup (App & Web Server) to ensure environment consistency.
+The project includes a multi-container setup via Docker Compose.
 ```bash
 docker-compose up -d --build
 ```
-The API will be available at http://localhost.
-
 ### Production Deployment (Railway)
-This API is optimized for **Railway** using the provided `Dockerfile`.
-* **Live API:** `https://your-app-name.up.railway.app/api/v1/`
-* **CI/CD:** Any push to the `main` or `develop` branch triggers an automatic rebuild and deployment.
-
----
-
-## 📖 API Documentation
-Interactive documentation is generated via **Scribe** and rendered with **Scalar**.
-
-* **Live Docs:** [https://your-app-name.up.railway.app/docs](https://your-app-name.up.railway.app/docs)
-* **Postman Collection:** You can download the auto-generated Postman collection and OpenAPI spec directly from the "Introduction" section of the Live Docs.
+This API is served via **FrankenPHP**.
+* **Live API:** `https://underpass-api-production.up.railway.app/api/v1/`
+* **Live Docs:** `https://underpass-api-production.up.railway.app/docs`
 
 ---
 
