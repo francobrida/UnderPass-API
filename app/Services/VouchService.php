@@ -10,7 +10,6 @@ use Illuminate\Validation\ValidationException;
 
 class VouchService
 {
-    public const int VOUCHES_REQUIRED_FOR_VERIFICATION = 3;
 
     public function addVouch(User $user, Event $event): array
     {
@@ -36,18 +35,10 @@ class VouchService
             'event_id' => $event->id,
         ]);
 
-        $vouchCount = $event->vouches()->count();
-        
-        if ($vouchCount >= self::VOUCHES_REQUIRED_FOR_VERIFICATION && !$event->is_verified) {
-            $event->update(['is_verified' => true]);
-            
-            if ($event->organizer->role === UserRole::CLUBBER) {
-                $event->organizer->update(['role' => UserRole::ORGANIZER]);
-            }
-        }
+        $event->refresh();
 
         return [
-            'count' => $vouchCount,
+            'count' => $event->vouches()->count(),
             'is_verified' => (bool) $event->is_verified
         ];
     }
