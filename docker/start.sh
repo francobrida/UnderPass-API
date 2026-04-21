@@ -1,14 +1,17 @@
 #!/bin/sh
 
-# Laravel cache 
-php artisan config:cache || true
-php artisan route:cache || true
+# Limpiar caché para evitar rutas viejas
+php artisan config:clear
+php artisan cache:clear
 
-# Migraciones 
+# Migraciones (siempre con force en producción)
 php artisan migrate --force || true
 
-# Levantar PHP-FPM en background
+# Permisos de último minuto
+chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
+
+# Arrancar PHP-FPM en segundo plano
 php-fpm &
 
-# Levantar Nginx en foreground
+# Arrancar Nginx en primer plano (esto mantiene vivo el contenedor)
 nginx -g "daemon off;"
