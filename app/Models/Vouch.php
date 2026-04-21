@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Model;
 
 class Vouch extends Model
@@ -11,4 +12,9 @@ class Vouch extends Model
 
     public $incrementing = false;
     protected $keyType = 'string'; 
+
+    public function event(): BelongsTo
+    {
+        return $this->belongsTo(Event::class);
+    }
 }
