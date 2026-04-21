@@ -1,17 +1,16 @@
 #!/bin/sh
 
-# Limpiar caché para evitar rutas viejas
+# 1. Preparar la app
 php artisan config:clear
 php artisan cache:clear
-
-# Migraciones (siempre con force en producción)
 php artisan migrate --force || true
 
-# Permisos de último minuto
-chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
+# 2. Asegurar permisos totales sobre la carpeta de trabajo
+chown -R www-data:www-data /var/www
 
-# Arrancar PHP-FPM en segundo plano
-php-fpm &
+# 3. Arrancar PHP-FPM en segundo plano
+php-fpm -D
 
-# Arrancar Nginx en primer plano (esto mantiene vivo el contenedor)
+# 4. Arrancar Nginx en PRIMER PLANO (esto es lo que mantiene vivo el contenedor)
+echo "--- LANZANDO NGINX ---"
 nginx -g "daemon off;"
