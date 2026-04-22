@@ -212,8 +212,7 @@ test('update fails if date is in the past', function () {
 
     $response = putJson("/api/v1/events/{$event->id}", [
         'title' => 'New Title',
-        'date' => '2020-01-01', // Pasado
-        // ... enviar el resto de campos requeridos
+        'date' => '2020-01-01', 
     ]);
 
     $response->assertStatus(422)

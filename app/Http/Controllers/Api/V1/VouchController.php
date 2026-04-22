@@ -27,7 +27,7 @@ class VouchController extends Controller
         ], 201);
     }
 
-    public function index($id)
+    public function index($id): JsonResponse
     {
         $event = Event::findOrFail($id);
 

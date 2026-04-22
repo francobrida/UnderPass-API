@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Relations\{BelongsTo, BelongsToMany, HasMany};
 use Illuminate\Support\Carbon;
 
 #[Fillable(['user_id', 'title', 'lineup', 'description', 'date', 'start_time', 'end_time', 'price', 'price_info', 'ticket_link',
@@ -36,28 +37,33 @@ class Event extends Model
         return $endDatetime;
     }
     
-    public function organizer() {
+    public function organizer(): BelongsTo
+    {
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    public function genres() {
+    public function genres(): BelongsToMany
+    {
         return $this->belongsToMany(Genre::class, 'event_genre');
     }
 
-    public function vibeChecks() {
+    public function vibeChecks(): HasMany
+    {
         return $this->hasMany(VibeCheck::class);
     }
 
-    public function vouches() {
+    public function vouches(): BelongsToMany
+    {
         return $this->belongsToMany(User::class, 'vouches');
     }
 
-    public function getVouchProgressAttribute()
+    public function getVouchProgressAttribute(): int
     {
         return $this->vouches()->count();
     }
 
-    public function stamps() {
+    public function stamps(): HasMany
+    {
         return $this->hasMany(Stamp::class);
     }
     
