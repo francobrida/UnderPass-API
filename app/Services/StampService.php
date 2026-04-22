@@ -6,11 +6,12 @@ use App\Models\Stamp;
 use App\Models\Event;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Validation\ValidationException;
 
 class StampService
 {
-    public function getUserStamps(int $userId)
+    public function getUserStamps(int $userId): Collection
     {
         return Stamp::where('user_id', $userId)
             ->with('event:id,title,date,location')
@@ -19,7 +20,7 @@ class StampService
     }
 
     
-    public function collect(User $user, string $token)
+    public function collect(User $user, string $token): Stamp
     {
         
         $event = Event::where('stamp_token', $token)->first();
