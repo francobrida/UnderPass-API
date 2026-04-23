@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Event;
 use App\Models\User;
 use App\Enums\UserRole;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
@@ -12,7 +13,7 @@ use Illuminate\Validation\ValidationException;
 
 class EventService {
 
-    public function filter(array $eventData) 
+    public function filter(array $eventData): Collection
     {
         $query = Event::with(['organizer', 'genres']);
 
@@ -47,7 +48,7 @@ class EventService {
         return $query->get();
     }
 
-    public function store(User $user, array $eventData, $file = null)
+    public function store(User $user, array $eventData, $file = null): Event
     {
         
         if ($user->role === UserRole::CLUBBER) {
@@ -87,7 +88,7 @@ class EventService {
         return $event;
     }
 
-    public function update(User $user, Event $event, array $eventData, $file = null)
+    public function update(User $user, Event $event, array $eventData, $file = null): Event
     {
         $eventData['price_info'] = $this->processPriceInfo($eventData);
 
@@ -110,7 +111,7 @@ class EventService {
         return $event;
     }
 
-    public function delete(Event $event)
+    public function delete(Event $event): bool
     {
         if ($event->flyer) {
             Storage::disk('public')->delete($event->flyer);

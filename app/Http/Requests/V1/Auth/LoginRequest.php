@@ -15,7 +15,7 @@ class LoginRequest extends FormRequest
         return true;
     }
 
-    protected function prepareForValidation()
+    protected function prepareForValidation(): void
     {
         $this->merge([
             'email' => strtolower($this->email),

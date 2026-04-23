@@ -12,7 +12,7 @@ class VibecheckService
 {
     public const int POINTS_FOR_VIBECHECK = 5;
 
-    public function getEventFeedback(Event $event)
+    public function getEventFeedback(Event $event): array
     {
         $vibechecks = $event->vibechecks()->with('user:id,name')->get();
 
@@ -25,7 +25,7 @@ class VibecheckService
         ];
     }
 
-    public function store(User $user, Event $event, array $data)
+    public function store(User $user, Event $event, array $data): Vibecheck
     {
         
         if ($event->date >= now()->toDateString()) {
@@ -67,7 +67,7 @@ class VibecheckService
         return $vibecheck;
     }
 
-    public function delete(int $id)
+    public function delete(int $id): bool
     {
         return Vibecheck::findOrFail($id)->delete();
     }
