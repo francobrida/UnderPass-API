@@ -11,12 +11,13 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Schema;
 
 class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        
+     
         $genreNames = ['Techno', 'Industrial', 'House', 'Drum n Bass', 'Electro Pop', 'Acid'];
         $genres = [];
         foreach ($genreNames as $name) {
@@ -28,6 +29,7 @@ class DatabaseSeeder extends Seeder
         }
         $allGenreIds = array_values($genres);
 
+      
         $admin = User::factory()->create([
             'name' => 'Admin Underpass',
             'email' => 'admin@underpass.com',
@@ -48,6 +50,7 @@ class DatabaseSeeder extends Seeder
 
         $crowd = User::factory(10)->create();
 
+     
         for ($i = 0; $i < 8; $i++) {
             $event = Event::factory()->create([
                 'user_id' => $organizer->id,
@@ -55,13 +58,11 @@ class DatabaseSeeder extends Seeder
             ]);
 
             $randomKeys = array_rand($allGenreIds, rand(1, 2));
-
-            $selectedIds = [];
-
             if (!is_array($randomKeys)) {
                 $randomKeys = [$randomKeys];
             }
 
+            $selectedIds = [];
             foreach ($randomKeys as $key) {
                 $selectedIds[] = $allGenreIds[$key];
             }
@@ -77,34 +78,23 @@ class DatabaseSeeder extends Seeder
             ]);
         }
 
-        for ($i = 0; $i < 3; $i++) {
-            $event = Event::factory()->create([
-                'user_id' => $crowd->random()->id,
-                'is_verified' => false,
-            ]);
-            $event->genres()->attach($allGenreIds[array_rand($allGenreIds)]);
-        }
-
-      
-        $vouchEvent = Event::factory()->create([
-            'title' => 'Underground Secret Session',
-            'is_verified' => false,
-            'user_id' => $crowd->random()->id
-        ]);
-        $vouchEvent->vouches()->attach($crowd->take(2)->pluck('id'));
-
         $pastEvents = Event::where('is_verified', true)->limit(2)->get();
         foreach ($pastEvents as $event) {
             $clubber->stampedEvents()->attach($event->id, ['scanned_at' => now()]);
         }
 
-        if (!DB::table('oauth_clients')->where('personal_access_client', 1)->exists()) {
-            Artisan::call('passport:client', [
-                '--personal' => true,
-                '--name' => 'UnderPass Personal Access Client',
-                '--no-interaction' => true,
-            ]);
-            $this->command->info('Passport client created successfully!');
+    
+        if (Schema::hasTable('oauth_clients')) {
+            if (!DB::table('oauth_clients')->where('personal_access_client', 1)->exists()) {
+                Artisan::call('passport:client', [
+                    '--personal' => true,
+                    '--name' => 'UnderPass Personal Access Client',
+                    '--no-interaction' => true,
+                ]);
+                $this->command->info('Passport client created successfully!');
+            }
+        } else {
+            $this->command->warn('La tabla oauth_clients no existe todavia. Passport podria fallar.');
         }
 
         $this->command->info('Database seeded for Underpass Barcelona.');
