@@ -7,6 +7,8 @@ use App\Models\Event;
 use App\Models\Genre;
 use App\Models\Vibecheck;
 use App\Enums\UserRole;
+use Laravel\Passport\Client;
+use Laravel\Passport\ClientRepository;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
 
@@ -100,6 +102,15 @@ class DatabaseSeeder extends Seeder
         $pastEvents = Event::where('is_verified', true)->limit(2)->get();
         foreach ($pastEvents as $event) {
             $clubber->stampedEvents()->attach($event->id, ['stamped_at' => now()]);
+        }
+        
+        if (!\Laravel\Passport\Client::where('personal_access_client', 1)->exists()) {
+            \Illuminate\Support\Facades\Artisan::call('passport:client', [
+                '--personal' => true,
+                '--name' => 'UnderPass Personal Access Client',
+                '--no-interaction' => true,
+            ]);
+            $this->command->info('Passport personal client created via Artisan.');
         }
         
         $this->command->info('Database seeded for Underpass Barcelona.');
