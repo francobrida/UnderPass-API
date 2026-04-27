@@ -17,6 +17,12 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
+        
+        if (Schema::hasTable('oauth_clients')) {
+            if (!DB::table('oauth_clients')->where('personal_access_client', 1)->exists()) {
+                Artisan::call('passport:client', ['--personal' => true, '--no-interaction' => true]);
+            }
+        }
      
         $genreNames = ['Techno', 'Industrial', 'House', 'Drum n Bass', 'Electro Pop', 'Acid'];
         $genres = [];
