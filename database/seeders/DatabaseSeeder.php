@@ -104,27 +104,35 @@ class DatabaseSeeder extends Seeder
             $clubber->stampedEvents()->attach($event->id, ['scanned_at' => now()]);
         }
         
-       
-        if (!\Laravel\Passport\Client::where('personal_access_client', 1)->exists()) {
-            \Laravel\Passport\Client::create([
-                'user_id' => null,
-                'name' => 'UnderPass Personal Access Client',
-                'secret' => Str::random(40),
-                'provider' => 'users', 
-                'redirect' => 'http://localhost',
-                'personal_access_client' => 1,
-                'password_client' => 0,
-                'revoked' => 0,
-            ]);
+            try {
+                $clientExists = \Illuminate\Support\Facades\DB::table('oauth_clients')
+                    ->where('personal_access_client', 1)
+                    ->exists();
 
-            $client = \Laravel\Passport\Client::where('personal_access_client', 1)->first();
-            \Illuminate\Support\Facades\DB::table('oauth_personal_access_clients')->insert([
-                'client_id' => $client->id,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
+                if (!$clientExists) {
+                    $clientId = \Illuminate\Support\Facades\DB::table('oauth_clients')->insertGetId([
+                        'user_id' => null,
+                        'name' => 'UnderPass Personal Access Client',
+                        'secret' => \Illuminate\Support\Str::random(40),
+                        'provider' => 'users',
+                        'redirect' => 'http://localhost',
+                        'personal_access_client' => 1,
+                        'password_client' => 0,
+                        'revoked' => 0,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
 
-            $this->command->info('Personal access client forced in database.');
-        }
+                    \Illuminate\Support\Facades\DB::table('oauth_personal_access_clients')->insert([
+                        'client_id' => $clientId,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+
+                    $this->command->info('Personal access client created successfully.');
+                }
+            } catch (\Exception $e) {
+                $this->command->warn('Passport tables not ready yet, skipping client creation...');
+            }
     }
 }
