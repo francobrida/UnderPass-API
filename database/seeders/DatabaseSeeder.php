@@ -7,24 +7,23 @@ use App\Models\Event;
 use App\Models\Genre;
 use App\Models\Vibecheck;
 use App\Enums\UserRole;
-use Laravel\Passport\Client;
-use Laravel\Passport\ClientRepository;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Artisan;
 
 class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
+        
         $genreNames = ['Techno', 'Industrial', 'House', 'Drum n Bass', 'Electro Pop', 'Acid'];
         $genres = [];
-
         foreach ($genreNames as $name) {
             $genre = Genre::create([
                 'name' => $name,
                 'slug' => Str::slug($name)
             ]);
-            
             $genres[$name] = $genre->id; 
         }
         $allGenreIds = array_values($genres);
@@ -48,7 +47,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $crowd = User::factory(10)->create();
-        
+
         for ($i = 0; $i < 8; $i++) {
             $event = Event::factory()->create([
                 'user_id' => $organizer->id,
@@ -56,14 +55,15 @@ class DatabaseSeeder extends Seeder
             ]);
 
             $randomKeys = array_rand($allGenreIds, rand(1, 2));
-        
+
             $selectedIds = [];
-            if (is_array($randomKeys)) {
-                foreach ($randomKeys as $key) {
-                    $selectedIds[] = $allGenreIds[$key];
-                }
-            } else {
-                $selectedIds[] = $allGenreIds[$randomKeys];
+
+            if (!is_array($randomKeys)) {
+                $randomKeys = [$randomKeys];
+            }
+
+            foreach ($randomKeys as $key) {
+                $selectedIds[] = $allGenreIds[$key];
             }
 
             $event->genres()->attach($selectedIds);
@@ -82,57 +82,31 @@ class DatabaseSeeder extends Seeder
                 'user_id' => $crowd->random()->id,
                 'is_verified' => false,
             ]);
-
-            $randomGenreId = $allGenreIds[array_rand($allGenreIds)];
-            
-            $event->genres()->attach($randomGenreId);
+            $event->genres()->attach($allGenreIds[array_rand($allGenreIds)]);
         }
 
+      
         $vouchEvent = Event::factory()->create([
             'title' => 'Underground Secret Session',
             'is_verified' => false,
             'user_id' => $crowd->random()->id
         ]);
-        
-        $usersForVouch = $crowd->take(2);
-        foreach ($usersForVouch as $user) {
-            $vouchEvent->vouches()->attach($user->id);
-        }
+        $vouchEvent->vouches()->attach($crowd->take(2)->pluck('id'));
 
         $pastEvents = Event::where('is_verified', true)->limit(2)->get();
         foreach ($pastEvents as $event) {
             $clubber->stampedEvents()->attach($event->id, ['scanned_at' => now()]);
         }
-        
-            try {
-                $clientExists = \Illuminate\Support\Facades\DB::table('oauth_clients')
-                    ->where('personal_access_client', 1)
-                    ->exists();
 
-                if (!$clientExists) {
-                    $clientId = \Illuminate\Support\Facades\DB::table('oauth_clients')->insertGetId([
-                        'user_id' => null,
-                        'name' => 'UnderPass Personal Access Client',
-                        'secret' => \Illuminate\Support\Str::random(40),
-                        'provider' => 'users',
-                        'redirect' => 'http://localhost',
-                        'personal_access_client' => 1,
-                        'password_client' => 0,
-                        'revoked' => 0,
-                        'created_at' => now(),
-                        'updated_at' => now(),
-                    ]);
+        if (!DB::table('oauth_clients')->where('personal_access_client', 1)->exists()) {
+            Artisan::call('passport:client', [
+                '--personal' => true,
+                '--name' => 'UnderPass Personal Access Client',
+                '--no-interaction' => true,
+            ]);
+            $this->command->info('Passport client created successfully!');
+        }
 
-                    \Illuminate\Support\Facades\DB::table('oauth_personal_access_clients')->insert([
-                        'client_id' => $clientId,
-                        'created_at' => now(),
-                        'updated_at' => now(),
-                    ]);
-
-                    $this->command->info('Personal access client created successfully.');
-                }
-            } catch (\Exception $e) {
-                $this->command->warn('Passport tables not ready yet, skipping client creation...');
-            }
+        $this->command->info('Database seeded for Underpass Barcelona.');
     }
 }
