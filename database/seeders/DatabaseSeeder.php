@@ -84,19 +84,32 @@ class DatabaseSeeder extends Seeder
         }
 
     
-        if (Schema::hasTable('oauth_clients')) {
-            if (!DB::table('oauth_clients')->where('personal_access_client', 1)->exists()) {
-                Artisan::call('passport:client', [
-                    '--personal' => true,
-                    '--name' => 'UnderPass Personal Access Client',
-                    '--no-interaction' => true,
-                ]);
-                $this->command->info('Passport client created successfully!');
+        try {
+          
+            Artisan::call('passport:install', ['--no-interaction' => true]);
+            $this->command->info('Passport installed successfully.');
+        } catch (\Exception $e) {
+          
+            $this->command->warn('Passport install failed, trying manual insertion...');
+            
+            try {
+                if (Schema::hasTable('oauth_clients')) {
+                    DB::table('oauth_clients')->updateOrInsert(
+                        ['personal_access_client' => 1],
+                        [
+                            'name' => 'UnderPass Personal Access Client',
+                            'secret' => Str::random(40),
+                            'redirect' => 'http://localhost',
+                            'password_client' => 0,
+                            'revoked' => 0,
+                            'created_at' => now(),
+                            'updated_at' => now(),
+                        ]
+                    );
+                }
+            } catch (\Exception $innerException) {
+                $this->command->error('No se pudo crear el cliente de Passport: ' . $innerException->getMessage());
             }
-        } else {
-            $this->command->warn('La tabla oauth_clients no existe todavia. Passport podria fallar.');
         }
-
-        $this->command->info('Database seeded for Underpass Barcelona.');
     }
 }
