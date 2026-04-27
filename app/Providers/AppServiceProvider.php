@@ -22,6 +22,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+      Passport::loadKeysFrom(storage_path());
+      
         if (config('app.env') === 'production') {
             URL::forceScheme('https');
         }
