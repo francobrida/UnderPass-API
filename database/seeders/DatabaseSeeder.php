@@ -104,15 +104,26 @@ class DatabaseSeeder extends Seeder
             $clubber->stampedEvents()->attach($event->id, ['stamped_at' => now()]);
         }
         
+       
         if (!\Laravel\Passport\Client::where('personal_access_client', 1)->exists()) {
-            \Illuminate\Support\Facades\Artisan::call('passport:client', [
-                '--personal' => true,
-                '--name' => 'UnderPass Personal Access Client',
-                '--no-interaction' => true,
+            \Laravel\Passport\Client::create([
+                'user_id' => null,
+                'name' => 'UnderPass Personal Access Client',
+                'secret' => Str::random(40),
+                'provider' => 'users', 
+                'redirect' => 'http://localhost',
+                'personal_access_client' => 1,
+                'password_client' => 0,
+                'revoked' => 0,
             ]);
-            $this->command->info('Passport personal client created via Artisan.');
+
+            $client = \Laravel\Passport\Client::where('personal_access_client', 1)->first();
+            \Illuminate\Support\Facades\DB::table('oauth_personal_access_clients')->insert([
+                'client_id' => $client->id,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            $this->command->info('Personal access client forced in database.');
         }
-        
-        $this->command->info('Database seeded for Underpass Barcelona.');
-    }
 }
