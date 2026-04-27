@@ -126,4 +126,5 @@ class DatabaseSeeder extends Seeder
 
             $this->command->info('Personal access client forced in database.');
         }
+    }
 }
