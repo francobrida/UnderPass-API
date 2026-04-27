@@ -212,8 +212,7 @@ test('update fails if date is in the past', function () {
 
     $response = putJson("/api/v1/events/{$event->id}", [
         'title' => 'New Title',
-        'date' => '2020-01-01', // Pasado
-        // ... enviar el resto de campos requeridos
+        'date' => '2020-01-01', 
     ]);
 
     $response->assertStatus(422)
@@ -346,7 +345,6 @@ test('waiting room returns empty array when no pending events exist', function (
     /** @var \App\Models\User $user */
     Passport::actingAs($user);
 
-    // Creamos solo un evento que YA está verificado
     Event::factory()->create(['is_verified' => true]);
 
     $response = getJson('/api/v1/events?verified=false');
@@ -428,5 +426,34 @@ test('it returns 404 if the user_id in the URL does not exist at all', function 
     $response = getJson("/api/v1/users/999/events");
 
     $response->assertStatus(404);
+});
+
+test('clubber cant create more than one unverified event', function() {
+    $user = User::factory()->create(['role' => \App\Enums\UserRole::CLUBBER]);
+    
+    Event::factory()->create([
+        'user_id' => $user->id, 
+        'is_verified' => false,
+        'date' => now()->addDays(1)->toDateString() 
+    ]);
+
+    /** @var \App\Models\User $user */
+    Passport::actingAs($user);
+
+    $response = postJson('/api/v1/events', [
+        'title' => 'Second Event',
+        'date' => now()->addDays(2)->toDateString(),
+        'price' => 10,
+        'lineup' => 'Lolo, pepe, etc',
+        'description' => 'Updated Desc',
+        'location_name' => 'New Club',
+        'neighborhood' => 'Gracia',
+        'start_time' => '23:00',
+        'end_time' => '06:00',
+        'is_18_plus' => true
+    ]);
+
+    $response->assertStatus(422)
+             ->assertJsonValidationErrors(['limit']);
 });
 

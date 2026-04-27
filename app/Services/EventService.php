@@ -5,23 +5,21 @@ namespace App\Services;
 use App\Models\Event;
 use App\Models\User;
 use App\Enums\UserRole;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\ValidationException;
 
 class EventService {
 
-    public const int VOUCHES_TO_VERIFY = 3;
-
-    public function filter(array $eventData) 
+    public function filter(array $eventData): Collection
     {
         $query = Event::with(['organizer', 'genres']);
 
         if (isset($eventData['verified']) && $eventData['verified'] === 'false') {
-            // WAITING ROOM
             $query->where('is_verified', false)->latest();
         } else {
-            // MAIN DASHBOARD
             $query->where('is_verified', true)
                 ->where('date', '>=', now()->toDateString()); 
         }
@@ -45,24 +43,30 @@ class EventService {
         }
 
         $order = $eventData['price'] ?? null;
-
-        if ($order === 'asc' || $order === 'desc') {
-            $query->orderBy('price', $order);
-        } else {
-            $query->orderBy('date', 'asc');
-        }
+        $order === 'asc' || $order === 'desc' ? $query->orderBy('price', $order) : $query->orderBy('date', 'asc');
 
         return $query->get();
-
     }
 
-    public function store($user, array $eventData, $file = null)
+    public function store(User $user, array $eventData, $file = null): Event
     {
+        
+        if ($user->role === UserRole::CLUBBER) {
+            $activeEventsCount = $user->events()
+                ->where('date', '>=', now()->toDateString())
+                ->count();
+
+            if ($activeEventsCount >= 1) {
+                throw ValidationException::withMessages([
+                    'limit' => 'As a Clubber, you can only have one active event. Get verified to unlock more slots!'
+                ]);
+            }
+        }
+
         $eventData['price_info'] = $this->processPriceInfo($eventData);
         $eventData['stamp_token'] = Str::random(32); 
         $eventData['is_verified'] = false; 
 
-        
         if ($file) {
             $eventData['flyer'] = $file->store('flyers', 'public');
         }
@@ -84,29 +88,18 @@ class EventService {
         return $event;
     }
 
-    private function processPriceInfo(array $eventData): string 
-    {
-        if (!empty($eventData['price_info'])) return $eventData['price_info'];
-        return ($eventData['price'] ?? 0) == 0 ? 'Entrada gratuita' : '';
-    }
-
-    public function update(User $user, Event $event, array $eventData, $file = null)
+    public function update(User $user, Event $event, array $eventData, $file = null): Event
     {
         $eventData['price_info'] = $this->processPriceInfo($eventData);
 
-    
         if ($file) {
-            if ($event->flyer) {
-                Storage::disk('public')->delete($event->flyer);
-            }
+            if ($event->flyer) Storage::disk('public')->delete($event->flyer);
             $eventData['flyer'] = $file->store('flyers', 'public');
         }
 
-      
+       
         if ($user->role !== UserRole::ADMIN) {
-            $eventData['is_verified'] = false; 
-        } else {
-            $eventData['is_verified'] = $eventData['is_verified'] ?? $event->is_verified;
+            $eventData['is_verified'] = false;
         }
 
         $event->update($eventData);
@@ -118,47 +111,17 @@ class EventService {
         return $event;
     }
 
-    public function delete($event)
+    public function delete(Event $event): bool
     {
         if ($event->flyer) {
             Storage::disk('public')->delete($event->flyer);
         }
-        
         return $event->delete();
     }
 
-    public function vouch($event, $user)
+    private function processPriceInfo(array $eventData): string 
     {
-        $event->vouches()->attach($user->id);
-
-        return $this->verifyEvent($event);
+        if (!empty($eventData['price_info'])) return $eventData['price_info'];
+        return ($eventData['price'] ?? 0) == 0 ? 'Entrada gratuita' : '';
     }
-
-    public function processFlyer(Event $event, $file) {
-        if ($file) {
-            if ($event->flyer) {
-                Storage::disk('public')->delete($event->flyer);
-            }
-            return $file->store('flyers', 'public');
-        }
-        return $event->flyer;
-    }
-
-    public function verifyEvent(Event $event): bool 
-    {
-        if ($event->is_verified) return true;
-
-        if ($event->vouches()->count() >= self::VOUCHES_TO_VERIFY) {
-            $event->update(['is_verified' => true]);
-
-            $owner = $event->organizer; 
-            
-            if ($owner && $owner->role === UserRole::CLUBBER) {
-                $owner->update(['role' => UserRole::ORGANIZER]);
-            }
-            return true;
-        }
-        return false;
-    }
-
 }

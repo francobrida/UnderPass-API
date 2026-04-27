@@ -3,7 +3,9 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use Laravel\Passport\Passport;
+use App\Models\Vouch;
+use App\Observers\VouchObserver;
+use Illuminate\Support\Facades\URL;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -21,5 +23,11 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
       Passport::loadKeysFrom(storage_path());
+      
+        if (config('app.env') === 'production') {
+            URL::forceScheme('https');
+        }
+
+        Vouch::observe(VouchObserver::class);
     }
 }

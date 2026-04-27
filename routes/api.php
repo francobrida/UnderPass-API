@@ -13,6 +13,13 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
     
+    Route::get('/', function () {
+        return response()->json([
+            'message' => 'Welcome to UnderPass API v1',
+            'status' => 'Connected'
+        ]);
+    });
+    
     Route::post('/login', [AuthController::class, 'login']);
     Route::post('/register', [AuthController::class, 'register']);
 
