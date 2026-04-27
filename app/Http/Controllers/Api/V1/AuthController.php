@@ -20,8 +20,13 @@ class AuthController extends Controller
     public function login(LoginRequest $request): JsonResponse
     {
         $credentials = $request->validated();
-
         $user = User::where('email', $credentials['email'])->first();
+
+        if (!$user) {
+            \Illuminate\Support\Facades\Log::warning("Login fallido: Usuario no encontrado: " . $credentials['email']);
+        } elseif (!Hash::check($credentials['password'], $user->password)) {
+            \Illuminate\Support\Facades\Log::warning("Login fallido: Contraseña incorrecta para: " . $credentials['email']);
+        }
 
         if (!$user || !Hash::check($credentials['password'], $user->password)) {
             return response()->json(['message' => 'Invalid credentials'], 401);

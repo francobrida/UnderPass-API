@@ -34,21 +34,21 @@ class DatabaseSeeder extends Seeder
             'name' => 'Admin Underpass',
             'email' => 'admin@underpass.com',
             'role' => UserRole::ADMIN,
-            'password' => \Illuminate\Support\Facades\Hash::make('password'),
+            'password' => 'password',
         ]);
 
         $organizer = User::factory()->create([
             'name' => 'Main Organizer',
             'email' => 'organizer@test.com',
             'role' => UserRole::ORGANIZER,
-            'password' => \Illuminate\Support\Facades\Hash::make('password'),
+            'password' => 'password',
         ]);
 
         $clubber = User::factory()->create([
             'name' => 'Pepe Clubber',
             'email' => 'clubber@test.com',
             'role' => UserRole::CLUBBER,
-            'password' => \Illuminate\Support\Facades\Hash::make('password'),
+            'password' =>  'password',
         ]);
 
         $crowd = User::factory(10)->create();
