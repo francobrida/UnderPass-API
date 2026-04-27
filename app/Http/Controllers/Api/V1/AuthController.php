@@ -28,6 +28,11 @@ class AuthController extends Controller
             \Illuminate\Support\Facades\Log::warning("Login fallido: Contraseña incorrecta para: " . $credentials['email']);
         }
 
+        \Illuminate\Support\Facades\Log::info("Intento de login para: " . $credentials['email']);
+        if (!$user) {
+            \Illuminate\Support\Facades\Log::error("USUARIO NO ENCONTRADO EN DB");
+        }
+        
         if (!$user || !Hash::check($credentials['password'], $user->password)) {
             return response()->json(['message' => 'Invalid credentials'], 401);
         }
