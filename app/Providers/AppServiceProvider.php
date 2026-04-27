@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use App\Models\Vouch;
+use Laravel\Passport\Passport;
 use App\Observers\VouchObserver;
 use Illuminate\Support\Facades\URL;
 
