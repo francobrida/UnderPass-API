@@ -39,4 +39,10 @@ class User extends Authenticatable
     {
         return $this->hasMany(Stamp::class);
     }
+
+    public function stampedEvents() {
+        return $this->belongsToMany(Event::class, 'stamps')
+                ->withPivot('scanned_at')
+                ->withTimestamps();
+    }
 }
