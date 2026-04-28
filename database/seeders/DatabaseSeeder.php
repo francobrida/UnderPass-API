@@ -9,33 +9,12 @@ use App\Models\VibeCheck;
 use App\Enums\UserRole;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Artisan;
+
 
 class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        
-        if (DB::table('oauth_clients')->where('personal_access_client', 1)->doesntExist()) {
-            $clientId = DB::table('oauth_clients')->insertGetId([
-                'name' => 'UnderPass Personal Access Client',
-                'secret' => Str::random(40),
-                'provider' => 'users',
-                'redirect' => 'http://localhost',
-                'personal_access_client' => 1,
-                'password_client' => 0,
-                'revoked' => 0,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
-
-            DB::table('oauth_personal_access_clients')->insert([
-                'client_id' => $clientId,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
-        }
 
         $genreNames = ['Techno', 'Industrial', 'House', 'Drum n Bass', 'Electro Pop', 'Acid'];
         $allGenreIds = [];
