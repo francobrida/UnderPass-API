@@ -26,12 +26,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        if (class_exists('Laravel\Passport\Passport')) {
-            $passport = 'Laravel\Passport\Passport';
-            $passport::ignoreCryptoKeys();
-            $passport::personalAccessClientId(1);
-        }
-
         Vouch::observe(VouchObserver::class);
     }
 }
