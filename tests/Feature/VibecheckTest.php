@@ -131,7 +131,7 @@ test('an organizer can view vibechecks for their own event', function () {
     $event = Event::factory()->create(['user_id' => $organizer->id]);
     
 
-    Vibecheck::create([
+    VibeCheck::create([
         'user_id' => User::factory()->create()->id,
         'event_id' => $event->id,
         'sound_score' => 5,
@@ -149,7 +149,7 @@ test('an organizer can view vibechecks for their own event', function () {
 });
 
 test('admin can delete any vibecheck', function () {
-    $vibecheck = Vibecheck::factory()->create();
+    $vibecheck = VibeCheck::factory()->create();
     $admin = User::factory()->create(['role' => UserRole::ADMIN]);
 
     /** @var \App\Models\User $admin */
@@ -158,5 +158,5 @@ test('admin can delete any vibecheck', function () {
     $response = deleteJson("/api/v1/vibechecks/{$vibecheck->id}");
 
     $response->assertStatus(204);
-    assertDatabaseMissing('vibechecks', ['id' => $vibecheck->id]);
+    assertDatabaseMissing('vibe_checks', ['id' => $vibecheck->id]);
 });

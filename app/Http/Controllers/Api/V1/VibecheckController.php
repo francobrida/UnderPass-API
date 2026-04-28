@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Models\Event;
-use App\Models\Vibecheck;
+use App\Models\VibeCheck;
 use App\Enums\UserRole;
 use App\Http\Requests\V1\StoreVibecheckRequest;
 use App\Services\VibecheckService;
