@@ -99,7 +99,7 @@ class DatabaseSeeder extends Seeder
 
         $pastEvents = Event::where('is_verified', true)->limit(2)->get();
         foreach ($pastEvents as $event) {
-            $clubber->stampedEvents()->attach($event->id, ['stamped_at' => now()]);
+            $clubber->stampedEvents()->attach($event->id, ['scanned_at' => now()]);
         }
         
         $this->command->info('Database seeded for Underpass Barcelona.');
