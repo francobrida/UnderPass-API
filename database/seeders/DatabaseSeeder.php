@@ -16,7 +16,27 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-       
+        
+        if (DB::table('oauth_clients')->where('personal_access_client', 1)->doesntExist()) {
+            $clientId = DB::table('oauth_clients')->insertGetId([
+                'name' => 'UnderPass Personal Access Client',
+                'secret' => Str::random(40),
+                'provider' => 'users',
+                'redirect' => 'http://localhost',
+                'personal_access_client' => 1,
+                'password_client' => 0,
+                'revoked' => 0,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            DB::table('oauth_personal_access_clients')->insert([
+                'client_id' => $clientId,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+
         $genreNames = ['Techno', 'Industrial', 'House', 'Drum n Bass', 'Electro Pop', 'Acid'];
         $allGenreIds = [];
         
@@ -28,7 +48,6 @@ class DatabaseSeeder extends Seeder
             $allGenreIds[] = $genre->id;
         }
 
-        
         $admin = User::where('email', 'admin@underpass.com')->first();
         if (!$admin) {
             $admin = User::factory()->create([
@@ -88,19 +107,6 @@ class DatabaseSeeder extends Seeder
             foreach ($pastEvents as $event) {
                 $clubber->stampedEvents()->syncWithoutDetaching([$event->id => ['scanned_at' => now()]]);
             }
-        }
-
-        $clientExists = DB::table('oauth_clients')
-            ->where('personal_access_client', 1)
-            ->exists();
-
-        if (!$clientExists) {
-            $this->command->info('Configurando cliente personal de Passport...');
-            Artisan::call('passport:client', [
-                '--personal' => true,
-                '--name' => 'UnderPass Personal Access Client',
-                '--no-interaction' => true
-            ]);
         }
 
         $this->command->info('Database seeded and checked for Underpass Barcelona.');
