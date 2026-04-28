@@ -5,7 +5,7 @@ namespace Database\Seeders;
 use App\Models\User;
 use App\Models\Event;
 use App\Models\Genre;
-use App\Models\Vibecheck;
+use App\Models\VibeCheck;
 use App\Enums\UserRole;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
@@ -78,7 +78,7 @@ class DatabaseSeeder extends Seeder
 
             $event->genres()->attach($selectedIds);
 
-            Vibecheck::create([
+            VibeCheck::create([
                 'event_id' => $event->id,
                 'user_id' => $crowd->random()->id,
                 'sound_score' => rand(3, 5),
