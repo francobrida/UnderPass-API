@@ -28,14 +28,13 @@ class AppServiceProvider extends ServiceProvider
     {
       Passport::loadKeysFrom(storage_path());
       
-        if (config('app.env') === 'production') {
-            URL::forceScheme('https');
-        }
-        
-        if (config('app.env') === 'production' && Schema::hasTable('users')) {
-            if (User::count() === 0) {
-                Artisan::call('db:seed', ['--force' => true]);
-                Artisan::call('passport:install', ['--force' => true]);
+        if (!app()->runningInConsole() && config('app.env') === 'production') {
+            try {
+                if (Schema::hasTable('users') && \App\Models\User::count() === 0) {
+                    Artisan::call('db:seed', ['--force' => true]);
+                    Artisan::call('passport:install', ['--force' => true]);
+                }
+            } catch (\Exception $e) {
             }
         }
 
