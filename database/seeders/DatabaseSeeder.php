@@ -86,6 +86,14 @@ class DatabaseSeeder extends Seeder
             $clubber->stampedEvents()->attach($event->id, ['scanned_at' => now()]);
         }
 
+        $this->command->info('Configurando Passport...');
+        
+        \Illuminate\Support\Facades\Artisan::call('passport:client', [
+            '--personal' => true,
+            '--name' => 'UnderPass Personal Access Client',
+            '--no-interaction' => true
+        ]);
+
         $this->command->info('Database seeded for Underpass Barcelona.');
     }
 }
