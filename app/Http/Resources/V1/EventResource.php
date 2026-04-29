@@ -23,10 +23,14 @@ class EventResource extends JsonResource
             'price'     => (float) $this->price,
             'is_18_plus'    => (bool) $this->is_18_plus,
             'is_verified'   => (bool) $this->is_verified,
+            'flyer'   => $this->flyer,
             'organizer'     => $this->organizer?->name, 
             'vouch_count'   => $this->vouches_count ?? $this->vouches()->count(),
             'created_at'    => $this->created_at->toDateTimeString(),
             'can_vibe_check' => $this->isReadyForVibeCheck(),
+            'has_vouched' => $this->vouches()->where('user_id', auth()->id())->exists(),
+            'is_mine' => $this->user_id === auth()->id(),
+            
         ];
     }
 }

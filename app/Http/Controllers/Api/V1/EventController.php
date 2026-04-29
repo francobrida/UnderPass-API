@@ -88,7 +88,7 @@ class EventController extends Controller
             ], 403);
         }
 
-        $event->load('organizer')->loadCount('vouches');
+        $event->load(['organizer', 'genres'])->loadCount('vouches');
 
         return (new EventResource($event))->response();
     }
@@ -107,4 +107,10 @@ class EventController extends Controller
 
         return EventResource::collection($events)->response();
     }
+
+    public function neighborhoods() {
+        return Event::where('is_verified', true)->distinct()->pluck('neighborhood');
+    }
+
+    
 }
