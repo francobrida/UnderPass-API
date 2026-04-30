@@ -7,19 +7,33 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
 /**
- * @bodyParam name string Example: Lolo Techno
- * @bodyParam email email Example: fran@underpass.app
- * @bodyParam password string Example: password123
- * @bodyParam password_confirmation string Example: password123
+ * @authenticated
+ * @header Authorization Bearer {token}
+ * 
+ * @bodyParam name string optional The user's full name. Example: Lolo Techno
+ * @bodyParam email string optional A unique email address. Example: fran@underpass.app
+ * @bodyParam password string optional New password (minimum 8 characters). Example: password123
+ * @bodyParam password_confirmation string optional Must match the password field. Example: password123
  */
 class UpdateUserRequest extends FormRequest
 {
-    
+    /**
+     * Determine if the user is authorized to make this request.
+     * Publicly accessible to any authenticated user modifying their own profile.
+     */
     public function authorize(): bool
     {
         return true;
     }
 
+    /**
+     * Get the validation rules that apply to the request.
+     * 
+     * Uses 'sometimes' to support partial updates. The unique email rule 
+     * ignores the current authenticated user's ID to allow saving without changes.
+     *
+     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     */
     public function rules(): array
     {
         return [

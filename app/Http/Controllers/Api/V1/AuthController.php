@@ -11,31 +11,37 @@ use App\Enums\UserRole;
 use App\Http\Requests\V1\Auth\{RegisterRequest, LoginRequest};
 
 
+/**
+ * @group Authentication
+ * 
+ * Endpoints for managing user access, registration, and logout sessions.
+ */
 class AuthController extends Controller
 {
     /**
      * Login user.
+     * 
+     * Authenticates a user with email and password, returning a Personal Access Token (Passport).
+     * 
      * @unauthenticated
+     * @response 200 {
+     *  "message": "Login successful",
+     *  "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6...",
+     *  "token_type": "Bearer",
+     *  "user": {
+     *      "id": 1,
+     *      "name": "Pepe Clubber",
+     *      "role": "clubber"
+     *  }
+     * }
+     * @response 401 {
+     *  "message": "Invalid credentials"
+     * }
      */
     public function login(LoginRequest $request): JsonResponse
     {
         $credentials = $request->validated();
         $user = User::where('email', $credentials['email'])->first();
-
-        if (!$user) {
-            \Illuminate\Support\Facades\Log::warning("Login fallido: Usuario no encontrado: " . $credentials['email']);
-        } elseif (!Hash::check($credentials['password'], $user->password)) {
-            \Illuminate\Support\Facades\Log::warning("Login fallido: Contraseña incorrecta para: " . $credentials['email']);
-        }
-
-        \Illuminate\Support\Facades\Log::info("Intento de login para: " . $credentials['email']);
-        if (!$user) {
-            \Illuminate\Support\Facades\Log::error("USUARIO NO ENCONTRADO EN DB");
-        }
-        
-        if (!$user || !Hash::check($credentials['password'], $user->password)) {
-            return response()->json(['message' => 'Invalid credentials'], 401);
-        }
 
         $token = $user->createToken('auth_token')->accessToken;
 
@@ -52,9 +58,22 @@ class AuthController extends Controller
     }
 
     /**
-     * Register a new user.
+     * Register user.
+     * 
+     * Creates a new "Clubber" account and returns the initial access token.
+     * 
      * @unauthenticated
-     * @bodyParam password_confirmation string required Same pass as above. Example: secret1234
+     * @bodyParam password_confirmation string required Must match the password field. Example: secret1234
+     * @response 201 {
+     *  "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6...",
+     *  "token_type": "Bearer",
+     *  "user": {
+     *      "id": 5,
+     *      "name": "Pepe lolo",
+     *      "email": "pepe@example.com",
+     *      "role": "clubber"
+     *  }
+     * }
      */
     public function register(RegisterRequest $request): JsonResponse
     {
@@ -80,6 +99,16 @@ class AuthController extends Controller
         ], 201);
     }
 
+    /**
+     * Logout.
+     * 
+     * Revokes the current access token for the authenticated user.
+     * 
+     * @authenticated
+     * @response 200 {
+     *  "message": "Session successfully logged out"
+     * }
+     */
     public function logout(Request $request): JsonResponse
     {
         /** @var \App\Models\User $user */

@@ -1,0 +1,230 @@
+name: Authentication
+description: |-
+
+  Endpoints for managing user access, registration, and logout sessions.
+endpoints:
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: api/v1/login
+    metadata:
+      custom: []
+      groupName: Authentication
+      groupDescription: |-
+
+        Endpoints for managing user access, registration, and logout sessions.
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Login user.'
+      description: 'Authenticates a user with email and password, returning a Personal Access Token (Passport).'
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      email:
+        custom: []
+        name: email
+        description: "The user's registered email address."
+        required: true
+        example: admin@underpass.app
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      password:
+        custom: []
+        name: password
+        description: 'The account password.'
+        required: true
+        example: password123
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      email: admin@underpass.app
+      password: password123
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: |-
+          {
+           "message": "Login successful",
+           "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6...",
+           "token_type": "Bearer",
+           "user": {
+               "id": 1,
+               "name": "Pepe Clubber",
+               "role": "clubber"
+           }
+          }
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 401
+        content: |-
+          {
+           "message": "Invalid credentials"
+          }
+        headers: []
+        description: ''
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: api/v1/register
+    metadata:
+      custom: []
+      groupName: Authentication
+      groupDescription: |-
+
+        Endpoints for managing user access, registration, and logout sessions.
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Register user.'
+      description: 'Creates a new "Clubber" account and returns the initial access token.'
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      name:
+        custom: []
+        name: name
+        description: "The user's full name."
+        required: true
+        example: 'Lolo Techno'
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      email:
+        custom: []
+        name: email
+        description: 'A valid and unique email address.'
+        required: true
+        example: fran@underpass.app
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      password:
+        custom: []
+        name: password
+        description: 'Must be at least 8 characters.'
+        required: true
+        example: password123
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      password_confirmation:
+        custom: []
+        name: password_confirmation
+        description: 'Must match the password field.'
+        required: true
+        example: password123
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      name: 'Lolo Techno'
+      email: fran@underpass.app
+      password: password123
+      password_confirmation: password123
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 201
+        content: |-
+          {
+           "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6...",
+           "token_type": "Bearer",
+           "user": {
+               "id": 5,
+               "name": "Pepe lolo",
+               "email": "pepe@example.com",
+               "role": "clubber"
+           }
+          }
+        headers: []
+        description: ''
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: api/v1/logout
+    metadata:
+      custom: []
+      groupName: Authentication
+      groupDescription: |-
+
+        Endpoints for managing user access, registration, and logout sessions.
+      subgroup: ''
+      subgroupDescription: ''
+      title: Logout.
+      description: 'Revokes the current access token for the authenticated user.'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: |-
+          {
+           "message": "Session successfully logged out"
+          }
+        headers: []
+        description: ''
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null

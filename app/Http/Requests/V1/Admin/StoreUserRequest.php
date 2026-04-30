@@ -7,19 +7,31 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
 
 /**
- * @bodyParam name string required Example: Pepe Organizer
- * @bodyParam email email required Example: Pepe@club.com
- * @bodyParam role string required The user's role (admin, organizer, clubber). Example: organizer
- * @bodyParam password string required Example: secret1234
- * @bodyParam password_confirmation required string Example: secret1234
+ * @authenticated
+ * @header Authorization Bearer {token}
+ * 
+ * @bodyParam name string required The full name of the user. Example: Pepe Organizer
+ * @bodyParam email string required A unique email address. Example: pepe@club.com
+ * @bodyParam role string required The system role assigned to the user (admin, organizer, clubber). Example: organizer
+ * @bodyParam password string required Must be at least 8 characters. Example: secret1234
+ * @bodyParam password_confirmation string required Must match the password field. Example: secret1234
  */
 class StoreUserRequest extends FormRequest
 {
+    /**
+     * Determine if the user is authorized to make this request.
+     * Restricted to users with the ADMIN role.
+     */
     public function authorize(): bool
     {
         return $this->user()->role === UserRole::ADMIN;
     }
 
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     */
     public function rules(): array
     {
         return [
@@ -30,4 +42,3 @@ class StoreUserRequest extends FormRequest
         ];
     }
 }
-
