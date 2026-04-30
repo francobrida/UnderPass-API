@@ -14,13 +14,28 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
-
+/**
+ * @group Events
+ * 
+ * Management of the event agenda, club sessions, and parties for Underpass Barcelona.
+ */
 class EventController extends Controller
 {
     use AuthorizesRequests;
 
     public function __construct(private EventService $eventService){}
 
+    /**
+     * List events.
+     * 
+     * Retrieves a filterable list of verified events. Includes organizer details and musical genres.
+     * 
+     * @queryParam neighborhood string Filter by neighborhood (e.g., Poblenou, Gràcia). Example: Poblenou
+     * @queryParam date string Filter by specific date (Y-m-d). Example: 2026-05-15
+     * 
+     * @apiResourceCollection App\Http\Resources\V1\EventResource
+     * @apiResourceModel App\Models\Event
+     */
     public function index(Request $request): JsonResponse
     {
         $events = $this->eventService->filter($request->all());
@@ -30,6 +45,19 @@ class EventController extends Controller
         return EventResource::collection($events)->response();
     }
 
+    /**
+     * Create event.
+     * 
+     * Registers a new event in the platform. Upon creation, the event is set to "pending verification" status.
+     * 
+     * @authenticated
+     * @bodyParam flyer file optional Event image (jpg, png).
+     * 
+     * @response 201 {
+     *  "message": "Event created successfully, pending verification",
+     *  "data": { "id": 1, "title": "Techno Night", "is_verified": false }
+     * }
+     */
     public function store(StoreEventRequest $request): JsonResponse
     {
         $event = $this->eventService->store(
@@ -45,19 +73,25 @@ class EventController extends Controller
     }
 
     /**
-     * Edit own event.
-     * * This endpoint allows an organizer to update the details of an event they created.
-     * * @urlParam id int required The ID of the event to edit. Example: 1
+     * Update event.
+     * 
+     * Allows an organizer to modify their event details. If a new flyer is uploaded, the previous one is replaced.
+     * 
+     * @authenticated
+     * @urlParam id int required The ID of the event. Example: 1
+     * 
+     * @apiResource App\Http\Resources\V1\EventResource
+     * @apiResourceModel App\Models\Event
      */
     public function update(UpdateEventRequest $request, $id): JsonResponse
     {
         $event = Event::findOrFail($id);
 
         $updatedEvent = $this->eventService->update(
-            $request->user(),      // the user
-            $event,               // the model Event
-            $request->validated(), // validated data
-            $request->file('flyer') // file (optional)
+            $request->user(),
+            $event,
+            $request->validated(),
+            $request->file('flyer')
         );
 
         return response()->json([
@@ -66,6 +100,18 @@ class EventController extends Controller
         ], 200);
     }
 
+    /**
+     * Delete event.
+     * 
+     * Permanently removes an event from the system. Only allowed for the creator or administrators.
+     * 
+     * @authenticated
+     * @urlParam id int required The ID of the event. Example: 1
+     * 
+     * @response 200 {
+     *  "message": "Event successfully deleted"
+     * }
+     */
     public function destroy(int $id): JsonResponse
     {
         $event = Event::findOrFail($id);
@@ -78,6 +124,20 @@ class EventController extends Controller
         ], 200);
     }
 
+    /**
+     * Get event details.
+     * 
+     * Displays complete information for a specific event, including loaded genres and vouch count.
+     * 
+     * @authenticated
+     * @urlParam id int required The ID of the event. Example: 1
+     * 
+     * @apiResource App\Http\Resources\V1\EventResource
+     * @apiResourceModel App\Models\Event
+     * @response 403 {
+     *  "message": "This event is pending verification and is not public yet."
+     * }
+     */
     public function show(Request $request, int $id): JsonResponse
     {
         $event = Event::findOrFail($id);
@@ -93,6 +153,17 @@ class EventController extends Controller
         return (new EventResource($event))->response();
     }
 
+    /**
+     * Get own events.
+     * 
+     * Returns events created by the authenticated user, sorted by creation date.
+     * 
+     * @authenticated
+     * @urlParam user_id int required The ID of the organizer. Example: 3
+     * 
+     * @apiResourceCollection App\Http\Resources\V1\EventResource
+     * @apiResourceModel App\Models\Event
+     */
     public function getUserEvents(int $user_id): JsonResponse
     {
         $user = User::findOrFail($user_id);
@@ -108,9 +179,14 @@ class EventController extends Controller
         return EventResource::collection($events)->response();
     }
 
+    /**
+     * List neighborhoods with events.
+     * 
+     * Retrieves a list of neighborhood names that currently have at least one verified active event.
+     * 
+     * @response ["Poblenou", "Eixample", "Gràcia"]
+     */
     public function neighborhoods() {
         return Event::where('is_verified', true)->distinct()->pluck('neighborhood');
     }
-
-    
 }
