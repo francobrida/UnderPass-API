@@ -35,7 +35,6 @@ class UpdateUserRequest extends FormRequest
      */
     public function rules(): array
     {
-        // Extracts ID whether the route binding is an object or an integer
         $userId = $this->route('user')->id ?? $this->route('user');
 
         return [
@@ -48,6 +47,7 @@ class UpdateUserRequest extends FormRequest
                 'unique:users,email,' . $userId
             ],
             'role'  => ['sometimes', new Enum(UserRole::class)],
+            'points' => ['sometimes', 'integer', 'min:0'],
         ];
     }
 }
