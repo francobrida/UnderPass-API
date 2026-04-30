@@ -6,6 +6,50 @@ endpoints:
   -
     custom: []
     httpMethods:
+      - GET
+    uri: api/v1
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"message":"Welcome to UnderPass API v1","status":"Connected"}'
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+          access-control-allow-origin: '*'
+        description: null
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
       - POST
     uri: api/v1/login
     metadata:
@@ -1524,7 +1568,7 @@ endpoints:
         name: role
         description: ''
         required: false
-        example: organizer
+        example: admin
         type: string
         enumValues:
           - admin
@@ -1536,7 +1580,7 @@ endpoints:
     cleanBodyParameters:
       name: 'Lolo Techno'
       email: fran@underpass.app
-      role: organizer
+      role: admin
     fileParameters: []
     responses: []
     responseFields: []
