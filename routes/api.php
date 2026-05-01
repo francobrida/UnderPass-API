@@ -1,7 +1,8 @@
 <?php
 
 use App\Http\Controllers\Api\V1\{AuthController, GenreController, EventController, 
-VouchController, VibecheckController, UserController, StampController, RankingController};
+VouchController, VibecheckController, UserController, StampController, 
+RankingController, NeighborhoodController};
 use App\Http\Controllers\Api\V1\Admin\UserController as AdminUserController;
 use Illuminate\Support\Facades\Route;
 
@@ -29,6 +30,7 @@ Route::prefix('v1')->group(function () {
         Route::delete('/events/{id}', [EventController::class, 'destroy']);
 
         Route::get('genres', [GenreController::class, 'index']);
+        Route::get('neighborhoods', [NeighborhoodController::class, 'index']);
 
         Route::get('/events/{id}', [EventController::class, 'show']);
         Route::get('/users/{user_id}/events', [EventController::class, 'getUserEvents']);

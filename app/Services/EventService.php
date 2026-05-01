@@ -28,7 +28,8 @@ class EventService {
             $search = '%' . $eventData['search'] . '%';
             $query->where(function($each) use ($search) {
                 $each->where('title', 'like', $search)
-                ->orWhere('lineup', 'like', $search);
+                ->orWhere('lineup', 'like', $search)
+                ->orWhere('location_name', 'like', $search); 
             });
         }
 
