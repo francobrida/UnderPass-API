@@ -1,12 +1,7 @@
 <?php
 
-use App\Http\Controllers\Api\V1\AuthController;
-use App\Http\Controllers\Api\V1\UserController;
-use App\Http\Controllers\Api\V1\EventController;
-use App\Http\Controllers\Api\V1\VouchController;
-use App\Http\Controllers\Api\V1\VibecheckController;
-use App\Http\Controllers\Api\V1\StampController;
-use App\Http\Controllers\Api\V1\RankingController;
+use App\Http\Controllers\Api\V1\{AuthController, GenreController, EventController, 
+VouchController, VibecheckController, UserController, StampController, RankingController};
 use App\Http\Controllers\Api\V1\Admin\UserController as AdminUserController;
 use Illuminate\Support\Facades\Route;
 
@@ -32,6 +27,9 @@ Route::prefix('v1')->group(function () {
         Route::post('/events', [EventController::class, 'store']);
         Route::put('/events/{id}', [EventController::class, 'update']);
         Route::delete('/events/{id}', [EventController::class, 'destroy']);
+
+        Route::get('genres', [GenreController::class, 'index']);
+
         Route::get('/events/{id}', [EventController::class, 'show']);
         Route::get('/users/{user_id}/events', [EventController::class, 'getUserEvents']);
         Route::post('/events/{id}/vouches', [VouchController::class, 'store']);
