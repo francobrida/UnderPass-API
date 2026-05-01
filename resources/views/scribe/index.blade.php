@@ -125,6 +125,9 @@
                                                                                 <li class="tocify-item level-2" data-unique="events-GETapi-v1-genres">
                                 <a href="#events-GETapi-v1-genres">List all genres.</a>
                             </li>
+                                                                                <li class="tocify-item level-2" data-unique="events-GETapi-v1-neighborhoods">
+                                <a href="#events-GETapi-v1-neighborhoods">List active neighborhoods.</a>
+                            </li>
                                                                                 <li class="tocify-item level-2" data-unique="events-GETapi-v1-events--id-">
                                 <a href="#events-GETapi-v1-events--id-">Get event details.</a>
                             </li>
@@ -1265,7 +1268,7 @@ fetch(url, {
 <code class="language-json" style="max-height: 300px;">{
     &quot;data&quot;: [
         {
-            &quot;id&quot;: 21,
+            &quot;id&quot;: 29,
             &quot;title&quot;: &quot;Adipisci quidem nostrum qui.&quot;,
             &quot;lineup&quot;: &quot;Miss Jazlyn Keebler III, Ferne Fritsch&quot;,
             &quot;description&quot;: &quot;Autem et consequatur aut dolores enim non facere tempora. Voluptatem laboriosam praesentium quis adipisci.&quot;,
@@ -1282,13 +1285,13 @@ fetch(url, {
             &quot;flyer&quot;: &quot;images/flyers/party2.jpg&quot;,
             &quot;organizer&quot;: &quot;Prof. Kyla Kutch DDS&quot;,
             &quot;vouch_count&quot;: 0,
-            &quot;created_at&quot;: &quot;2026-05-01 08:23:54&quot;,
+            &quot;created_at&quot;: &quot;2026-05-01 08:44:58&quot;,
             &quot;can_vibe_check&quot;: false,
             &quot;has_vouched&quot;: false,
             &quot;is_mine&quot;: false
         },
         {
-            &quot;id&quot;: 22,
+            &quot;id&quot;: 30,
             &quot;title&quot;: &quot;Dignissimos neque.&quot;,
             &quot;lineup&quot;: &quot;Gerhard Beier, Emanuel Emmerich&quot;,
             &quot;description&quot;: &quot;Repudiandae laboriosam est alias tenetur ratione. Voluptate accusamus ut et recusandae. Rerum ex repellendus assumenda et.&quot;,
@@ -1305,7 +1308,7 @@ fetch(url, {
             &quot;flyer&quot;: &quot;images/flyers/party2.jpg&quot;,
             &quot;organizer&quot;: &quot;Rosario Grady&quot;,
             &quot;vouch_count&quot;: 0,
-            &quot;created_at&quot;: &quot;2026-05-01 08:23:54&quot;,
+            &quot;created_at&quot;: &quot;2026-05-01 08:44:58&quot;,
             &quot;can_vibe_check&quot;: false,
             &quot;has_vouched&quot;: false,
             &quot;is_mine&quot;: false
@@ -1888,7 +1891,7 @@ fetch(url, {
 
 <code class="language-json" style="max-height: 300px;">{
     &quot;data&quot;: {
-        &quot;id&quot;: 23,
+        &quot;id&quot;: 31,
         &quot;title&quot;: &quot;Et animi quos.&quot;,
         &quot;lineup&quot;: &quot;Aleen O&#039;Kon, Justina Gaylord&quot;,
         &quot;description&quot;: &quot;Modi deserunt aut ab provident perspiciatis. Omnis nostrum aut adipisci quidem nostrum qui commodi. Iure odit et et modi ipsum nostrum omnis. Et consequatur aut dolores enim.&quot;,
@@ -1905,7 +1908,7 @@ fetch(url, {
         &quot;flyer&quot;: &quot;images/flyers/party1.jpg&quot;,
         &quot;organizer&quot;: &quot;Mrs. Abbey Gaylord MD&quot;,
         &quot;vouch_count&quot;: 0,
-        &quot;created_at&quot;: &quot;2026-05-01 08:23:55&quot;,
+        &quot;created_at&quot;: &quot;2026-05-01 08:44:59&quot;,
         &quot;can_vibe_check&quot;: false,
         &quot;has_vouched&quot;: false,
         &quot;is_mine&quot;: false
@@ -2520,6 +2523,145 @@ You can check the Dev Tools console for debugging information.</code></pre>
             </div>
                         </form>
 
+                    <h2 id="events-GETapi-v1-neighborhoods">List active neighborhoods.</h2>
+
+<p>
+<small class="badge badge-darkred">requires authentication</small>
+</p>
+
+<p>Retrieves a unique list of neighborhoods where events are currently scheduled.</p>
+
+<span id="example-requests-GETapi-v1-neighborhoods">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request GET \
+    --get "http://localhost:8000/api/v1/neighborhoods" \
+    --header "Authorization: Bearer {YOUR_AUTH_KEY}" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost:8000/api/v1/neighborhoods"
+);
+
+const headers = {
+    "Authorization": "Bearer {YOUR_AUTH_KEY}",
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+
+fetch(url, {
+    method: "GET",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-GETapi-v1-neighborhoods">
+            <blockquote>
+            <p>Example response (200):</p>
+        </blockquote>
+                <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;data&quot;: [
+        &quot;Poble Espanyol&quot;,
+        &quot;Poblenou&quot;,
+        &quot;Eixample&quot;
+    ]
+}</code>
+ </pre>
+    </span>
+<span id="execution-results-GETapi-v1-neighborhoods" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-GETapi-v1-neighborhoods"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-GETapi-v1-neighborhoods"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-GETapi-v1-neighborhoods" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-GETapi-v1-neighborhoods">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-GETapi-v1-neighborhoods" data-method="GET"
+      data-path="api/v1/neighborhoods"
+      data-authed="1"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-v1-neighborhoods', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-GETapi-v1-neighborhoods"
+                    onclick="tryItOut('GETapi-v1-neighborhoods');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-GETapi-v1-neighborhoods"
+                    onclick="cancelTryOut('GETapi-v1-neighborhoods');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-GETapi-v1-neighborhoods"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-green">GET</small>
+            <b><code>api/v1/neighborhoods</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Authorization</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Authorization" class="auth-value"               data-endpoint="GETapi-v1-neighborhoods"
+               value="Bearer {YOUR_AUTH_KEY}"
+               data-component="header">
+    <br>
+<p>Example: <code>Bearer {YOUR_AUTH_KEY}</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="GETapi-v1-neighborhoods"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="GETapi-v1-neighborhoods"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        </form>
+
                     <h2 id="events-GETapi-v1-events--id-">Get event details.</h2>
 
 <p>
@@ -2567,7 +2709,7 @@ fetch(url, {
 
 <code class="language-json" style="max-height: 300px;">{
     &quot;data&quot;: {
-        &quot;id&quot;: 24,
+        &quot;id&quot;: 32,
         &quot;title&quot;: &quot;Adipisci quidem nostrum qui.&quot;,
         &quot;lineup&quot;: &quot;Miss Jazlyn Keebler III, Ferne Fritsch&quot;,
         &quot;description&quot;: &quot;Autem et consequatur aut dolores enim non facere tempora. Voluptatem laboriosam praesentium quis adipisci.&quot;,
@@ -2584,7 +2726,7 @@ fetch(url, {
         &quot;flyer&quot;: &quot;images/flyers/party2.jpg&quot;,
         &quot;organizer&quot;: &quot;Prof. Kyla Kutch DDS&quot;,
         &quot;vouch_count&quot;: 0,
-        &quot;created_at&quot;: &quot;2026-05-01 08:23:56&quot;,
+        &quot;created_at&quot;: &quot;2026-05-01 08:44:59&quot;,
         &quot;can_vibe_check&quot;: false,
         &quot;has_vouched&quot;: false,
         &quot;is_mine&quot;: false
@@ -2747,7 +2889,7 @@ fetch(url, {
 <code class="language-json" style="max-height: 300px;">{
     &quot;data&quot;: [
         {
-            &quot;id&quot;: 25,
+            &quot;id&quot;: 33,
             &quot;title&quot;: &quot;Adipisci quidem nostrum qui.&quot;,
             &quot;lineup&quot;: &quot;Miss Jazlyn Keebler III, Ferne Fritsch&quot;,
             &quot;description&quot;: &quot;Autem et consequatur aut dolores enim non facere tempora. Voluptatem laboriosam praesentium quis adipisci.&quot;,
@@ -2764,13 +2906,13 @@ fetch(url, {
             &quot;flyer&quot;: &quot;images/flyers/party2.jpg&quot;,
             &quot;organizer&quot;: &quot;Prof. Kyla Kutch DDS&quot;,
             &quot;vouch_count&quot;: 0,
-            &quot;created_at&quot;: &quot;2026-05-01 08:23:56&quot;,
+            &quot;created_at&quot;: &quot;2026-05-01 08:44:59&quot;,
             &quot;can_vibe_check&quot;: false,
             &quot;has_vouched&quot;: false,
             &quot;is_mine&quot;: false
         },
         {
-            &quot;id&quot;: 26,
+            &quot;id&quot;: 34,
             &quot;title&quot;: &quot;Repudiandae laboriosam est.&quot;,
             &quot;lineup&quot;: &quot;Jacques Howe, Cristobal Smith&quot;,
             &quot;description&quot;: &quot;Recusandae modi rerum ex repellendus assumenda et. Ab reiciendis quia perspiciatis deserunt ducimus corrupti. Dolores quia maiores assumenda odit doloribus repellat officiis. Nesciunt ut ratione iure impedit molestiae ut rem.&quot;,
@@ -2787,7 +2929,7 @@ fetch(url, {
             &quot;flyer&quot;: &quot;images/flyers/party2.jpg&quot;,
             &quot;organizer&quot;: &quot;Alia Orn&quot;,
             &quot;vouch_count&quot;: 0,
-            &quot;created_at&quot;: &quot;2026-05-01 08:23:56&quot;,
+            &quot;created_at&quot;: &quot;2026-05-01 08:44:59&quot;,
             &quot;can_vibe_check&quot;: false,
             &quot;has_vouched&quot;: false,
             &quot;is_mine&quot;: false
@@ -3720,12 +3862,12 @@ fetch(url, {
 
 <code class="language-json" style="max-height: 300px;">{
     &quot;data&quot;: {
-        &quot;id&quot;: 28,
+        &quot;id&quot;: 42,
         &quot;name&quot;: &quot;Morgan Hirthe&quot;,
         &quot;email&quot;: &quot;dare.emelie@example.com&quot;,
         &quot;role&quot;: &quot;clubber&quot;,
         &quot;points&quot;: 0,
-        &quot;created_at&quot;: &quot;2026-05-01 08:23:53&quot;
+        &quot;created_at&quot;: &quot;2026-05-01 08:44:58&quot;
     }
 }</code>
  </pre>
@@ -4042,12 +4184,12 @@ fetch(url, {
 
 <code class="language-json" style="max-height: 300px;">{
     &quot;data&quot;: {
-        &quot;id&quot;: 29,
+        &quot;id&quot;: 43,
         &quot;name&quot;: &quot;Mr. Adriel Romaguera&quot;,
         &quot;email&quot;: &quot;antonio24@example.net&quot;,
         &quot;role&quot;: &quot;clubber&quot;,
         &quot;points&quot;: 0,
-        &quot;created_at&quot;: &quot;2026-05-01 08:23:54&quot;
+        &quot;created_at&quot;: &quot;2026-05-01 08:44:58&quot;
     }
 }</code>
  </pre>
@@ -4252,20 +4394,20 @@ fetch(url, {
 <code class="language-json" style="max-height: 300px;">{
     &quot;data&quot;: [
         {
-            &quot;id&quot;: 36,
+            &quot;id&quot;: 50,
             &quot;name&quot;: &quot;Morgan Hirthe&quot;,
             &quot;email&quot;: &quot;imclaughlin@example.org&quot;,
             &quot;role&quot;: &quot;clubber&quot;,
             &quot;points&quot;: 0,
-            &quot;created_at&quot;: &quot;2026-05-01 08:23:57&quot;
+            &quot;created_at&quot;: &quot;2026-05-01 08:45:00&quot;
         },
         {
-            &quot;id&quot;: 37,
+            &quot;id&quot;: 51,
             &quot;name&quot;: &quot;Mr. Oswald Koch&quot;,
             &quot;email&quot;: &quot;bailee15@example.org&quot;,
             &quot;role&quot;: &quot;clubber&quot;,
             &quot;points&quot;: 0,
-            &quot;created_at&quot;: &quot;2026-05-01 08:23:57&quot;
+            &quot;created_at&quot;: &quot;2026-05-01 08:45:00&quot;
         }
     ]
 }</code>
@@ -4419,12 +4561,12 @@ fetch(url, {
 
 <code class="language-json" style="max-height: 300px;">{
     &quot;data&quot;: {
-        &quot;id&quot;: 38,
+        &quot;id&quot;: 52,
         &quot;name&quot;: &quot;Mr. Adriel Romaguera&quot;,
         &quot;email&quot;: &quot;okeefe.isidro@example.org&quot;,
         &quot;role&quot;: &quot;clubber&quot;,
         &quot;points&quot;: 0,
-        &quot;created_at&quot;: &quot;2026-05-01 08:23:57&quot;
+        &quot;created_at&quot;: &quot;2026-05-01 08:45:00&quot;
     }
 }</code>
  </pre>
@@ -4636,12 +4778,12 @@ fetch(url, {
 
 <code class="language-json" style="max-height: 300px;">{
     &quot;data&quot;: {
-        &quot;id&quot;: 39,
+        &quot;id&quot;: 53,
         &quot;name&quot;: &quot;Mr. Gerhard Dach Jr.&quot;,
         &quot;email&quot;: &quot;lafayette.considine@example.com&quot;,
         &quot;role&quot;: &quot;clubber&quot;,
         &quot;points&quot;: 0,
-        &quot;created_at&quot;: &quot;2026-05-01 08:23:57&quot;
+        &quot;created_at&quot;: &quot;2026-05-01 08:45:00&quot;
     }
 }</code>
  </pre>
@@ -4998,7 +5140,7 @@ fetch(url, {
 <code class="language-json" style="max-height: 300px;">{
     &quot;data&quot;: [
         {
-            &quot;id&quot;: 27,
+            &quot;id&quot;: 35,
             &quot;title&quot;: &quot;Adipisci quidem nostrum qui.&quot;,
             &quot;lineup&quot;: &quot;Miss Jazlyn Keebler III, Ferne Fritsch&quot;,
             &quot;description&quot;: &quot;Autem et consequatur aut dolores enim non facere tempora. Voluptatem laboriosam praesentium quis adipisci.&quot;,
@@ -5015,13 +5157,13 @@ fetch(url, {
             &quot;flyer&quot;: &quot;images/flyers/party2.jpg&quot;,
             &quot;organizer&quot;: &quot;Prof. Kyla Kutch DDS&quot;,
             &quot;vouch_count&quot;: 0,
-            &quot;created_at&quot;: &quot;2026-05-01 08:23:57&quot;,
+            &quot;created_at&quot;: &quot;2026-05-01 08:45:01&quot;,
             &quot;can_vibe_check&quot;: false,
             &quot;has_vouched&quot;: false,
             &quot;is_mine&quot;: false
         },
         {
-            &quot;id&quot;: 28,
+            &quot;id&quot;: 36,
             &quot;title&quot;: &quot;Ratione nemo voluptate accusamus ut.&quot;,
             &quot;lineup&quot;: &quot;Ms. Anais Conroy, Josephine Dare&quot;,
             &quot;description&quot;: &quot;Ab reiciendis quia perspiciatis deserunt ducimus corrupti. Dolores quia maiores assumenda odit doloribus repellat officiis. Nesciunt ut ratione iure impedit molestiae ut rem.&quot;,
@@ -5038,7 +5180,7 @@ fetch(url, {
             &quot;flyer&quot;: &quot;images/flyers/party2.jpg&quot;,
             &quot;organizer&quot;: &quot;Alia Orn&quot;,
             &quot;vouch_count&quot;: 0,
-            &quot;created_at&quot;: &quot;2026-05-01 08:23:57&quot;,
+            &quot;created_at&quot;: &quot;2026-05-01 08:45:01&quot;,
             &quot;can_vibe_check&quot;: false,
             &quot;has_vouched&quot;: false,
             &quot;is_mine&quot;: false
