@@ -37,7 +37,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":22,"name":"Morgan Hirthe","email":"imclaughlin@example.org","role":"clubber","points":0,"created_at":"2026-04-30 08:31:30"},{"id":23,"name":"Mr. Oswald Koch","email":"bailee15@example.org","role":"clubber","points":0,"created_at":"2026-04-30 08:31:30"}]}'
+        content: '{"data":[{"id":36,"name":"Morgan Hirthe","email":"imclaughlin@example.org","role":"clubber","points":0,"created_at":"2026-05-01 08:23:57"},{"id":37,"name":"Mr. Oswald Koch","email":"bailee15@example.org","role":"clubber","points":0,"created_at":"2026-05-01 08:23:57"}]}'
         headers: []
         description: ''
     responseFields: []
@@ -140,7 +140,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":24,"name":"Mr. Adriel Romaguera","email":"okeefe.isidro@example.org","role":"clubber","points":0,"created_at":"2026-04-30 08:31:31"}}'
+        content: '{"data":{"id":38,"name":"Mr. Adriel Romaguera","email":"okeefe.isidro@example.org","role":"clubber","points":0,"created_at":"2026-05-01 08:23:57"}}'
         headers: []
         description: ''
     responseFields: []
@@ -222,16 +222,28 @@ endpoints:
         exampleWasSpecified: true
         nullable: false
         deprecated: false
+      points:
+        custom: []
+        name: points
+        description: 'Must be at least 0.'
+        required: false
+        example: 8
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
     cleanBodyParameters:
       name: 'Lolo Techno'
       email: fran@underpass.app
       role: admin
+      points: 8
     fileParameters: []
     responses:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":25,"name":"Aleen O''Kon","email":"jdach@example.org","role":"clubber","points":0,"created_at":"2026-04-30 08:31:31"}}'
+        content: '{"data":{"id":39,"name":"Mr. Gerhard Dach Jr.","email":"lafayette.considine@example.com","role":"clubber","points":0,"created_at":"2026-05-01 08:23:57"}}'
         headers: []
         description: ''
     responseFields: []
@@ -353,7 +365,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":19,"title":"Adipisci quidem nostrum qui.","lineup":"Miss Jazlyn Keebler III, Ferne Fritsch","description":"Autem et consequatur aut dolores enim non facere tempora. Voluptatem laboriosam praesentium quis adipisci.","date":"2026-06-11T00:00:00.000000Z","start_time":"23:00:00","end_time":"06:00:00","location":"Gaylord, Hettinger and Nitzsche","neighborhood":"Poblenou","price":20,"price_info":null,"ticket_link":null,"is_18_plus":true,"is_verified":true,"flyer":"images\/flyers\/party2.jpg","organizer":"Prof. Kyla Kutch DDS","vouch_count":0,"created_at":"2026-04-30 08:31:31","can_vibe_check":false,"has_vouched":false,"is_mine":false},{"id":20,"title":"Ratione nemo voluptate accusamus ut.","lineup":"Ms. Anais Conroy, Josephine Dare","description":"Ab reiciendis quia perspiciatis deserunt ducimus corrupti. Dolores quia maiores assumenda odit doloribus repellat officiis. Nesciunt ut ratione iure impedit molestiae ut rem.","date":"2026-05-28T00:00:00.000000Z","start_time":"23:00:00","end_time":"06:00:00","location":"Willms, Collins and Leannon","neighborhood":"Eixample","price":0,"price_info":"Incluye consumici\u00f3n","ticket_link":null,"is_18_plus":true,"is_verified":true,"flyer":"images\/flyers\/party2.jpg","organizer":"Alia Orn","vouch_count":0,"created_at":"2026-04-30 08:31:31","can_vibe_check":false,"has_vouched":false,"is_mine":false}]}'
+        content: '{"data":[{"id":27,"title":"Adipisci quidem nostrum qui.","lineup":"Miss Jazlyn Keebler III, Ferne Fritsch","description":"Autem et consequatur aut dolores enim non facere tempora. Voluptatem laboriosam praesentium quis adipisci.","date":"2026-06-12T00:00:00.000000Z","start_time":"23:00:00","end_time":"06:00:00","location":"Gaylord, Hettinger and Nitzsche","neighborhood":"Poblenou","price":20,"price_info":null,"ticket_link":null,"is_18_plus":true,"is_verified":true,"flyer":"images\/flyers\/party2.jpg","organizer":"Prof. Kyla Kutch DDS","vouch_count":0,"created_at":"2026-05-01 08:23:57","can_vibe_check":false,"has_vouched":false,"is_mine":false},{"id":28,"title":"Ratione nemo voluptate accusamus ut.","lineup":"Ms. Anais Conroy, Josephine Dare","description":"Ab reiciendis quia perspiciatis deserunt ducimus corrupti. Dolores quia maiores assumenda odit doloribus repellat officiis. Nesciunt ut ratione iure impedit molestiae ut rem.","date":"2026-05-29T00:00:00.000000Z","start_time":"23:00:00","end_time":"06:00:00","location":"Willms, Collins and Leannon","neighborhood":"Eixample","price":0,"price_info":"Incluye consumici\u00f3n","ticket_link":null,"is_18_plus":true,"is_verified":true,"flyer":"images\/flyers\/party2.jpg","organizer":"Alia Orn","vouch_count":0,"created_at":"2026-05-01 08:23:57","can_vibe_check":false,"has_vouched":false,"is_mine":false}]}'
         headers: []
         description: ''
     responseFields: []
