@@ -8,8 +8,9 @@ use App\Enums\UserRole;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Validation\ValidationException;
+use File;
 
 class EventService {
 
@@ -49,9 +50,11 @@ class EventService {
         return $query->get();
     }
 
+    /**
+     * @param \Illuminate\Http\UploadedFile $file
+     */
     public function store(User $user, array $eventData, $file = null): Event
     {
-        
         if ($user->role === UserRole::CLUBBER) {
             $activeEventsCount = $user->events()
                 ->where('date', '>=', now()->toDateString())
@@ -68,8 +71,9 @@ class EventService {
         $eventData['stamp_token'] = Str::random(32); 
         $eventData['is_verified'] = false; 
 
+       
         if ($file) {
-            $eventData['flyer'] = $file->store('flyers', 'public');
+            $eventData['flyer'] = $this->handleFileUpload($file);
         }
 
         if (isset($eventData['start_time'])) {
@@ -89,16 +93,21 @@ class EventService {
         return $event;
     }
 
+    /**
+     * @param \Illuminate\Http\UploadedFile $file
+     */
     public function update(User $user, Event $event, array $eventData, $file = null): Event
     {
         $eventData['price_info'] = $this->processPriceInfo($eventData);
 
         if ($file) {
-            if ($event->flyer) Storage::disk('public')->delete($event->flyer);
-            $eventData['flyer'] = $file->store('flyers', 'public');
+           
+            if ($event->flyer && file_exists(public_path($event->flyer))) {
+                unlink(public_path($event->flyer));
+            }
+            $eventData['flyer'] = $this->handleFileUpload($file);
         }
 
-       
         if ($user->role !== UserRole::ADMIN) {
             $eventData['is_verified'] = false;
         }
@@ -114,10 +123,23 @@ class EventService {
 
     public function delete(Event $event): bool
     {
-        if ($event->flyer) {
-            Storage::disk('public')->delete($event->flyer);
+        if ($event->flyer && file_exists(public_path($event->flyer))) {
+            unlink(public_path($event->flyer));
         }
         return $event->delete();
+    }
+
+    
+    private function handleFileUpload(UploadedFile $file): string
+    {
+        $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+        $destinationPath = public_path('images/flyers');
+
+        if (!file_exists($destinationPath)) { mkdir($destinationPath, 0755, true); }
+
+        $file->move($destinationPath, $filename);
+
+        return 'images/flyers/' . $filename;
     }
 
     private function processPriceInfo(array $eventData): string 
