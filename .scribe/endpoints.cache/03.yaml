@@ -61,7 +61,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":13,"title":"Adipisci quidem nostrum qui.","lineup":"Miss Jazlyn Keebler III, Ferne Fritsch","description":"Autem et consequatur aut dolores enim non facere tempora. Voluptatem laboriosam praesentium quis adipisci.","date":"2026-06-11T00:00:00.000000Z","start_time":"23:00:00","end_time":"06:00:00","location":"Gaylord, Hettinger and Nitzsche","neighborhood":"Poblenou","price":20,"price_info":null,"ticket_link":null,"is_18_plus":true,"is_verified":true,"flyer":"images\/flyers\/party2.jpg","organizer":"Prof. Kyla Kutch DDS","vouch_count":0,"created_at":"2026-04-30 08:31:28","can_vibe_check":false,"has_vouched":false,"is_mine":false},{"id":14,"title":"Dignissimos neque.","lineup":"Gerhard Beier, Emanuel Emmerich","description":"Repudiandae laboriosam est alias tenetur ratione. Voluptate accusamus ut et recusandae. Rerum ex repellendus assumenda et.","date":"2026-05-11T00:00:00.000000Z","start_time":"23:00:00","end_time":"06:00:00","location":"Ortiz Inc","neighborhood":"Raval","price":20,"price_info":null,"ticket_link":null,"is_18_plus":true,"is_verified":true,"flyer":"images\/flyers\/party2.jpg","organizer":"Rosario Grady","vouch_count":0,"created_at":"2026-04-30 08:31:28","can_vibe_check":false,"has_vouched":false,"is_mine":false}]}'
+        content: '{"data":[{"id":21,"title":"Adipisci quidem nostrum qui.","lineup":"Miss Jazlyn Keebler III, Ferne Fritsch","description":"Autem et consequatur aut dolores enim non facere tempora. Voluptatem laboriosam praesentium quis adipisci.","date":"2026-06-12T00:00:00.000000Z","start_time":"23:00:00","end_time":"06:00:00","location":"Gaylord, Hettinger and Nitzsche","neighborhood":"Poblenou","price":20,"price_info":null,"ticket_link":null,"is_18_plus":true,"is_verified":true,"flyer":"images\/flyers\/party2.jpg","organizer":"Prof. Kyla Kutch DDS","vouch_count":0,"created_at":"2026-05-01 08:23:54","can_vibe_check":false,"has_vouched":false,"is_mine":false},{"id":22,"title":"Dignissimos neque.","lineup":"Gerhard Beier, Emanuel Emmerich","description":"Repudiandae laboriosam est alias tenetur ratione. Voluptate accusamus ut et recusandae. Rerum ex repellendus assumenda et.","date":"2026-05-12T00:00:00.000000Z","start_time":"23:00:00","end_time":"06:00:00","location":"Ortiz Inc","neighborhood":"Raval","price":20,"price_info":null,"ticket_link":null,"is_18_plus":true,"is_verified":true,"flyer":"images\/flyers\/party2.jpg","organizer":"Rosario Grady","vouch_count":0,"created_at":"2026-05-01 08:23:54","can_vibe_check":false,"has_vouched":false,"is_mine":false}]}'
         headers: []
         description: ''
     responseFields: []
@@ -544,7 +544,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":15,"title":"Et animi quos.","lineup":"Aleen O''Kon, Justina Gaylord","description":"Modi deserunt aut ab provident perspiciatis. Omnis nostrum aut adipisci quidem nostrum qui commodi. Iure odit et et modi ipsum nostrum omnis. Et consequatur aut dolores enim.","date":"2026-06-09T00:00:00.000000Z","start_time":"23:00:00","end_time":"06:00:00","location":"Glover, Raynor and Schultz","neighborhood":"Raval","price":20,"price_info":"Early Bird","ticket_link":null,"is_18_plus":true,"is_verified":true,"flyer":"images\/flyers\/party1.jpg","organizer":"Mrs. Abbey Gaylord MD","vouch_count":0,"created_at":"2026-04-30 08:31:29","can_vibe_check":false,"has_vouched":false,"is_mine":false}}'
+        content: '{"data":{"id":23,"title":"Et animi quos.","lineup":"Aleen O''Kon, Justina Gaylord","description":"Modi deserunt aut ab provident perspiciatis. Omnis nostrum aut adipisci quidem nostrum qui commodi. Iure odit et et modi ipsum nostrum omnis. Et consequatur aut dolores enim.","date":"2026-06-10T00:00:00.000000Z","start_time":"23:00:00","end_time":"06:00:00","location":"Glover, Raynor and Schultz","neighborhood":"Raval","price":20,"price_info":"Early Bird","ticket_link":null,"is_18_plus":true,"is_verified":true,"flyer":"images\/flyers\/party1.jpg","organizer":"Mrs. Abbey Gaylord MD","vouch_count":0,"created_at":"2026-05-01 08:23:55","can_vibe_check":false,"has_vouched":false,"is_mine":false}}'
         headers: []
         description: ''
     responseFields: []
@@ -617,6 +617,55 @@ endpoints:
     custom: []
     httpMethods:
       - GET
+    uri: api/v1/genres
+    metadata:
+      custom: []
+      groupName: Events
+      groupDescription: |-
+
+        Management of musical genres for event categorization.
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'List all genres.'
+      description: 'Returns a complete list of musical genres available for filtering and event creation.'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {YOUR_AUTH_KEY}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: |-
+          {
+           "data": [
+             { "id": 1, "name": "Techno", "slug": "techno" },
+             { "id": 2, "name": "Industrial", "slug": "industrial" }
+           ]
+          }
+        headers: []
+        description: ''
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 6g43cv8PD1aE5beadkZfhV6'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
     uri: 'api/v1/events/{id}'
     metadata:
       custom: []
@@ -657,7 +706,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":{"id":16,"title":"Adipisci quidem nostrum qui.","lineup":"Miss Jazlyn Keebler III, Ferne Fritsch","description":"Autem et consequatur aut dolores enim non facere tempora. Voluptatem laboriosam praesentium quis adipisci.","date":"2026-06-11T00:00:00.000000Z","start_time":"23:00:00","end_time":"06:00:00","location":"Gaylord, Hettinger and Nitzsche","neighborhood":"Poblenou","price":20,"price_info":null,"ticket_link":null,"is_18_plus":true,"is_verified":true,"flyer":"images\/flyers\/party2.jpg","organizer":"Prof. Kyla Kutch DDS","vouch_count":0,"created_at":"2026-04-30 08:31:29","can_vibe_check":false,"has_vouched":false,"is_mine":false}}'
+        content: '{"data":{"id":24,"title":"Adipisci quidem nostrum qui.","lineup":"Miss Jazlyn Keebler III, Ferne Fritsch","description":"Autem et consequatur aut dolores enim non facere tempora. Voluptatem laboriosam praesentium quis adipisci.","date":"2026-06-12T00:00:00.000000Z","start_time":"23:00:00","end_time":"06:00:00","location":"Gaylord, Hettinger and Nitzsche","neighborhood":"Poblenou","price":20,"price_info":null,"ticket_link":null,"is_18_plus":true,"is_verified":true,"flyer":"images\/flyers\/party2.jpg","organizer":"Prof. Kyla Kutch DDS","vouch_count":0,"created_at":"2026-05-01 08:23:56","can_vibe_check":false,"has_vouched":false,"is_mine":false}}'
         headers: []
         description: ''
       -
@@ -721,7 +770,7 @@ endpoints:
       -
         custom: []
         status: 200
-        content: '{"data":[{"id":17,"title":"Adipisci quidem nostrum qui.","lineup":"Miss Jazlyn Keebler III, Ferne Fritsch","description":"Autem et consequatur aut dolores enim non facere tempora. Voluptatem laboriosam praesentium quis adipisci.","date":"2026-06-11T00:00:00.000000Z","start_time":"23:00:00","end_time":"06:00:00","location":"Gaylord, Hettinger and Nitzsche","neighborhood":"Poblenou","price":20,"price_info":null,"ticket_link":null,"is_18_plus":true,"is_verified":true,"flyer":"images\/flyers\/party2.jpg","organizer":"Prof. Kyla Kutch DDS","vouch_count":0,"created_at":"2026-04-30 08:31:29","can_vibe_check":false,"has_vouched":false,"is_mine":false},{"id":18,"title":"Repudiandae laboriosam est.","lineup":"Jacques Howe, Cristobal Smith","description":"Recusandae modi rerum ex repellendus assumenda et. Ab reiciendis quia perspiciatis deserunt ducimus corrupti. Dolores quia maiores assumenda odit doloribus repellat officiis. Nesciunt ut ratione iure impedit molestiae ut rem.","date":"2026-05-28T00:00:00.000000Z","start_time":"23:00:00","end_time":"06:00:00","location":"Willms, Collins and Leannon","neighborhood":"Eixample","price":0,"price_info":"Incluye consumici\u00f3n","ticket_link":null,"is_18_plus":true,"is_verified":true,"flyer":"images\/flyers\/party2.jpg","organizer":"Alia Orn","vouch_count":0,"created_at":"2026-04-30 08:31:29","can_vibe_check":false,"has_vouched":false,"is_mine":false}]}'
+        content: '{"data":[{"id":25,"title":"Adipisci quidem nostrum qui.","lineup":"Miss Jazlyn Keebler III, Ferne Fritsch","description":"Autem et consequatur aut dolores enim non facere tempora. Voluptatem laboriosam praesentium quis adipisci.","date":"2026-06-12T00:00:00.000000Z","start_time":"23:00:00","end_time":"06:00:00","location":"Gaylord, Hettinger and Nitzsche","neighborhood":"Poblenou","price":20,"price_info":null,"ticket_link":null,"is_18_plus":true,"is_verified":true,"flyer":"images\/flyers\/party2.jpg","organizer":"Prof. Kyla Kutch DDS","vouch_count":0,"created_at":"2026-05-01 08:23:56","can_vibe_check":false,"has_vouched":false,"is_mine":false},{"id":26,"title":"Repudiandae laboriosam est.","lineup":"Jacques Howe, Cristobal Smith","description":"Recusandae modi rerum ex repellendus assumenda et. Ab reiciendis quia perspiciatis deserunt ducimus corrupti. Dolores quia maiores assumenda odit doloribus repellat officiis. Nesciunt ut ratione iure impedit molestiae ut rem.","date":"2026-05-29T00:00:00.000000Z","start_time":"23:00:00","end_time":"06:00:00","location":"Willms, Collins and Leannon","neighborhood":"Eixample","price":0,"price_info":"Incluye consumici\u00f3n","ticket_link":null,"is_18_plus":true,"is_verified":true,"flyer":"images\/flyers\/party2.jpg","organizer":"Alia Orn","vouch_count":0,"created_at":"2026-05-01 08:23:56","can_vibe_check":false,"has_vouched":false,"is_mine":false}]}'
         headers: []
         description: ''
     responseFields: []
