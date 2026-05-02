@@ -165,9 +165,7 @@ class EventService {
         return null;
     }
 
-    /**
-     * Procesa la imagen enviada como archivo tradicional
-     */
+   
     private function handleFileUpload(UploadedFile $file): string
     {
         $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
