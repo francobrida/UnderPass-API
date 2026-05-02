@@ -27,19 +27,10 @@ class EventController extends Controller
 
     /**
      * List events.
-     * 
-     * Retrieves a filterable list of verified events. Includes organizer details and musical genres.
-     * 
-     * @queryParam neighborhood string Filter by neighborhood (e.g., Poblenou, Gràcia). Example: Poblenou
-     * @queryParam date string Filter by specific date (Y-m-d). Example: 2026-05-15
-     * 
-     * @apiResourceCollection App\Http\Resources\V1\EventResource
-     * @apiResourceModel App\Models\Event
      */
     public function index(Request $request): JsonResponse
     {
         $events = $this->eventService->filter($request->all());
-
         $events->load('organizer')->loadCount('vouches');
 
         return EventResource::collection($events)->response();
@@ -48,22 +39,20 @@ class EventController extends Controller
     /**
      * Create event.
      * 
-     * Registers a new event in the platform. Upon creation, the event is set to "pending verification" status.
+     * Registers a new event. Supports both standard file upload (flyer) 
+     * and Base64 encoded strings (flyer_base64).
      * 
      * @authenticated
-     * @bodyParam flyer file optional Event image (jpg, png).
-     * 
-     * @response 201 {
-     *  "message": "Event created successfully, pending verification",
-     *  "data": { "id": 1, "title": "Techno Night", "is_verified": false }
-     * }
+     * @bodyParam flyer file optional Event image.
+     * @bodyParam flyer_base64 string optional Event image in Base64 format.
      */
     public function store(StoreEventRequest $request): JsonResponse
     {
         $event = $this->eventService->store(
             $request->user(), 
             $request->validated(), 
-            $request->file('flyer')
+            $request->file('flyer'),
+            $request->input('flyer_base64') // Pasamos el string base64 al servicio
         );
 
         return response()->json([
@@ -74,14 +63,6 @@ class EventController extends Controller
 
     /**
      * Update event.
-     * 
-     * Allows an organizer to modify their event details. If a new flyer is uploaded, the previous one is replaced.
-     * 
-     * @authenticated
-     * @urlParam id int required The ID of the event. Example: 1
-     * 
-     * @apiResource App\Http\Resources\V1\EventResource
-     * @apiResourceModel App\Models\Event
      */
     public function update(UpdateEventRequest $request, $id): JsonResponse
     {
@@ -91,7 +72,8 @@ class EventController extends Controller
             $request->user(),
             $event,
             $request->validated(),
-            $request->file('flyer')
+            $request->file('flyer'),
+            $request->input('flyer_base64') // Soporte para base64 también en el update
         );
 
         return response()->json([
@@ -102,15 +84,6 @@ class EventController extends Controller
 
     /**
      * Delete event.
-     * 
-     * Permanently removes an event from the system. Only allowed for the creator or administrators.
-     * 
-     * @authenticated
-     * @urlParam id int required The ID of the event. Example: 1
-     * 
-     * @response 200 {
-     *  "message": "Event successfully deleted"
-     * }
      */
     public function destroy(int $id): JsonResponse
     {
@@ -126,17 +99,6 @@ class EventController extends Controller
 
     /**
      * Get event details.
-     * 
-     * Displays complete information for a specific event, including loaded genres and vouch count.
-     * 
-     * @authenticated
-     * @urlParam id int required The ID of the event. Example: 1
-     * 
-     * @apiResource App\Http\Resources\V1\EventResource
-     * @apiResourceModel App\Models\Event
-     * @response 403 {
-     *  "message": "This event is pending verification and is not public yet."
-     * }
      */
     public function show(Request $request, int $id): JsonResponse
     {
@@ -155,14 +117,6 @@ class EventController extends Controller
 
     /**
      * Get own events.
-     * 
-     * Returns events created by the authenticated user, sorted by creation date.
-     * 
-     * @authenticated
-     * @urlParam user_id int required The ID of the organizer. Example: 3
-     * 
-     * @apiResourceCollection App\Http\Resources\V1\EventResource
-     * @apiResourceModel App\Models\Event
      */
     public function getUserEvents(int $user_id): JsonResponse
     {
@@ -173,7 +127,6 @@ class EventController extends Controller
         }
 
         $events = $user->events()->latest()->get();
-        
         $events->loadCount('vouches');
 
         return EventResource::collection($events)->response();
@@ -181,10 +134,6 @@ class EventController extends Controller
 
     /**
      * List neighborhoods with events.
-     * 
-     * Retrieves a list of neighborhood names that currently have at least one verified active event.
-     * 
-     * @response ["Poblenou", "Eixample", "Gràcia"]
      */
     public function neighborhoods() {
         return Event::where('is_verified', true)->distinct()->pluck('neighborhood');
