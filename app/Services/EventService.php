@@ -51,9 +51,12 @@ class EventService {
     }
 
     /**
-     * @param \Illuminate\Http\UploadedFile $file
+     * @param User $user
+     * @param array $eventData
+     * @param UploadedFile|null $file
+     * @param string|null $base64Image
      */
-    public function store(User $user, array $eventData, $file = null): Event
+    public function store(User $user, array $eventData, $file = null, string $base64Image = null): Event
     {
         if ($user->role === UserRole::CLUBBER) {
             $activeEventsCount = $user->events()
@@ -71,8 +74,10 @@ class EventService {
         $eventData['stamp_token'] = Str::random(32); 
         $eventData['is_verified'] = false; 
 
-       
-        if ($file) {
+     
+        if ($base64Image) {
+            $eventData['flyer'] = $this->handleBase64Upload($base64Image);
+        } elseif ($file instanceof UploadedFile) {
             $eventData['flyer'] = $this->handleFileUpload($file);
         }
 
@@ -94,18 +99,25 @@ class EventService {
     }
 
     /**
-     * @param \Illuminate\Http\UploadedFile $file
+     * @param User $user
+     * @param Event $event
+     * @param array $eventData
+     * @param UploadedFile|null $file
+     * @param string|null $base64Image
      */
-    public function update(User $user, Event $event, array $eventData, $file = null): Event
+    public function update(User $user, Event $event, array $eventData, $file = null, string $base64Image = null): Event
     {
         $eventData['price_info'] = $this->processPriceInfo($eventData);
 
-        if ($file) {
-           
+    
+        if ($base64Image || $file instanceof UploadedFile) {
             if ($event->flyer && file_exists(public_path($event->flyer))) {
                 unlink(public_path($event->flyer));
             }
-            $eventData['flyer'] = $this->handleFileUpload($file);
+
+            $eventData['flyer'] = $base64Image 
+                ? $this->handleBase64Upload($base64Image) 
+                : $this->handleFileUpload($file);
         }
 
         if ($user->role !== UserRole::ADMIN) {
@@ -129,13 +141,41 @@ class EventService {
         return $event->delete();
     }
 
-    
+    /**
+     * Procesa la imagen enviada como string Base64
+     */
+    private function handleBase64Upload(string $base64Image): ?string
+    {
+        if (preg_match('/^data:image\/(\w+);base64,/', $base64Image, $type)) {
+            $data = substr($base64Image, strpos($base64Image, ',') + 1);
+            $type = strtolower($type[1]); // png, jpg, jpeg...
+            $data = base64_decode($data);
+            
+            $filename = time() . '_' . uniqid() . '.' . $type;
+            $destinationPath = public_path('images/flyers');
+
+            if (!file_exists($destinationPath)) {
+                mkdir($destinationPath, 0755, true);
+            }
+            
+            file_put_contents($destinationPath . '/' . $filename, $data);
+            
+            return 'images/flyers/' . $filename;
+        }
+        return null;
+    }
+
+    /**
+     * Procesa la imagen enviada como archivo tradicional
+     */
     private function handleFileUpload(UploadedFile $file): string
     {
         $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
         $destinationPath = public_path('images/flyers');
 
-        if (!file_exists($destinationPath)) { mkdir($destinationPath, 0755, true); }
+        if (!file_exists($destinationPath)) { 
+            mkdir($destinationPath, 0755, true); 
+        }
 
         $file->move($destinationPath, $filename);
 
