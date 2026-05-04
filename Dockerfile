@@ -10,9 +10,6 @@ ENV COMPOSER_ALLOW_SUPERUSER=1
 WORKDIR /app
 COPY docker/nginx.conf /etc/nginx/sites-available/default
 
-
-COPY .github/nginx.conf /etc/nginx/sites-available/default
-
 RUN composer install --no-dev --optimize-autoloader
 RUN chown -R www-data:www-data storage bootstrap/cache
 
