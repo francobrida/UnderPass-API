@@ -7,18 +7,20 @@ RUN apt-get update && apt-get install -y \
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 ENV COMPOSER_ALLOW_SUPERUSER=1
 
+ENV APP_ENV=production
+ENV DEBIAN_FRONTEND=noninteractive
+
 WORKDIR /app
 COPY . .
 
 COPY docker/nginx.conf /etc/nginx/sites-available/default
 
 RUN composer install --no-dev --optimize-autoloader
-
-RUN chown -R www-data:www-data /app && chmod -R 755 /app/storage
+RUN chown -R www-data:www-data /app && chmod -R 775 /app/storage bootstrap/cache
 
 CMD sh -c "sed -i 's/\${PORT}/'$PORT'/g' /etc/nginx/sites-available/default && \
-    php-fpm -D; \
-    php artisan optimize:clear; \
-    php artisan migrate:fresh --force --no-interaction; \
-    php artisan passport:install --force --no-interaction; \
+    php artisan optimize:clear && \
+    php artisan migrate:fresh --force --no-interaction && \
+    php artisan passport:install --force --no-interaction && \
+    php-fpm -D && \
     nginx -g 'daemon off;'"
