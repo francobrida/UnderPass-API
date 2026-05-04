@@ -14,9 +14,6 @@ Route::get('/', function () {
 });
 
 // debug to make passport work on railway
-use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\Route;
-
 Route::get('/debug-db', function () {
     try {
         $log = "--- Forzando Registro de Passport ---\n";
