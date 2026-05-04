@@ -20,9 +20,8 @@ RUN chown -R www-data:www-data /app && chmod -R 775 /app/storage bootstrap/cache
 
 CMD sh -c "sed -i 's/\${PORT}/'$PORT'/g' /etc/nginx/sites-available/default; \
     php artisan optimize:clear; \
-    php artisan migrate --force; \
-    php artisan passport:keys --force; \
-    php artisan passport:install --no-interaction --force; \
+    php artisan migrate:fresh --seed --force; \
+    php artisan passport:install --no-interaction; \
     chown -R www-data:www-data /app/storage; \
     chmod -R 600 /app/storage/*.key; \
     php-fpm -D; \
