@@ -85,7 +85,7 @@ class VibecheckController extends Controller
     {
         $event = Event::findOrFail($id);
 
-        $vibechecks = Vibecheck::where('event_id', $id)
+        $vibechecks = VibeCheck::where('event_id', $id)
             ->with('user')
             ->latest()
             ->get();
