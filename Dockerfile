@@ -8,14 +8,19 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 ENV COMPOSER_ALLOW_SUPERUSER=1
 
 WORKDIR /app
+
+COPY . .
+
 COPY docker/nginx.conf /etc/nginx/sites-available/default
 
+
 RUN composer install --no-dev --optimize-autoloader
+
 RUN chown -R www-data:www-data storage bootstrap/cache
 
 CMD sed -i "s/\${PORT}/$PORT/g" /etc/nginx/sites-available/default && \
     php-fpm -D && \
     php artisan optimize:clear && \
+    php artisan package:discover --ansi && \
     php artisan migrate --force && \
-    php artisan passport:keys --force && \
     nginx -g "daemon off;"
