@@ -16,20 +16,22 @@ Route::get('/', function () {
 // debug to make passport work on railway
 Route::get('/debug-db', function () {
     try {
-        $log = "";
+        $log = "--- Forzando Registro de Passport ---\n";
 
-        Artisan::call('vendor:publish', ['--tag' => 'passport-migrations']);
-        $log .= "1. Migraciones de Passport publicadas.\n";
+        // 1. Registro manual del Service Provider (Esto activa el comando si el discovery falló)
+        app()->register(\Laravel\Passport\PassportServiceProvider::class);
+        $log .= "Provider registrado manualmente.\n";
 
-       
-        Artisan::call('migrate', ['--force' => true]);
-        $log .= "2. Migraciones ejecutadas: " . Artisan::output() . "\n";
+        // 2. Limpieza de optimización
+        Artisan::call('optimize:clear');
+        $log .= "Caché de optimización purgada.\n";
 
+        // 3. Ejecutar la instalación con salida directa
         Artisan::call('passport:install', ['--force' => true]);
-        $log .= "3. Passport Install: " . Artisan::output() . "\n";
+        $log .= "Resultado Passport Install:\n" . Artisan::output();
 
         return "<pre>$log</pre>";
     } catch (\Exception $e) {
-        return "Error: " . $e->getMessage();
+        return "Error en el fix: " . $e->getMessage() . "\n\n" . $e->getTraceAsString();
     }
 });
