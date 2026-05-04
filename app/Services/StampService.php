@@ -14,7 +14,7 @@ class StampService
     public function getUserStamps(int $userId): Collection
     {
         return Stamp::where('user_id', $userId)
-            ->with('event:id,title,date,location')
+            ->with('event')
             ->latest('scanned_at')
             ->get();
     }
