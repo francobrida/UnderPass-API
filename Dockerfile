@@ -17,8 +17,8 @@ RUN composer install --no-dev --optimize-autoloader
 RUN chown -R www-data:www-data /app && chmod -R 755 /app/storage
 
 CMD sh -c "sed -i 's/\${PORT}/'$PORT'/g' /etc/nginx/sites-available/default && \
-    php-fpm -D && \
-    php artisan optimize:clear && \
-    php artisan migrate:fresh --force --no-interaction && \
-    php artisan passport:install --force --no-interaction && \
+    php-fpm -D; \
+    php artisan optimize:clear; \
+    php artisan migrate:fresh --force --no-interaction; \
+    php artisan passport:install --force --no-interaction; \
     nginx -g 'daemon off;'"
