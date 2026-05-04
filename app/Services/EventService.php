@@ -142,7 +142,7 @@ class EventService {
     }
 
     /**
-     * Procesa la imagen enviada como string Base64
+     * Process base64-encoded image uploads, saving them to the server and returning the file path.
      */
     private function handleBase64Upload(string $base64Image): ?string
     {
@@ -166,7 +166,7 @@ class EventService {
     }
 
     /**
-     * Procesa la imagen enviada como archivo tradicional
+     * Process file uploads in traditional multipart/form-data requests
      */
     private function handleFileUpload(UploadedFile $file): string
     {
