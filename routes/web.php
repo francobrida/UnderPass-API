@@ -15,23 +15,27 @@ Route::get('/', function () {
 
 // debug to make passport work on railway
 Route::get('/debug-db', function () {
-    try {
-        $log = "--- Forzando Registro de Passport ---\n";
+    $log = "--- Chequeo de Integridad de Passport ---\n";
 
-        // 1. Registro manual del Service Provider (Esto activa el comando si el discovery falló)
-        app()->register(\Laravel\Passport\PassportServiceProvider::class);
-        $log .= "Provider registrado manualmente.\n";
-
-        // 2. Limpieza de optimización
-        Artisan::call('optimize:clear');
-        $log .= "Caché de optimización purgada.\n";
-
-        // 3. Ejecutar la instalación con salida directa
-        Artisan::call('passport:install', ['--force' => true]);
-        $log .= "Resultado Passport Install:\n" . Artisan::output();
-
-        return "<pre>$log</pre>";
-    } catch (\Exception $e) {
-        return "Error en el fix: " . $e->getMessage() . "\n\n" . $e->getTraceAsString();
+    if (class_exists(\Laravel\Passport\PassportServiceProvider::class)) {
+        $log .= "✅ La clase PassportServiceProvider existe en el servidor.\n";
+    } else {
+        $log .= "❌ ERROR: La clase no existe. El paquete no se instaló en el vendor de producción.\n";
     }
+
+    try {
+        app()->register(\Laravel\Passport\PassportServiceProvider::class);
+        $log .= "✅ Registro manual completado.\n";
+        
+        \Illuminate\Support\Facades\Artisan::call('optimize:clear');
+        
+        // Ejecutamos el comando directamente por su nombre de clase si Artisan no lo mapeó
+        $exitCode = \Illuminate\Support\Facades\Artisan::call('passport:install', ['--force' => true]);
+        $log .= "✅ passport:install ejecutado (Código: $exitCode).\n";
+        $log .= "Salida: " . \Illuminate\Support\Facades\Artisan::output();
+    } catch (\Exception $e) {
+        $log .= "❌ Fallo en ejecución: " . $e->getMessage() . "\n";
+    }
+
+    return "<pre>$log</pre>";
 });
