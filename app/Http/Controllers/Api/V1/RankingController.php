@@ -36,7 +36,7 @@ class RankingController extends Controller
      */
     public function index(): JsonResponse
     {
-        $users = User::select('id', 'name')
+        $users = User::select('id', 'name', 'points')
             ->withCount('stamps') 
             ->orderBy('stamps_count', 'desc')
             ->limit(20)
