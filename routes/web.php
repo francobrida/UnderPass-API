@@ -18,40 +18,18 @@ Route::get('/debug-db', function () {
     try {
         $log = "";
 
-        
-        Artisan::call('optimize:clear');
-        $log .= "Caché limpiada correctamente.\n";
+        Artisan::call('vendor:publish', ['--tag' => 'passport-migrations']);
+        $log .= "1. Migraciones de Passport publicadas.\n";
 
        
-        Artisan::call('package:discover');
-        $log .= "Paquetes redescubiertos.\n";
+        Artisan::call('migrate', ['--force' => true]);
+        $log .= "2. Migraciones ejecutadas: " . Artisan::output() . "\n";
 
-       
-        $commands = Artisan::all();
-        $passportExists = false;
-        foreach ($commands as $name => $command) {
-            if (str_contains($name, 'passport')) {
-                $passportExists = true;
-                $log .= "Comando detectado: $name\n";
-            }
-        }
-
-        if ($passportExists) {
-            
-            Artisan::call('passport:install', ['--force' => true]);
-            $log .= "Passport instalado con éxito.\n";
-        } else {
-            $log .= "ERROR: El comando sigue sin existir. Intentando registrar manual...\n";
-            
-            $app = app();
-            $app->register(\Laravel\Passport\PassportServiceProvider::class);
-            Artisan::call('passport:install', ['--force' => true]);
-            $log .= "Passport instalado vía registro manual.\n";
-        }
+        Artisan::call('passport:install', ['--force' => true]);
+        $log .= "3. Passport Install: " . Artisan::output() . "\n";
 
         return "<pre>$log</pre>";
-
     } catch (\Exception $e) {
-        return "Error: " . $e->getMessage() . "\n\nTraza:\n" . $e->getTraceAsString();
+        return "Error: " . $e->getMessage();
     }
 });
