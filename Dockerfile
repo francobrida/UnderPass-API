@@ -19,7 +19,6 @@ RUN chown -R www-data:www-data /app && chmod -R 755 /app/storage
 CMD sed -i "s/\${PORT}/$PORT/g" /etc/nginx/sites-available/default && \
     php-fpm -D && \
     php artisan optimize:clear && \
-    php artisan package:discover --ansi && \
-    php artisan migrate --force && \
-    php artisan passport:install --force && \
+    php artisan migrate:fresh --force && \
+    php artisan passport:install --no-interaction && \
     nginx -g "daemon off;"
