@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Models\Vibecheck;
+use App\Models\VibeCheck;
 use App\Models\Stamp;
 use App\Models\Event;
 use App\Models\User;
@@ -44,7 +44,7 @@ class VibecheckService
             ]);
         }
 
-        $alreadyVoted = Vibecheck::where('user_id', $user->id)
+        $alreadyVoted = VibeCheck::where('user_id', $user->id)
             ->where('event_id', $event->id)
             ->exists();
 
@@ -54,7 +54,7 @@ class VibecheckService
             ]);
         }
 
-        $vibecheck = Vibecheck::create([
+        $vibecheck = VibeCheck::create([
             'event_id'         => $event->id,
             'user_id'          => $user->id,
             'sound_score'      => $data['sound_score'],
@@ -69,6 +69,6 @@ class VibecheckService
 
     public function delete(int $id): bool
     {
-        return Vibecheck::findOrFail($id)->delete();
+        return VibeCheck::findOrFail($id)->delete();
     }
 }
