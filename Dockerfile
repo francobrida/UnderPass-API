@@ -8,7 +8,7 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 ENV COMPOSER_ALLOW_SUPERUSER=1
 
 WORKDIR /app
-COPY . .
+COPY docker/nginx.conf /etc/nginx/sites-available/default
 
 
 COPY .github/nginx.conf /etc/nginx/sites-available/default
