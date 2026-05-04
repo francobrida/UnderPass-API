@@ -137,7 +137,7 @@ class DatabaseSeeder extends Seeder
         }
 
         $waitingEvent1 = Event::factory()->create([
-            'title' => 'House Secret Gathering [WAITING]',
+            'title' => 'House partyyy [WAITING]',
             'user_id' => $crowd->random()->id,
             'is_verified' => false,
             'date' => Carbon::now()->addDays(15)->format('Y-m-d'),
@@ -157,7 +157,7 @@ class DatabaseSeeder extends Seeder
         $waitingEvent2->genres()->attach($genres['Acid'] ?? $allGenreIds[0]);
 
         $waitingEvent3 = Event::factory()->create([
-            'title' => 'Industrial Base [VOTED BY PEPE]',
+            'title' => 'Industrial nave [VOTED BY PEPE]',
             'user_id' => $crowd->random()->id,
             'is_verified' => false,
             'date' => Carbon::now()->addDays(12)->format('Y-m-d'),
