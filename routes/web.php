@@ -43,8 +43,8 @@ Route::get('/debug-db', function () {
 Route::get('/seed-db', function () {
     $log = "--- Seeding Database in Production ---\n";
     try {
-        \Illuminate\Support\Facades\Artisan::call('migrate:fresh', ['--seed' => true, '--force' => true]);
-        $log .= "✅ Database successfully migrated and seeded in production!\n";
+        \Illuminate\Support\Facades\Artisan::call('db:seed', ['--force' => true]);
+        $log .= "✅ Database successfully seeded in production!\n";
         $log .= \Illuminate\Support\Facades\Artisan::output();
     } catch (\Exception $e) {
         $log .= "❌ Fallo en ejecución: " . $e->getMessage() . "\n";
