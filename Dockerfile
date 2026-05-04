@@ -21,6 +21,5 @@ CMD sh -c "sed -i 's/\${PORT}/'$PORT'/g' /etc/nginx/sites-available/default; \
     php-fpm -D; \
     php artisan optimize:clear; \
     php artisan migrate --force; \
-    php artisan passport:keys --force; \
-    php artisan passport:client --personal --no-interaction --force; \
+    php artisan passport:install --no-interaction; \
     nginx -g 'daemon off;'"
