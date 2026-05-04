@@ -16,15 +16,42 @@ Route::get('/', function () {
 // debug to make passport work on railway
 Route::get('/debug-db', function () {
     try {
+        $log = "";
+
         
-        Artisan::call('migrate', ['--force' => true]);
-        $output = Artisan::output();
+        Artisan::call('optimize:clear');
+        $log .= "Caché limpiada correctamente.\n";
 
-        Artisan::call('passport:install', ['--force' => true]);
-        $output .= "\nPassport Install: " . Artisan::output();
+       
+        Artisan::call('package:discover');
+        $log .= "Paquetes redescubiertos.\n";
 
-        return "<pre>$output</pre>";
+       
+        $commands = Artisan::all();
+        $passportExists = false;
+        foreach ($commands as $name => $command) {
+            if (str_contains($name, 'passport')) {
+                $passportExists = true;
+                $log .= "Comando detectado: $name\n";
+            }
+        }
+
+        if ($passportExists) {
+            
+            Artisan::call('passport:install', ['--force' => true]);
+            $log .= "Passport instalado con éxito.\n";
+        } else {
+            $log .= "ERROR: El comando sigue sin existir. Intentando registrar manual...\n";
+            
+            $app = app();
+            $app->register(\Laravel\Passport\PassportServiceProvider::class);
+            Artisan::call('passport:install', ['--force' => true]);
+            $log .= "Passport instalado vía registro manual.\n";
+        }
+
+        return "<pre>$log</pre>";
+
     } catch (\Exception $e) {
-        return "Error: " . $e->getMessage();
+        return "Error: " . $e->getMessage() . "\n\nTraza:\n" . $e->getTraceAsString();
     }
 });
