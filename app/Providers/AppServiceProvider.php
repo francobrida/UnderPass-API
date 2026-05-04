@@ -30,6 +30,7 @@ class AppServiceProvider extends ServiceProvider
             URL::forceScheme('https');
         }
         
+        \Laravel\Passport\Passport::loadKeysFrom(storage_path());
         Vouch::observe(VouchObserver::class);
     }
 }
