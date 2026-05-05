@@ -26,6 +26,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        if (config('app.env') === 'production') {
+            URL::forceScheme('https');
+        }
+        
+        \Laravel\Passport\Passport::loadKeysFrom(storage_path());
         Vouch::observe(VouchObserver::class);
     }
 }

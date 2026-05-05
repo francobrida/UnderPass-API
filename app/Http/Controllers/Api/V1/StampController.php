@@ -77,7 +77,7 @@ class StampController extends Controller
 
         return response()->json([
             'message' => 'Stamp collected successfully!',
-            'data'    => $stamp->load('event:id,title')
+            'data'    => $stamp->load('event')
         ], 201);
     }
 

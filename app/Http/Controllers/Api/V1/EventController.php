@@ -52,7 +52,7 @@ class EventController extends Controller
             $request->user(), 
             $request->validated(), 
             $request->file('flyer'),
-            $request->input('flyer_base64') // Pasamos el string base64 al servicio
+            $request->input('flyer_base64') 
         );
 
         return response()->json([
@@ -73,7 +73,7 @@ class EventController extends Controller
             $event,
             $request->validated(),
             $request->file('flyer'),
-            $request->input('flyer_base64') // Soporte para base64 también en el update
+            $request->input('flyer_base64') 
         );
 
         return response()->json([

@@ -1,23 +1,28 @@
-FROM dunglas/frankenphp:1-php8.4
+FROM php:8.4-fpm
 
 RUN apt-get update && apt-get install -y \
-    git unzip libzip-dev libpng-dev libicu-dev \
+    git unzip libzip-dev libpng-dev libicu-dev nginx \
     && docker-php-ext-install pdo_mysql zip gd intl bcmath pcntl
 
-ENV SERVER_NAME=:8080
-ENV PORT=8080
-
-ENV APP_RUNTIME=Laravel\Octane\FrankenPHP\Runtime 
-
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+ENV COMPOSER_ALLOW_SUPERUSER=1
+
+ENV APP_ENV=production
 
 WORKDIR /app
 COPY . .
 
-RUN composer install --no-interaction --optimize-autoloader --no-dev
+COPY docker/nginx.conf /etc/nginx/sites-available/default
 
-RUN chown -R www-data:www-data storage bootstrap/cache
+RUN composer install --no-dev --optimize-autoloader
+RUN chown -R www-data:www-data /app && chmod -R 775 /app/storage bootstrap/cache
 
-EXPOSE 8080
- 
-CMD ["frankenphp", "php-server", "--listen", ":8080", "--root", "public/"]
+
+CMD sh -c "sed -i 's/\${PORT}/'$PORT'/g' /etc/nginx/sites-available/default; \
+    php artisan optimize:clear; \
+    php artisan migrate:fresh --seed --force; \
+    php artisan passport:install --no-interaction; \
+    chown -R www-data:www-data /app/storage; \
+    chmod -R 600 /app/storage/*.key; \
+    php-fpm -D; \
+    nginx -g 'daemon off;'"

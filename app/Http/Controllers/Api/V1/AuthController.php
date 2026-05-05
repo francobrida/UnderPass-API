@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Enums\UserRole;
 use App\Http\Requests\V1\Auth\{RegisterRequest, LoginRequest};
+use Illuminate\Support\Facades\Auth;
 
 
 /**
@@ -41,7 +42,15 @@ class AuthController extends Controller
     public function login(LoginRequest $request): JsonResponse
     {
         $credentials = $request->validated();
-        $user = User::where('email', $credentials['email'])->first();
+
+        if (!Auth::attempt($credentials)) {
+           
+            return response()->json([
+                'message' => 'Invalid credentials'
+            ], 401);
+        }
+
+        $user = Auth::user();
 
         $token = $user->createToken('auth_token')->accessToken;
 
@@ -50,9 +59,9 @@ class AuthController extends Controller
             'access_token' => $token,
             'token_type'   => 'Bearer',
             'user'         => [
-                'name' => $user->name,
-                'id' => $user->id, 
-                'role' => $user->role
+                'id'    => $user->id,
+                'name'  => $user->name,
+                'role'  => $user->role
             ]
         ], 200);
     }
