@@ -26,9 +26,12 @@ Route::get('/reset-db-production', function () {
         // 2. Ejecutar las migraciones
         Artisan::call('migrate', ['--force' => true]);
         $log .= "✅ Migraciones ejecutadas.\n";
-        // 3. Instalar Passport (Crucial para generar clientes y claves de encriptación)
-        Artisan::call('passport:install', ['--force' => true]);
-        $log .= "✅ Passport configurado.\n";
+        // 3. Generar claves y clientes de Passport (Para Laravel 11 / Passport 12+)
+        Artisan::call('passport:keys', ['--force' => true]);
+        Artisan::call('passport:client', ['--personal' => true, '--name' => 'Laravel Personal Access Client']);
+        Artisan::call('passport:client', ['--password' => true, '--name' => 'Laravel Password Grant Client']);
+        $log .= "✅ Passport configurado (claves y clientes).\n";
+
         // 4. Ejecutar los seeders (usuarios de prueba, eventos, etc.)
         Artisan::call('db:seed', ['--force' => true]);
         $log .= "✅ Seeders ejecutados.\n";
