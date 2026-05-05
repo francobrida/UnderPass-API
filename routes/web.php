@@ -15,32 +15,27 @@ Route::get('/', function () {
 });
 
 Route::get('/reset-db-production', function () {
-    // 1. Verificación de seguridad opcional (puedes usar un parámetro en la URL)
-    // if (request('token') !== 'un-token-secreto-aqui') { return "No autorizado"; }
-
-    $log = "--- Inicia: Wipe, Migrate y Seed en Producción ---\n";
+    // Seguridad (descomenta esto en producción real para que nadie borre tu BD)
+    // if (request('token') !== '123456789') { return "No autorizado"; }
+    $log = "--- Inicia: Limpieza y Sembrado en Producción ---\n";
     
     try {
-        // Ejecutamos el comando 'fresh' que elimina tablas y recrea el esquema.
-        // El parámetro '--seed' ejecuta automáticamente el DatabaseSeeder.
-        $exitCode = Artisan::call('migrate:fresh', [
-            '--force' => true,
-            '--seed' => true
-        ]);
-
-        if ($exitCode === 0) {
-            $log .= "✅ Proceso completado con éxito.\n";
-            $log .= "--- Salida del sistema: ---\n";
-            $log .= Artisan::output();
-        } else {
-            $log .= "⚠️ El comando terminó con un código de salida inesperado: $exitCode\n";
-        }
-
+        // 1. Borrar todas las tablas a la fuerza (ignora Foreign Keys temporales)
+        Artisan::call('db:wipe', ['--force' => true]);
+        $log .= "✅ Tablas borradas correctamente.\n";
+        // 2. Ejecutar las migraciones
+        Artisan::call('migrate', ['--force' => true]);
+        $log .= "✅ Migraciones ejecutadas.\n";
+        // 3. Instalar Passport (Crucial para generar clientes y claves de encriptación)
+        Artisan::call('passport:install', ['--force' => true]);
+        $log .= "✅ Passport configurado.\n";
+        // 4. Ejecutar los seeders (usuarios de prueba, eventos, etc.)
+        Artisan::call('db:seed', ['--force' => true]);
+        $log .= "✅ Seeders ejecutados.\n";
+        $log .= "\n--- 🎉 Proceso completado con éxito ---\n";
     } catch (\Exception $e) {
-        $log .= "❌ ERROR CRÍTICO: " . $e->getMessage() . "\n";
-        // Opcional: Registrar el error en los logs de Laravel para debug
+        $log .= "\n❌ ERROR CRÍTICO: " . $e->getMessage() . "\n";
         Log::error("Fallo en reset-db: " . $e->getMessage());
     }
-
     return "<pre>$log</pre>";
 });
