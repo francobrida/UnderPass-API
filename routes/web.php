@@ -26,11 +26,20 @@ Route::get('/reset-db-production', function () {
         // 2. Ejecutar las migraciones
         Artisan::call('migrate', ['--force' => true]);
         $log .= "✅ Migraciones ejecutadas.\n";
-        // 3. Generar claves y clientes de Passport (Para Laravel 11 / Passport 12+)
-        Artisan::call('passport:keys', ['--force' => true]);
-        Artisan::call('passport:client', ['--personal' => true, '--name' => 'Laravel Personal Access Client']);
-        Artisan::call('passport:client', ['--password' => true, '--name' => 'Laravel Password Grant Client']);
-        $log .= "✅ Passport configurado (claves y clientes).\n";
+        // 3. Generar claves y clientes de Passport usando shell_exec
+        // (Passport oculta sus comandos en rutas web, por lo que usamos la terminal directamente)
+        $output1 = shell_exec('php ../artisan passport:keys --force 2>&1');
+        $output2 = shell_exec('php ../artisan passport:client --personal --name="Laravel Personal Access Client" 2>&1');
+        $output3 = shell_exec('php ../artisan passport:client --password --name="Laravel Password Grant Client" 2>&1');
+        
+        // Si no funciona con '../artisan', probamos con 'artisan' (dependiendo del CWD en Railway)
+        if (strpos($output1, 'Could not open input file') !== false) {
+             shell_exec('php artisan passport:keys --force');
+             shell_exec('php artisan passport:client --personal --name="Laravel Personal Access Client"');
+             shell_exec('php artisan passport:client --password --name="Laravel Password Grant Client"');
+        }
+        
+        $log .= "✅ Passport configurado (comandos de terminal ejecutados).\n";
 
         // 4. Ejecutar los seeders (usuarios de prueba, eventos, etc.)
         Artisan::call('db:seed', ['--force' => true]);
