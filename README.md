@@ -58,6 +58,11 @@ The API implements a custom Role system to manage permissions:
 * **Digital Stamps:** When a user scans the QR URL, they receive a collectible Stamp in their digital Passport.
 
 ---
+## 📊 Entity-Relationship Model 
+
+![UnderPass Database Schema](screenshots/diagrama-MER.png)
+
+---
 
 ## 🧪 Testing & QA
 The project follows a rigorous testing strategy to ensure all endpoints are functional (Happy, Sad, and Edge cases).
