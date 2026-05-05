@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Log;
 
 Route::get('/', function () {
     return response()->json([
@@ -13,41 +14,32 @@ Route::get('/', function () {
     ]);
 });
 
-// debug to make passport work on railway
-Route::get('/debug-db', function () {
-    $log = "--- Chequeo de Integridad de Passport ---\n";
+Route::get('/reset-db-production', function () {
+    // 1. Verificación de seguridad opcional (puedes usar un parámetro en la URL)
+    // if (request('token') !== 'un-token-secreto-aqui') { return "No autorizado"; }
 
-    if (class_exists(\Laravel\Passport\PassportServiceProvider::class)) {
-        $log .= "✅ La clase PassportServiceProvider existe en el servidor.\n";
-    } else {
-        $log .= "❌ ERROR: La clase no existe. El paquete no se instaló en el vendor de producción.\n";
-    }
-
+    $log = "--- Inicia: Wipe, Migrate y Seed en Producción ---\n";
+    
     try {
-        app()->register(\Laravel\Passport\PassportServiceProvider::class);
-        $log .= "✅ Registro manual completado.\n";
-        
-        \Illuminate\Support\Facades\Artisan::call('optimize:clear');
-        
-        // Ejecutamos el comando directamente por su nombre de clase si Artisan no lo mapeó
-        $exitCode = \Illuminate\Support\Facades\Artisan::call('passport:install', ['--force' => true]);
-        $log .= "✅ passport:install ejecutado (Código: $exitCode).\n";
-        $log .= "Salida: " . \Illuminate\Support\Facades\Artisan::output();
-    } catch (\Exception $e) {
-        $log .= "❌ Fallo en ejecución: " . $e->getMessage() . "\n";
-    }
+        // Ejecutamos el comando 'fresh' que elimina tablas y recrea el esquema.
+        // El parámetro '--seed' ejecuta automáticamente el DatabaseSeeder.
+        $exitCode = Artisan::call('migrate:fresh', [
+            '--force' => true,
+            '--seed' => true
+        ]);
 
-    return "<pre>$log</pre>";
-});
+        if ($exitCode === 0) {
+            $log .= "✅ Proceso completado con éxito.\n";
+            $log .= "--- Salida del sistema: ---\n";
+            $log .= Artisan::output();
+        } else {
+            $log .= "⚠️ El comando terminó con un código de salida inesperado: $exitCode\n";
+        }
 
-Route::get('/seed-db', function () {
-    $log = "--- Seeding Database in Production ---\n";
-    try {
-        \Illuminate\Support\Facades\Artisan::call('db:seed', ['--force' => true]);
-        $log .= "✅ Database successfully seeded in production!\n";
-        $log .= \Illuminate\Support\Facades\Artisan::output();
     } catch (\Exception $e) {
-        $log .= "❌ Fallo en ejecución: " . $e->getMessage() . "\n";
+        $log .= "❌ ERROR CRÍTICO: " . $e->getMessage() . "\n";
+        // Opcional: Registrar el error en los logs de Laravel para debug
+        Log::error("Fallo en reset-db: " . $e->getMessage());
     }
 
     return "<pre>$log</pre>";
