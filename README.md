@@ -36,7 +36,7 @@ The API follows RESTful conventions, is fully versioned under `/api/v1/`, and us
 * **Database:** MySQL 8.0
 * **Documentation:** Scribe + Scalar (Interactive UI)
 * **Containerization:** Docker + Docker Compose
-* **Deployment:** Railway (FrankenPHP)
+* **Deployment:** Railway (Nginx)
 
 ---
 
@@ -188,7 +188,7 @@ The project includes a multi-container setup via Docker Compose.
 docker-compose up -d --build
 ```
 ### Production Deployment (Railway)
-This API is served via **FrankenPHP**.
+This API is served via **Nginx**.
 * **Live API:** `https://underpass-api-production.up.railway.app/api/v1/`
 * **Live Docs:** `https://underpass-api-production.up.railway.app/docs`
 
