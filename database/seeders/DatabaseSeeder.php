@@ -15,20 +15,12 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        $genreNames = ['Techno', 'Industrial', 'House', 'Drum n Bass', 'Electro Pop', 'Acid'];
-        $genres = [];
+        // Poblamos la base de datos con todos los géneros
+        $this->call([
+            AddMoreGenresSeeder::class,
+        ]);
 
-        foreach ($genreNames as $name) {
-            $genre = Genre::where('slug', Str::slug($name))->first();
-            if (!$genre) {
-                $genre = Genre::create([
-                    'name' => $name,
-                    'slug' => Str::slug($name)
-                ]);
-            }
-            $genres[$name] = $genre->id; 
-        }
-        $allGenreIds = array_values($genres);
+        $allGenreIds = \App\Models\Genre::pluck('id')->toArray();
 
         $admin = User::where('email', 'admin@underpass.com')->first();
         if (!$admin) {
@@ -60,6 +52,26 @@ class DatabaseSeeder extends Seeder
             ]);
         }
 
+        for ($i = 1; $i <= 3; $i++) {
+            $event = Event::factory()->create([
+                'title' => "TEST EVENT {$i}",
+                'user_id' => $organizer->id,
+                'is_verified' => true,
+                'date' => Carbon::now()->addDays($i)->format('Y-m-d'),
+                'start_time' => '23:00',
+                'end_time' => '06:00',
+            ]);
+
+            if (!empty($allGenreIds)) {
+                $event->genres()->attach($allGenreIds[array_rand($allGenreIds)]);
+            }
+        }
+
+        $this->command->info('Database fully seeded with exactly 3 test events for Underpass API.');
+
+        /*
+        // === ANTIGUO SEEDER PARA TESTS (Comentado para no perderlo) ===
+        
         $crowd = User::factory(10)->create();
 
         for ($i = 1; $i <= 5; $i++) {
@@ -99,7 +111,8 @@ class DatabaseSeeder extends Seeder
                 'start_time' => '18:00',
                 'end_time' => '23:00',
             ]);
-            $pastVibeCheckReady->genres()->attach($genres['Acid'] ?? $allGenreIds[0]);
+            // Nota: En el seeder viejo esto usaba $genres['Acid'] que ya no existe asi
+            $pastVibeCheckReady->genres()->attach($allGenreIds[array_rand($allGenreIds)]);
         }
 
         $hasStamp = \DB::table('stamps')
@@ -121,12 +134,12 @@ class DatabaseSeeder extends Seeder
                 'start_time' => '22:00',
                 'end_time' => '05:00',
             ]);
-            $pastWithVibechecks->genres()->attach($genres['Industrial'] ?? $allGenreIds[0]);
+            $pastWithVibechecks->genres()->attach($allGenreIds[array_rand($allGenreIds)]);
 
             foreach ($crowd->take(3) as $user) {
                 $user->stampedEvents()->attach($pastWithVibechecks->id, ['scanned_at' => now()->subDays(5)]);
                 
-                VibeCheck::create([
+                \App\Models\VibeCheck::create([
                     'event_id' => $pastWithVibechecks->id,
                     'user_id' => $user->id,
                     'sound_score' => rand(3, 5),
@@ -142,7 +155,7 @@ class DatabaseSeeder extends Seeder
             'is_verified' => false,
             'date' => Carbon::now()->addDays(15)->format('Y-m-d'),
         ]);
-        $waitingEvent1->genres()->attach($genres['House'] ?? $allGenreIds[0]);
+        $waitingEvent1->genres()->attach($allGenreIds[array_rand($allGenreIds)]);
 
         foreach ($crowd->take(2) as $vUser) {
             $waitingEvent1->vouches()->attach($vUser->id);
@@ -154,7 +167,7 @@ class DatabaseSeeder extends Seeder
             'is_verified' => false,
             'date' => Carbon::now()->addDays(10)->format('Y-m-d'),
         ]);
-        $waitingEvent2->genres()->attach($genres['Acid'] ?? $allGenreIds[0]);
+        $waitingEvent2->genres()->attach($allGenreIds[array_rand($allGenreIds)]);
 
         $waitingEvent3 = Event::factory()->create([
             'title' => 'Industrial nave [VOTED BY PEPE]',
@@ -162,9 +175,8 @@ class DatabaseSeeder extends Seeder
             'is_verified' => false,
             'date' => Carbon::now()->addDays(12)->format('Y-m-d'),
         ]);
-        $waitingEvent3->genres()->attach($genres['Industrial'] ?? $allGenreIds[0]);
+        $waitingEvent3->genres()->attach($allGenreIds[array_rand($allGenreIds)]);
         $waitingEvent3->vouches()->attach($clubber->id);
-
-        $this->command->info('Database fully seeded for Underpass API.');
+        */
     }
 }

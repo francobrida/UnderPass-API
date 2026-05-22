@@ -15,50 +15,28 @@ Route::get('/', function () {
 });
 
 Route::get('/reset-db-production', function () {
-    
     if (request('token') !== '123456789') { return "No autorizado"; }
     $log = "--- Inicia: Limpieza y Sembrado en Producción ---\n";
     
     try {
-       
         Artisan::call('db:wipe', ['--force' => true]);
         $log .= "✅ Tablas borradas correctamente.\n";
   
         Artisan::call('migrate', ['--force' => true]);
-        $log .= "✅ Migraciones ejecutadas.\n";
+        $log .= "✅ Migraciones ejecutadas (incluyendo Passport si fue publicado).\n";
 
-        $output1 = shell_exec('php ../artisan passport:keys --force 2>&1');
-        $output2 = shell_exec('php ../artisan passport:client --personal --name="Laravel Personal Access Client" 2>&1');
-        $output3 = shell_exec('php ../artisan passport:client --password --name="Laravel Password Grant Client" 2>&1');
-        
-        if (strpos($output1, 'Could not open input file') !== false) {
-             shell_exec('php artisan passport:keys --force');
-             shell_exec('php artisan passport:client --personal --name="Laravel Personal Access Client"');
-             shell_exec('php artisan passport:client --password --name="Laravel Password Grant Client"');
-        }
-        
-        $log .= "✅ Passport configurado (comandos de terminal ejecutados).\n";
+        Artisan::call('passport:client', ['--personal' => true, '--name' => 'Laravel Personal Access Client']);
+        Artisan::call('passport:client', ['--password' => true, '--name' => 'Laravel Password Grant Client']);
+        Artisan::call('passport:keys', ['--force' => true]);
+        $log .= "✅ Passport configurado (comandos Artisan directos).\n";
 
         Artisan::call('db:seed', ['--force' => true]);
-        $log .= "✅ Seeders ejecutados.\n";
+        $log .= "✅ Seeders ejecutados (incluye Géneros y los 3 TEST EVENTS).\n";
+        
         $log .= "\n--- 🎉 Proceso completado con éxito ---\n";
     } catch (\Exception $e) {
         $log .= "\n❌ ERROR CRÍTICO: " . $e->getMessage() . "\n";
         Log::error("Fallo en reset-db: " . $e->getMessage());
-    }
-    return "<pre>$log</pre>";
-});
-
-Route::get('/update-genres-production', function () {
-    if (request('token') !== '123456789') { return "No autorizado"; }
-    $log = "--- Inicia: Agregado de Géneros en Producción ---\n";
-    try {
-        Artisan::call('db:seed', ['--class' => 'AddMoreGenresSeeder', '--force' => true]);
-        $log .= "✅ Seeder AddMoreGenresSeeder ejecutado.\n";
-        $log .= "\n--- 🎉 Proceso completado con éxito ---\n";
-    } catch (\Exception $e) {
-        $log .= "\n❌ ERROR CRÍTICO: " . $e->getMessage() . "\n";
-        Log::error("Fallo en update-genres: " . $e->getMessage());
     }
     return "<pre>$log</pre>";
 });
