@@ -111,8 +111,16 @@ class EventService {
 
     
         if ($base64Image || $file instanceof UploadedFile) {
-            if ($event->flyer && file_exists(public_path($event->flyer))) {
-                unlink(public_path($event->flyer));
+            if ($event->flyer) {
+                if (str_contains($event->flyer, 'res.cloudinary.com')) {
+                    try {
+                        $publicId = pathinfo(parse_url($event->flyer, PHP_URL_PATH), PATHINFO_FILENAME);
+                        $cloudinary = new \Cloudinary\Cloudinary(env('CLOUDINARY_URL'));
+                        $cloudinary->uploadApi()->destroy($publicId);
+                    } catch (\Exception $e) {}
+                } elseif (file_exists(public_path($event->flyer))) {
+                    unlink(public_path($event->flyer));
+                }
             }
 
             $eventData['flyer'] = $base64Image 
@@ -135,34 +143,33 @@ class EventService {
 
     public function delete(Event $event): bool
     {
-        if ($event->flyer && file_exists(public_path($event->flyer))) {
-            unlink(public_path($event->flyer));
+        if ($event->flyer) {
+            if (str_contains($event->flyer, 'res.cloudinary.com')) {
+                try {
+                    $publicId = pathinfo(parse_url($event->flyer, PHP_URL_PATH), PATHINFO_FILENAME);
+                    $cloudinary = new \Cloudinary\Cloudinary(env('CLOUDINARY_URL'));
+                    $cloudinary->uploadApi()->destroy($publicId);
+                } catch (\Exception $e) {}
+            } elseif (file_exists(public_path($event->flyer))) {
+                unlink(public_path($event->flyer));
+            }
         }
         return $event->delete();
     }
 
     /**
-     * Process base64-encoded image uploads, saving them to the server and returning the file path.
+     * Process base64-encoded image uploads, saving them to Cloudinary and returning the file path.
      */
     private function handleBase64Upload(string $base64Image): ?string
     {
-        if (preg_match('/^data:image\/(\w+);base64,/', $base64Image, $type)) {
-            $data = substr($base64Image, strpos($base64Image, ',') + 1);
-            $type = strtolower($type[1]); // png, jpg, jpeg...
-            $data = base64_decode($data);
-            
-            $filename = time() . '_' . uniqid() . '.' . $type;
-            $destinationPath = public_path('images/flyers');
-
-            if (!file_exists($destinationPath)) {
-                mkdir($destinationPath, 0755, true);
-            }
-            
-            file_put_contents($destinationPath . '/' . $filename, $data);
-            
-            return 'images/flyers/' . $filename;
+        try {
+            $cloudinary = new \Cloudinary\Cloudinary(env('CLOUDINARY_URL'));
+            $response = $cloudinary->uploadApi()->upload($base64Image);
+            return $response['secure_url'];
+        } catch (\Exception $e) {
+            \Log::error('Error uploading base64 to Cloudinary: ' . $e->getMessage());
+            return null;
         }
-        return null;
     }
 
     /**
@@ -170,16 +177,9 @@ class EventService {
      */
     private function handleFileUpload(UploadedFile $file): string
     {
-        $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
-        $destinationPath = public_path('images/flyers');
-
-        if (!file_exists($destinationPath)) { 
-            mkdir($destinationPath, 0755, true); 
-        }
-
-        $file->move($destinationPath, $filename);
-
-        return 'images/flyers/' . $filename;
+        $cloudinary = new \Cloudinary\Cloudinary(env('CLOUDINARY_URL'));
+        $response = $cloudinary->uploadApi()->upload($file->getRealPath());
+        return $response['secure_url'];
     }
 
     private function processPriceInfo(array $eventData): string 

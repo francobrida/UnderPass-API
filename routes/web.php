@@ -48,3 +48,17 @@ Route::get('/reset-db-production', function () {
     }
     return "<pre>$log</pre>";
 });
+
+Route::get('/update-genres-production', function () {
+    if (request('token') !== '123456789') { return "No autorizado"; }
+    $log = "--- Inicia: Agregado de Géneros en Producción ---\n";
+    try {
+        Artisan::call('db:seed', ['--class' => 'AddMoreGenresSeeder', '--force' => true]);
+        $log .= "✅ Seeder AddMoreGenresSeeder ejecutado.\n";
+        $log .= "\n--- 🎉 Proceso completado con éxito ---\n";
+    } catch (\Exception $e) {
+        $log .= "\n❌ ERROR CRÍTICO: " . $e->getMessage() . "\n";
+        Log::error("Fallo en update-genres: " . $e->getMessage());
+    }
+    return "<pre>$log</pre>";
+});

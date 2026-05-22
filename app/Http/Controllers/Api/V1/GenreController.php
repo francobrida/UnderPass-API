@@ -28,7 +28,7 @@ class GenreController extends Controller
      */
     public function index(): JsonResponse
     {
-        $genres = Genre::all();
+        $genres = Genre::orderBy('name', 'asc')->get();
 
         return GenreResource::collection($genres)->response();
     }
