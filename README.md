@@ -1,4 +1,6 @@
-# 🎧 UnderPass API | Barcelona Underground Electronic Scene
+<p align="center">
+  <img src="public/images/Underpass-front-banner.png" alt="Underpass banner" title="Underpass">
+</p>
 
 UnderPass is a specialized REST API designed for the management and community-driven curation of electronic music events within the Barcelona local scene. It features a unique trust-based verification system, physical attendance validation via QR/Stamps, and a qualitative feedback loop.
 
@@ -187,8 +189,14 @@ The project includes a multi-container setup via Docker Compose.
 ```bash
 docker-compose up -d --build
 ```
-### Production Deployment (Railway)
-This API is served via **Nginx**.
+### Production & Demo Environments (Railway)
+This API is served via **Nginx** on two separate environments:
+
+**🧪 Demo Environment (Full Seed & Test Accounts):**
+* **Live API:** `https://underpass-demo.up.railway.app/api/v1/`
+* **Live Docs:** `https://underpass-demo.up.railway.app/docs`
+
+**🚀 Production Environment (Clean State):**
 * **Live API:** `https://underpass-api-production.up.railway.app/api/v1/`
 * **Live Docs:** `https://underpass-api-production.up.railway.app/docs`
 
