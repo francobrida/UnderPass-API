@@ -28,10 +28,20 @@ Route::get('/reset-db-demo', function () {
         Artisan::call('migrate', ['--force' => true]);
         $log .= "✅ Migraciones ejecutadas (incluyendo Passport si fue publicado).\n";
 
-        Artisan::call('passport:client', ['--personal' => true, '--name' => 'Laravel Personal Access Client']);
-        Artisan::call('passport:client', ['--password' => true, '--name' => 'Laravel Password Grant Client']);
-        Artisan::call('passport:keys', ['--force' => true]);
-        $log .= "✅ Passport configurado (comandos Artisan directos).\n";
+        $clientRepository = app(\Laravel\Passport\ClientRepository::class);
+        $clientRepository->createPersonalAccessGrantClient('Laravel Personal Access Client', 'users');
+        $clientRepository->createPasswordGrantClient('Laravel Password Grant Client', 'users', true);
+
+        $publicKeyPath = \Laravel\Passport\Passport::keyPath('oauth-public.key');
+        $privateKeyPath = \Laravel\Passport\Passport::keyPath('oauth-private.key');
+        $key = \phpseclib3\Crypt\RSA::createKey(4096);
+        file_put_contents($publicKeyPath, (string) $key->getPublicKey());
+        file_put_contents($privateKeyPath, (string) $key);
+        if (! windows_os()) {
+            chmod($publicKeyPath, 0660);
+            chmod($privateKeyPath, 0600);
+        }
+        $log .= "✅ Passport configurado (clientes creados y llaves generadas directamente).\n";
 
         Artisan::call('db:seed', ['--force' => true]);
         $log .= "✅ Seeders DEMO ejecutados (incluye Géneros, Usuarios de prueba y Eventos).\n";
@@ -59,10 +69,20 @@ Route::get('/reset-db-prod', function () {
         Artisan::call('migrate', ['--force' => true]);
         $log .= "✅ Migraciones ejecutadas.\n";
 
-        Artisan::call('passport:client', ['--personal' => true, '--name' => 'Laravel Personal Access Client']);
-        Artisan::call('passport:client', ['--password' => true, '--name' => 'Laravel Password Grant Client']);
-        Artisan::call('passport:keys', ['--force' => true]);
-        $log .= "✅ Passport configurado.\n";
+        $clientRepository = app(\Laravel\Passport\ClientRepository::class);
+        $clientRepository->createPersonalAccessGrantClient('Laravel Personal Access Client', 'users');
+        $clientRepository->createPasswordGrantClient('Laravel Password Grant Client', 'users', true);
+
+        $publicKeyPath = \Laravel\Passport\Passport::keyPath('oauth-public.key');
+        $privateKeyPath = \Laravel\Passport\Passport::keyPath('oauth-private.key');
+        $key = \phpseclib3\Crypt\RSA::createKey(4096);
+        file_put_contents($publicKeyPath, (string) $key->getPublicKey());
+        file_put_contents($privateKeyPath, (string) $key);
+        if (! windows_os()) {
+            chmod($publicKeyPath, 0660);
+            chmod($privateKeyPath, 0600);
+        }
+        $log .= "✅ Passport configurado (clientes creados y llaves generadas directamente).\n";
 
         Artisan::call('db:seed', ['--class' => 'ProductionSeeder', '--force' => true]);
         $log .= "✅ Seeder de PRODUCCIÓN ejecutado (Solo Géneros y Admin).\n";
