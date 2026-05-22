@@ -27,6 +27,7 @@ class DatabaseSeeder extends Seeder
             $admin = User::factory()->create([
                 'name' => 'Admin Underpass',
                 'email' => 'admin@underpass.com',
+                'password' => 'password',
                 'role' => UserRole::ADMIN,
                 'points' => 1200,
             ]);
@@ -37,6 +38,7 @@ class DatabaseSeeder extends Seeder
             $organizer = User::factory()->create([
                 'name' => 'Main Organizer',
                 'email' => 'organizer@test.com',
+                'password' => 'password',
                 'role' => UserRole::ORGANIZER,
                 'points' => 500,
             ]);
@@ -47,6 +49,7 @@ class DatabaseSeeder extends Seeder
             $clubber = User::factory()->create([
                 'name' => 'Pepe Clubber',
                 'email' => 'clubber@test.com',
+                'password' => 'password',
                 'role' => UserRole::CLUBBER,
                 'points' => 1500,
             ]);
