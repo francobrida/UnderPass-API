@@ -57,7 +57,7 @@ class DatabaseSeeder extends Seeder
                 'title' => "TEST EVENT {$i}",
                 'user_id' => $organizer->id,
                 'is_verified' => true,
-                'date' => Carbon::now()->addDays($i)->format('Y-m-d'),
+                'date' => Carbon::now()->addDays($i * 30)->format('Y-m-d'),
                 'start_time' => '23:00',
                 'end_time' => '06:00',
             ]);
@@ -69,8 +69,6 @@ class DatabaseSeeder extends Seeder
 
         $this->command->info('Database fully seeded with exactly 3 test events for Underpass API.');
 
-        /*
-        // === ANTIGUO SEEDER PARA TESTS (Comentado para no perderlo) ===
         
         $crowd = User::factory(10)->create();
 
@@ -79,7 +77,7 @@ class DatabaseSeeder extends Seeder
                 'title' => "Underground Rave Session #{$i}",
                 'user_id' => $organizer->id,
                 'is_verified' => true,
-                'date' => Carbon::now()->addDays($i)->format('Y-m-d'),
+                'date' => Carbon::now()->addDays($i * 25)->format('Y-m-d'),
                 'start_time' => '23:00',
                 'end_time' => '06:00',
             ]);
@@ -111,7 +109,6 @@ class DatabaseSeeder extends Seeder
                 'start_time' => '18:00',
                 'end_time' => '23:00',
             ]);
-            // Nota: En el seeder viejo esto usaba $genres['Acid'] que ya no existe asi
             $pastVibeCheckReady->genres()->attach($allGenreIds[array_rand($allGenreIds)]);
         }
 
@@ -153,7 +150,7 @@ class DatabaseSeeder extends Seeder
             'title' => 'House partyyy [WAITING]',
             'user_id' => $crowd->random()->id,
             'is_verified' => false,
-            'date' => Carbon::now()->addDays(15)->format('Y-m-d'),
+            'date' => Carbon::now()->addDays(40)->format('Y-m-d'),
         ]);
         $waitingEvent1->genres()->attach($allGenreIds[array_rand($allGenreIds)]);
 
@@ -165,7 +162,7 @@ class DatabaseSeeder extends Seeder
             'title' => 'Acid Electro Lab [WAITING - VOTE ME]',
             'user_id' => $crowd->random()->id,
             'is_verified' => false,
-            'date' => Carbon::now()->addDays(10)->format('Y-m-d'),
+            'date' => Carbon::now()->addDays(55)->format('Y-m-d'),
         ]);
         $waitingEvent2->genres()->attach($allGenreIds[array_rand($allGenreIds)]);
 
@@ -173,10 +170,9 @@ class DatabaseSeeder extends Seeder
             'title' => 'Industrial nave [VOTED BY PEPE]',
             'user_id' => $crowd->random()->id,
             'is_verified' => false,
-            'date' => Carbon::now()->addDays(12)->format('Y-m-d'),
+            'date' => Carbon::now()->addDays(70)->format('Y-m-d'),
         ]);
         $waitingEvent3->genres()->attach($allGenreIds[array_rand($allGenreIds)]);
         $waitingEvent3->vouches()->attach($clubber->id);
-        */
     }
 }
