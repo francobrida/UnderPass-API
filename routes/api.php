@@ -19,7 +19,7 @@ Route::prefix('v1')->group(function () {
     Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:login');
     Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:5,1');
 
-    Route::middleware('auth:api')->group(function () {
+    Route::middleware(['auth.cookie', 'auth:api'])->group(function () {
         Route::post('/logout', [AuthController::class, 'logout']);
         Route::get('/users/{id}', [UserController::class, 'show']);
         Route::delete('/profile', [UserController::class, 'destroy']);
