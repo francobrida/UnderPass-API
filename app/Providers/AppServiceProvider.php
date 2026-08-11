@@ -10,6 +10,8 @@ use App\Observers\VouchObserver;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Cache\RateLimiting\Limit;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -32,5 +34,11 @@ class AppServiceProvider extends ServiceProvider
         
         \Laravel\Passport\Passport::loadKeysFrom(storage_path());
         Vouch::observe(VouchObserver::class);
+
+        RateLimiter::for('login', function ($request) {
+            $email = strtolower(trim((string) $request->input('email')));
+
+            return Limit::perMinute(5)->by($email . '|' . $request->ip());
+        });
     }
 }
