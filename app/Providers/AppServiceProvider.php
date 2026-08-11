@@ -36,7 +36,8 @@ class AppServiceProvider extends ServiceProvider
         Vouch::observe(VouchObserver::class);
 
         RateLimiter::for('login', function ($request) {
-            $email = strtolower(trim((string) $request->input('email')));
+            $rawEmail = $request->input('email');
+            $email = strtolower(trim(is_string($rawEmail) ? $rawEmail : ''));
 
             return Limit::perMinute(5)->by($email . '|' . $request->ip());
         });
