@@ -11,6 +11,12 @@ return [
     | to this API. Only the known prod, demo, and local dev frontends are
     | listed here — no wildcard, no pattern matching. See CORS-01.
     |
+    | supports_credentials is enabled so the allowlisted frontends may send
+    | and receive the httpOnly auth cookie cross-origin (CORS-02). This is
+    | safe only because the allowlist above stays exact-origin literals with
+    | no wildcard or pattern matching — widening it while credentials are on
+    | would let any matching host read authenticated responses.
+    |
     */
 
     'paths' => ['api/*', 'sanctum/csrf-cookie'],
@@ -31,6 +37,6 @@ return [
 
     'max_age' => 0,
 
-    'supports_credentials' => false,
+    'supports_credentials' => true,
 
 ];
