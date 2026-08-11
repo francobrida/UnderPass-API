@@ -31,6 +31,16 @@ test('an OPTIONS preflight from a disallowed origin receives no Access-Control-A
     $response->assertHeaderMissing('Access-Control-Allow-Origin');
 });
 
+test('an OPTIONS preflight from an allowed origin receives Access-Control-Allow-Origin', function () {
+    $response = $this->call('OPTIONS', '/api/v1/login', server: [
+        'HTTP_ORIGIN' => 'https://underpass.up.railway.app',
+        'HTTP_ACCESS_CONTROL_REQUEST_METHOD' => 'POST',
+        'HTTP_ACCESS_CONTROL_REQUEST_HEADERS' => 'authorization, content-type',
+    ]);
+
+    $response->assertHeader('Access-Control-Allow-Origin', 'https://underpass.up.railway.app');
+});
+
 test('per-request origin isolation: an allowed and a disallowed request each get their own correct decision', function () {
     $allowed = getJson('/api/v1/', ['Origin' => 'https://underpass.up.railway.app']);
     $denied = getJson('/api/v1/', ['Origin' => 'https://evil.example.com']);
