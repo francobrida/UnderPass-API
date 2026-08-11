@@ -23,7 +23,23 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->alias([
             'admin' => \App\Http\Middleware\AdminMiddleware::class,
+            'auth.cookie' => \App\Http\Middleware\AuthenticateWithCookie::class,
         ]);
+
+        // The 'api' group's SubstituteBindings sits in Laravel's default
+        // middlewarePriority list, and Authenticate (auth:api) does too
+        // (via the AuthenticatesRequests interface it implements — that
+        // interface, not the concrete class, is what's actually in the
+        // priority array). Without this, the priority sorter reorders
+        // Authenticate ahead of SubstituteBindings whenever both are
+        // present alongside our route-order-only bridge, dragging
+        // Authenticate past auth.cookie as a side effect and making the
+        // guard resolve before the cookie is ever bridged onto the
+        // Authorization header.
+        $middleware->prependToPriorityList(
+            before: \Illuminate\Contracts\Auth\Middleware\AuthenticatesRequests::class,
+            prepend: \App\Http\Middleware\AuthenticateWithCookie::class,
+        );
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
