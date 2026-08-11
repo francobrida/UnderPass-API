@@ -17,7 +17,7 @@ Route::prefix('v1')->group(function () {
     });
     
     Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:login');
-    Route::post('/register', [AuthController::class, 'register']);
+    Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:5,1');
 
     Route::middleware('auth:api')->group(function () {
         Route::post('/logout', [AuthController::class, 'logout']);
