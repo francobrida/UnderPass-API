@@ -58,3 +58,28 @@ test('login throttle bucket is shared across email capitalization variants', fun
     $response = postJson('/api/v1/login', $lower);
     $response->assertStatus(429);
 });
+
+test('the 6th register attempt within a minute from the same IP is throttled', function () {
+    for ($i = 1; $i <= 5; $i++) {
+        $response = postJson('/api/v1/register', []);
+        $response->assertStatus(422);
+    }
+
+    $response = postJson('/api/v1/register', []);
+    $response->assertStatus(429);
+});
+
+test('repeating an identical failing register payload still consumes quota', function () {
+    $first = postJson('/api/v1/register', []);
+    $first->assertStatus(422);
+
+    $second = postJson('/api/v1/register', []);
+    $second->assertStatus(422);
+
+    for ($i = 3; $i <= 5; $i++) {
+        postJson('/api/v1/register', []);
+    }
+
+    $sixth = postJson('/api/v1/register', []);
+    $sixth->assertStatus(429);
+});
