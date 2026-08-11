@@ -29,7 +29,8 @@ test('a user can login with correct credentials', function () {
     ]);
 
     $response->assertStatus(200)
-             ->assertJsonStructure(['access_token', 'token_type', 'user' => ['name', 'role']]);
+             ->assertJsonStructure(['message', 'user' => ['name', 'role']]);
+    $response->assertCookie('access_token');
 });
 
 
@@ -81,8 +82,8 @@ test('login is case-insensitive for the email address', function () {
         'password' => 'password123',
     ]);
 
-    $response->assertStatus(200)
-             ->assertJsonStructure(['access_token']);
+    $response->assertStatus(200);
+    $response->assertCookie('access_token');
 });
 
 // Registration
@@ -97,9 +98,10 @@ test('a user can register successfully', function () {
     ]);
 
     $response->assertStatus(201)
-             ->assertJsonStructure(['access_token', 'user' => ['name', 'email', 'role']]);
+             ->assertJsonStructure(['user' => ['name', 'email', 'role']]);
+    $response->assertCookie('access_token');
 
-    
+
     assertDatabaseHas('users', [
         'email'    => 'new@underpass.com',
         'name' => 'NewClubber'
