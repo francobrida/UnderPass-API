@@ -124,6 +124,7 @@ test('logout revokes the token and clears the cookie so the pre-logout cookie is
     $preLogoutCookie = $login->getCookie(AuthCookie::NAME, false)->getValue();
 
     $logout = $this->withCredentials()
+        ->withHeader('Origin', 'https://underpass.up.railway.app')
         ->withUnencryptedCookie(AuthCookie::NAME, $preLogoutCookie)
         ->postJson('/api/v1/logout');
 
@@ -153,6 +154,70 @@ test('logout revokes the token and clears the cookie so the pre-logout cookie is
         ->postJson('/api/v1/logout');
 
     $secondLogout->assertStatus(401);
+});
+
+test('a valid cookie on a state-changing route with no Origin header is rejected (CSRF gap fix)', function () {
+    User::factory()->create([
+        'email' => 'test@underpass.com',
+        'password' => Hash::make('password123'),
+    ]);
+
+    $login = postJson('/api/v1/login', [
+        'email' => 'test@underpass.com',
+        'password' => 'password123',
+    ]);
+
+    $cookie = $login->getCookie(AuthCookie::NAME, false)->getValue();
+
+    // No Origin header at all -- simulates a plain cross-site
+    // <form method="POST"> submission, which never sets Origin.
+    $response = $this->withCredentials()
+        ->withUnencryptedCookie(AuthCookie::NAME, $cookie)
+        ->postJson('/api/v1/logout');
+
+    $response->assertStatus(401);
+});
+
+test('a valid cookie on a state-changing route with a disallowed Origin header is rejected (CSRF gap fix)', function () {
+    User::factory()->create([
+        'email' => 'test@underpass.com',
+        'password' => Hash::make('password123'),
+    ]);
+
+    $login = postJson('/api/v1/login', [
+        'email' => 'test@underpass.com',
+        'password' => 'password123',
+    ]);
+
+    $cookie = $login->getCookie(AuthCookie::NAME, false)->getValue();
+
+    $response = $this->withCredentials()
+        ->withHeader('Origin', 'https://evil.example.com')
+        ->withUnencryptedCookie(AuthCookie::NAME, $cookie)
+        ->postJson('/api/v1/logout');
+
+    $response->assertStatus(401);
+});
+
+test('a valid cookie on a state-changing route with an allowed Origin header still authenticates', function () {
+    User::factory()->create([
+        'email' => 'test@underpass.com',
+        'password' => Hash::make('password123'),
+    ]);
+
+    $login = postJson('/api/v1/login', [
+        'email' => 'test@underpass.com',
+        'password' => 'password123',
+    ]);
+
+    $cookie = $login->getCookie(AuthCookie::NAME, false)->getValue();
+
+    $response = $this->withCredentials()
+        ->withHeader('Origin', 'https://underpass.up.railway.app')
+        ->withUnencryptedCookie(AuthCookie::NAME, $cookie)
+        ->postJson('/api/v1/logout');
+
+    $response->assertStatus(200);
 });
 
 test('a request with both an Authorization header and a different cookie authenticates as the header owner', function () {
