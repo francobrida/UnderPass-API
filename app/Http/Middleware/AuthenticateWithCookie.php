@@ -19,7 +19,9 @@ class AuthenticateWithCookie
 {
     public function handle(Request $request, Closure $next): Response
     {
-        if ($request->headers->has('Authorization')) {
+        $authHeader = $request->headers->get('Authorization');
+
+        if (is_string($authHeader) && trim($authHeader) !== '') {
             return $next($request);
         }
 

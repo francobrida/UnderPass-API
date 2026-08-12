@@ -253,6 +253,27 @@ test('a request with both an Authorization header and a different cookie authent
     $response->assertStatus(200);
 });
 
+test('a blank Authorization header falls back to a valid access_token cookie', function () {
+    User::factory()->create([
+        'email' => 'test@underpass.com',
+        'password' => Hash::make('password123'),
+    ]);
+
+    $login = postJson('/api/v1/login', [
+        'email' => 'test@underpass.com',
+        'password' => 'password123',
+    ]);
+
+    $cookie = $login->getCookie(AuthCookie::NAME, false)->getValue();
+
+    $response = $this->withHeader('Authorization', '')
+        ->withCredentials()
+        ->withUnencryptedCookie(AuthCookie::NAME, $cookie)
+        ->getJson('/api/v1/genres');
+
+    $response->assertStatus(200);
+});
+
 test('an empty-string access_token cookie on a protected route returns 401', function () {
     $response = $this->withCredentials()
         ->withUnencryptedCookie(AuthCookie::NAME, '')
