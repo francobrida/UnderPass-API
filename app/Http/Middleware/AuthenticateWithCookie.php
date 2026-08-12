@@ -25,7 +25,7 @@ class AuthenticateWithCookie
             return $next($request);
         }
 
-        $cookie = $request->cookie(AuthCookie::NAME);
+        $cookie = $request->cookie(AuthCookie::cookieName());
 
         if (! is_string($cookie) || trim($cookie) === '') {
             return $next($request);

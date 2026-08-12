@@ -16,6 +16,22 @@ class AuthCookie
     public const NAME = 'access_token';
 
     /**
+     * The `__Host-` prefix is a browser-enforced guarantee (the cookie is
+     * rejected outright unless Domain is unset and Secure is true) against
+     * subdomain cookie-fixation/injection. Every other attribute this class
+     * already sets (domain: null, path: '/', secure: true) satisfies its
+     * requirements in every non-local environment, so it's used everywhere
+     * except 'local' (where secure is false and the prefix would be
+     * rejected by the browser).
+     */
+    public const NAME_HOST_PREFIXED = '__Host-access_token';
+
+    public static function cookieName(): string
+    {
+        return app()->environment('local') ? self::NAME : self::NAME_HOST_PREFIXED;
+    }
+
+    /**
      * Build the Set-Cookie for a freshly minted Passport token.
      */
     public static function make(string $token, int $minutes): SymfonyCookie
@@ -23,7 +39,7 @@ class AuthCookie
         $secure = ! app()->environment('local');
 
         return Cookie::make(
-            name: self::NAME,
+            name: self::cookieName(),
             value: $token,
             minutes: $minutes,
             path: '/',
@@ -45,7 +61,7 @@ class AuthCookie
         $secure = ! app()->environment('local');
 
         return Cookie::make(
-            name: self::NAME,
+            name: self::cookieName(),
             value: '',
             minutes: -1,
             path: '/',

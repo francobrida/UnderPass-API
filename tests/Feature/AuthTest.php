@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\User;
+use App\Support\AuthCookie;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Hash;
@@ -30,7 +31,7 @@ test('a user can login with correct credentials', function () {
 
     $response->assertStatus(200)
              ->assertJsonStructure(['message', 'user' => ['name', 'email', 'role']]);
-    $response->assertCookie('access_token');
+    $response->assertCookie(AuthCookie::cookieName());
 });
 
 
@@ -83,7 +84,7 @@ test('login is case-insensitive for the email address', function () {
     ]);
 
     $response->assertStatus(200);
-    $response->assertCookie('access_token');
+    $response->assertCookie(AuthCookie::cookieName());
 });
 
 // Registration
@@ -99,7 +100,7 @@ test('a user can register successfully', function () {
 
     $response->assertStatus(201)
              ->assertJsonStructure(['user' => ['name', 'email', 'role']]);
-    $response->assertCookie('access_token');
+    $response->assertCookie(AuthCookie::cookieName());
 
 
     assertDatabaseHas('users', [

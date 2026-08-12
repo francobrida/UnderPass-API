@@ -31,7 +31,7 @@ test('login returns 200, no access_token in body, and sets the access_token cook
         ->assertJsonStructure(['user'])
         ->assertJsonMissingPath('access_token');
 
-    $cookie = $response->getCookie(AuthCookie::NAME, false);
+    $cookie = $response->getCookie(AuthCookie::cookieName(), false);
 
     expect($cookie)->not->toBeNull();
     expect($cookie->getValue())->toBeString()->not->toBeEmpty();
@@ -48,10 +48,10 @@ test('login cookie authenticates a protected route with no Authorization header'
         'password' => 'password123',
     ]);
 
-    $cookie = $login->getCookie(AuthCookie::NAME, false);
+    $cookie = $login->getCookie(AuthCookie::cookieName(), false);
 
     $response = $this->withCredentials()
-        ->withUnencryptedCookie(AuthCookie::NAME, $cookie->getValue())
+        ->withUnencryptedCookie(AuthCookie::cookieName(), $cookie->getValue())
         ->getJson('/api/v1/genres');
 
     $response->assertStatus(200);
@@ -68,18 +68,21 @@ test('the access_token cookie carries the hardened attributes in the testing env
         'password' => 'password123',
     ]);
 
-    $cookie = $response->getCookie(AuthCookie::NAME, false);
+    $cookie = $response->getCookie(AuthCookie::cookieName(), false);
 
     expect($cookie->isHttpOnly())->toBeTrue();
     expect($cookie->isSecure())->toBeTrue();
     expect($cookie->getSameSite())->toBe('none');
     expect($cookie->getPath())->toBe('/');
     expect($cookie->getDomain())->toBeNull();
+    // Pest runs under APP_ENV=testing (non-local), so the cookie should
+    // carry the browser-enforced __Host- prefix here.
+    expect($cookie->getName())->toBe(AuthCookie::NAME_HOST_PREFIXED);
 });
 
 test('a garbage access_token cookie on a protected route returns 401', function () {
     $response = $this->withCredentials()
-        ->withUnencryptedCookie(AuthCookie::NAME, 'garbage-not-a-real-token')
+        ->withUnencryptedCookie(AuthCookie::cookieName(), 'garbage-not-a-real-token')
         ->getJson('/api/v1/genres');
 
     $response->assertStatus(401);
@@ -104,7 +107,7 @@ test('register returns 201, no access_token in body, and sets the access_token c
         ->assertJsonStructure(['user'])
         ->assertJsonMissingPath('access_token');
 
-    $cookie = $response->getCookie(AuthCookie::NAME, false);
+    $cookie = $response->getCookie(AuthCookie::cookieName(), false);
 
     expect($cookie)->not->toBeNull();
     expect($cookie->getValue())->toBeString()->not->toBeEmpty();
@@ -121,16 +124,16 @@ test('logout revokes the token and clears the cookie so the pre-logout cookie is
         'password' => 'password123',
     ]);
 
-    $preLogoutCookie = $login->getCookie(AuthCookie::NAME, false)->getValue();
+    $preLogoutCookie = $login->getCookie(AuthCookie::cookieName(), false)->getValue();
 
     $logout = $this->withCredentials()
         ->withHeader('Origin', 'https://underpass.up.railway.app')
-        ->withUnencryptedCookie(AuthCookie::NAME, $preLogoutCookie)
+        ->withUnencryptedCookie(AuthCookie::cookieName(), $preLogoutCookie)
         ->postJson('/api/v1/logout');
 
     $logout->assertStatus(200);
 
-    $clearedCookie = $logout->getCookie(AuthCookie::NAME, false);
+    $clearedCookie = $logout->getCookie(AuthCookie::cookieName(), false);
 
     expect($clearedCookie->getValue())->toBe('');
     expect($clearedCookie->getExpiresTime())->toBeLessThan(now()->getTimestamp());
@@ -144,13 +147,13 @@ test('logout revokes the token and clears the cookie so the pre-logout cookie is
     Auth::forgetGuards();
 
     $replay = $this->withCredentials()
-        ->withUnencryptedCookie(AuthCookie::NAME, $preLogoutCookie)
+        ->withUnencryptedCookie(AuthCookie::cookieName(), $preLogoutCookie)
         ->getJson('/api/v1/genres');
 
     $replay->assertStatus(401);
 
     $secondLogout = $this->withCredentials()
-        ->withUnencryptedCookie(AuthCookie::NAME, $clearedCookie->getValue())
+        ->withUnencryptedCookie(AuthCookie::cookieName(), $clearedCookie->getValue())
         ->postJson('/api/v1/logout');
 
     $secondLogout->assertStatus(401);
@@ -167,12 +170,12 @@ test('a valid cookie on a state-changing route with no Origin header is rejected
         'password' => 'password123',
     ]);
 
-    $cookie = $login->getCookie(AuthCookie::NAME, false)->getValue();
+    $cookie = $login->getCookie(AuthCookie::cookieName(), false)->getValue();
 
     // No Origin header at all -- simulates a plain cross-site
     // <form method="POST"> submission, which never sets Origin.
     $response = $this->withCredentials()
-        ->withUnencryptedCookie(AuthCookie::NAME, $cookie)
+        ->withUnencryptedCookie(AuthCookie::cookieName(), $cookie)
         ->postJson('/api/v1/logout');
 
     $response->assertStatus(401);
@@ -189,11 +192,11 @@ test('a valid cookie on a state-changing route with a disallowed Origin header i
         'password' => 'password123',
     ]);
 
-    $cookie = $login->getCookie(AuthCookie::NAME, false)->getValue();
+    $cookie = $login->getCookie(AuthCookie::cookieName(), false)->getValue();
 
     $response = $this->withCredentials()
         ->withHeader('Origin', 'https://evil.example.com')
-        ->withUnencryptedCookie(AuthCookie::NAME, $cookie)
+        ->withUnencryptedCookie(AuthCookie::cookieName(), $cookie)
         ->postJson('/api/v1/logout');
 
     $response->assertStatus(401);
@@ -210,11 +213,11 @@ test('a valid cookie on a state-changing route with an allowed Origin header sti
         'password' => 'password123',
     ]);
 
-    $cookie = $login->getCookie(AuthCookie::NAME, false)->getValue();
+    $cookie = $login->getCookie(AuthCookie::cookieName(), false)->getValue();
 
     $response = $this->withCredentials()
         ->withHeader('Origin', 'https://underpass.up.railway.app')
-        ->withUnencryptedCookie(AuthCookie::NAME, $cookie)
+        ->withUnencryptedCookie(AuthCookie::cookieName(), $cookie)
         ->postJson('/api/v1/logout');
 
     $response->assertStatus(200);
@@ -239,15 +242,15 @@ test('a request with both an Authorization header and a different cookie authent
         'password' => 'password123',
     ]);
 
-    $tokenA = $loginA->getCookie(AuthCookie::NAME, false)->getValue();
-    $tokenB = $loginB->getCookie(AuthCookie::NAME, false)->getValue();
+    $tokenA = $loginA->getCookie(AuthCookie::cookieName(), false)->getValue();
+    $tokenB = $loginB->getCookie(AuthCookie::cookieName(), false)->getValue();
 
     // GET /users/{id} 200s only for the owner (or an admin). If the cookie
     // (user B) ever won over the header (user A), this would 403 instead,
     // since user B does not own user A's profile.
     $response = $this->withHeader('Authorization', 'Bearer '.$tokenA)
         ->withCredentials()
-        ->withUnencryptedCookie(AuthCookie::NAME, $tokenB)
+        ->withUnencryptedCookie(AuthCookie::cookieName(), $tokenB)
         ->getJson('/api/v1/users/'.$userA->id);
 
     $response->assertStatus(200);
@@ -264,11 +267,11 @@ test('a blank Authorization header falls back to a valid access_token cookie', f
         'password' => 'password123',
     ]);
 
-    $cookie = $login->getCookie(AuthCookie::NAME, false)->getValue();
+    $cookie = $login->getCookie(AuthCookie::cookieName(), false)->getValue();
 
     $response = $this->withHeader('Authorization', '')
         ->withCredentials()
-        ->withUnencryptedCookie(AuthCookie::NAME, $cookie)
+        ->withUnencryptedCookie(AuthCookie::cookieName(), $cookie)
         ->getJson('/api/v1/genres');
 
     $response->assertStatus(200);
@@ -276,7 +279,7 @@ test('a blank Authorization header falls back to a valid access_token cookie', f
 
 test('an empty-string access_token cookie on a protected route returns 401', function () {
     $response = $this->withCredentials()
-        ->withUnencryptedCookie(AuthCookie::NAME, '')
+        ->withUnencryptedCookie(AuthCookie::cookieName(), '')
         ->getJson('/api/v1/genres');
 
     $response->assertStatus(401);
@@ -303,7 +306,7 @@ test('logging in twice each returns exactly one non-empty access_token cookie', 
         $response->assertStatus(200);
 
         $cookies = collect($response->headers->getCookies())
-            ->filter(fn ($cookie) => $cookie->getName() === AuthCookie::NAME);
+            ->filter(fn ($cookie) => $cookie->getName() === AuthCookie::cookieName());
 
         expect($cookies)->toHaveCount(1);
         expect($cookies->first()->getValue())->not->toBeEmpty();
