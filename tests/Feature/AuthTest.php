@@ -29,7 +29,7 @@ test('a user can login with correct credentials', function () {
     ]);
 
     $response->assertStatus(200)
-             ->assertJsonStructure(['message', 'user' => ['name', 'role']]);
+             ->assertJsonStructure(['message', 'user' => ['name', 'email', 'role']]);
     $response->assertCookie('access_token');
 });
 
