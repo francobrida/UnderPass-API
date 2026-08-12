@@ -31,6 +31,7 @@ class AuthController extends Controller
      *  "user": {
      *      "id": 1,
      *      "name": "Pepe Clubber",
+     *      "email": "pepe@example.com",
      *      "role": "clubber"
      *  }
      * }
@@ -64,6 +65,7 @@ class AuthController extends Controller
             'user'         => [
                 'id'    => $user->id,
                 'name'  => $user->name,
+                'email' => $user->email,
                 'role'  => $user->role
             ]
         ], 200)->withCookie(AuthCookie::make($tokenResult->accessToken, $minutes));
