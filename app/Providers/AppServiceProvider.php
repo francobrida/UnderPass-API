@@ -39,7 +39,18 @@ class AppServiceProvider extends ServiceProvider
             $rawEmail = $request->input('email');
             $email = strtolower(trim(is_string($rawEmail) ? $rawEmail : ''));
 
-            return Limit::perMinute(5)->by($email . '|' . $request->ip());
+            // trustProxies(at: '*') (bootstrap/app.php) means Request::ip()
+            // reflects whatever X-Forwarded-For the client supplies if
+            // Railway's edge ever appends rather than replaces it -- an
+            // attacker could rotate the apparent IP on every attempt and
+            // reset the per-(email, IP) bucket below on each try. The
+            // email-only limit is independent of Request::ip() entirely,
+            // so it still bounds brute-forcing a given account even if IP
+            // can't be trusted.
+            return [
+                Limit::perMinute(5)->by($email),
+                Limit::perMinute(5)->by($email . '|' . $request->ip()),
+            ];
         });
     }
 }
