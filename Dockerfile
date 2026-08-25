@@ -25,4 +25,5 @@ CMD sh -c "sed -i 's/\${PORT}/'$PORT'/g' /etc/nginx/sites-available/default; \
     chown -R www-data:www-data /app/storage; \
     chmod -R 600 /app/storage/*.key; \
     php-fpm -D; \
+    (while true; do php artisan schedule:run --no-interaction > /dev/null 2>&1; sleep 60; done) & \
     nginx -g 'daemon off;'"
