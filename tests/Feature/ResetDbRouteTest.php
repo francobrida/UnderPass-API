@@ -55,6 +55,7 @@ test('correct token on /reset-db-prod with the prod flag disabled returns 404', 
 
 test('correct token on /reset-db-demo passes the guard without wiping anything', function () {
     config()->set('app.reset_db_token', 'test-guard-token-value');
+    config()->set('app.demo', true);
 
     Artisan::shouldReceive('call')->once()->andThrow(new \RuntimeException('RESET_GUARD_PASSED'));
 
@@ -63,6 +64,15 @@ test('correct token on /reset-db-demo passes the guard without wiping anything',
     $response->assertOk();
     $response->assertSee('RESET_GUARD_PASSED');
     $response->assertDontSee('Proceso DEMO completado con éxito');
+});
+
+test('correct token on /reset-db-demo with the demo flag off returns 404', function () {
+    Artisan::shouldReceive('call')->never();
+
+    config()->set('app.reset_db_token', 'test-guard-token-value');
+    config()->set('app.demo', false);
+
+    $this->get('/reset-db-demo?token=test-guard-token-value')->assertNotFound();
 });
 
 test('correct token on /reset-db-prod with the flag enabled passes the guard without wiping anything', function () {
