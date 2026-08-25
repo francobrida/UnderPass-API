@@ -139,4 +139,17 @@ return [
 
     'allow_prod_db_reset' => (bool) env('ALLOW_PROD_DB_RESET', false),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Demo Mode
+    |--------------------------------------------------------------------------
+    |
+    | Arms the `demo:refresh` command and its daily schedule entry, which
+    | destructively wipes and reseeds event/user data. Must stay unset (or
+    | false) on the production service — an absent env var fails closed.
+    |
+    */
+
+    'demo' => (bool) env('APP_DEMO', false),
+
 ];
