@@ -14,7 +14,7 @@ Route::get('/', function () {
     ]);
 });
 
-$assertResetAuthorized = function (bool $requiresProdFlag = false) {
+$assertResetAuthorized = function (bool $requiresProdFlag = false, bool $requiresDemoFlag = false) {
     $token = config('app.reset_db_token');
     abort_if(! is_string($token) || $token === '', 404);
 
@@ -26,10 +26,12 @@ $assertResetAuthorized = function (bool $requiresProdFlag = false) {
     // ponytail: token travels in a GET query string (logs/history/Referer);
     // real fix is POST + signed URL, deferred as out of scope for this hotfix.
     abort_if($requiresProdFlag && ! config('app.allow_prod_db_reset'), 404);
+
+    abort_if($requiresDemoFlag && ! config('app.demo'), 404);
 };
 
 Route::get('/reset-db-demo', function () use ($assertResetAuthorized) {
-    $assertResetAuthorized();
+    $assertResetAuthorized(false, true);
     $log = "--- Inicia: Limpieza y Sembrado en ENTORNO DEMO ---\n";
     
     try {
