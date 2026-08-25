@@ -123,4 +123,20 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | DB Reset Route Guard
+    |--------------------------------------------------------------------------
+    |
+    | Token required by the /reset-db-demo and /reset-db-prod routes in
+    | routes/web.php. No default is supplied: an absent env var must resolve
+    | to null so the guard fails closed. allow_prod_db_reset is a second,
+    | independently-set flag required only for the prod route.
+    |
+    */
+
+    'reset_db_token' => env('RESET_DB_TOKEN'),
+
+    'allow_prod_db_reset' => (bool) env('ALLOW_PROD_DB_RESET', false),
+
 ];
