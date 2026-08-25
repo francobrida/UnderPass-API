@@ -14,8 +14,24 @@ Route::get('/', function () {
     ]);
 });
 
-Route::get('/reset-db-demo', function () {
-    if (request('token') !== '123456789') { return "No autorizado"; }
+$assertResetAuthorized = function (bool $requiresProdFlag = false, bool $requiresDemoFlag = false) {
+    $token = config('app.reset_db_token');
+    abort_if(! is_string($token) || $token === '', 404);
+
+    $provided = request('token');
+    abort_if(! is_string($provided), 404);
+
+    abort_if(! hash_equals($token, $provided), 404);
+
+    // ponytail: token travels in a GET query string (logs/history/Referer);
+    // real fix is POST + signed URL, deferred as out of scope for this hotfix.
+    abort_if($requiresProdFlag && ! config('app.allow_prod_db_reset'), 404);
+
+    abort_if($requiresDemoFlag && ! config('app.demo'), 404);
+};
+
+Route::get('/reset-db-demo', function () use ($assertResetAuthorized) {
+    $assertResetAuthorized(false, true);
     $log = "--- Inicia: Limpieza y Sembrado en ENTORNO DEMO ---\n";
     
     try {
@@ -58,8 +74,8 @@ Route::get('/reset-db-demo', function () {
     return "<pre>$log</pre>";
 });
 
-Route::get('/reset-db-prod', function () {
-    if (request('token') !== '123456789') { return "No autorizado"; }
+Route::get('/reset-db-prod', function () use ($assertResetAuthorized) {
+    $assertResetAuthorized(true);
     $log = "--- Inicia: Limpieza y Sembrado en ENTORNO PRODUCCIÓN ---\n";
     
     try {
