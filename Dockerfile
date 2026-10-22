@@ -1,10 +1,10 @@
-FROM php:8.4-fpm
+FROM php:8.4.27-fpm
 
 RUN apt-get update && apt-get install -y \
     git unzip libzip-dev libpng-dev libicu-dev nginx \
     && docker-php-ext-install pdo_mysql zip gd intl bcmath pcntl
 
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+COPY --from=composer:2.10.3 /usr/bin/composer /usr/bin/composer
 ENV COMPOSER_ALLOW_SUPERUSER=1
 
 ENV APP_ENV=production
